@@ -3,16 +3,23 @@ require 'rubygems' rescue nil
 require 'chingu'
 require 'texplay'
 
+require 'yaml' # required for ocra.
+
 include Gosu
 include Chingu
 
 EDITOR_ENABLED = true
+
+module ZOrder
+  ENEMY, PLAYER, CONTROLLED, OVERLAY = (0..100).to_a
+end
 
 class Game < Window
   def initialize
     super(640, 480, false)
     self.caption = "Spooner LD 18 - Enemies as weapons"
 
+    on_input(:escape) { close }
   end
 
   def setup
@@ -21,27 +28,32 @@ class Game < Window
     
     push_game_state Level.new(1)
   end
+
+  def update
+    super
+    self.caption = current_game_state.class
+  end
 end
 
 class Level < GameState
+  trait :timer
   attr_reader :game_object_map
 
   def initialize(level)
     @level = level
     
-    super
+    super()
     
     @file = File.join(ROOT_PATH, "#{self.class}_#{level}.yml")
     load_game_objects(:file => @file)
 
     @player = Player.create(:x => 75, :y => 100)
-    (16..104).step(16) do |x|
-      Enemy.create(:x => x, :y => 25)
-    end
+
+    every(3000) { Enemy.create(:x => rand($window.width / $window.factor), :y => rand($window.height / $window.factor)) }
 
     on_input(:e, GameStates::Edit.new(:file => @file, :except => [Player]))
 
-    @status = Text.create("Status", :x => 2, :y => 2, :color => 0xa0ffffff, :factor => 2)
+    @status = Text.create("Status", :x => 2, :y => 2, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 2)
   end
 
   def setup
@@ -51,6 +63,7 @@ class Level < GameState
   def update
     super
     @status.text = "Health: %3d; Energy: %3d" % [@player.health, @player.energy]
+    after(1) { $window.push_game_state GameOver } if @player.health == 0
   end
 
   def draw
@@ -60,20 +73,31 @@ class Level < GameState
   end
 end
 
+class GameOver < GameState
+  def initialize
+    super
+    Text.create("GAME OVER", :x => 35, :y => 150, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 8)
+    Text.create("R to restart", :x => 190, :y => 250, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 4)
+    on_input(:r) { pop_game_state; pop_game_state; push_game_state(Level.new(1) )}
+  end
+
+  def draw
+    previous_game_state.draw
+    super
+  end
+end
+
 class Character < GameObject
-  trait :bounding_box, :debug => false, :scale => 0.25
+  trait :bounding_box, :debug => false, :scale => 0.22
   traits :collision_detection, :retrofy
   
   SIZE = 8
 
-  attr_reader :health, :damage
+  attr_reader :health, :damage, :max_health
 
   def health=(value)
-    @health = value
-    if @health <= 0
-      @health = 0
-      die
-    end
+    @health = [[0, value].max, max_health].min
+    die if @health == 0
   end
 
   def die
@@ -81,33 +105,34 @@ class Character < GameObject
   end
 
   def left
-    self.x -= @speed
+    self.x = [x - @speed, 0].max
   end
 
   def right
-    self.x += @speed
+    self.x = [x + @speed, $window.width / $window.factor].min
   end
 
   def up
-    self.y -= @speed
+    self.y = [y - @speed, 0].max
   end
 
   def down
-    self.y += @speed
+    self.y = [y + @speed, $window.height / $window.factor].min
   end
 end
 
 class Player < Character
-  attr_reader :energy
+  trait :timer
+  attr_reader :energy, :max_energy
 
-  MIN_CAPTURE_DISTANCE = 40
+  MIN_CAPTURE_DISTANCE = 50
   
-  MAX_HEALTH, MAX_ENERGY = 100, 1000
-  HEALTH_HEAL, ENERGY_HEAL = 1, 10
-  CONTROL_COST = 2
+  MAX_HEALTH, MAX_ENERGY = 1000, 1000
+  HEALTH_HEAL, ENERGY_HEAL = 10, 5
+  ENERGY_CONTROL = 5
 
   def initialize(options = {})
-    super
+    super({:zorder => ZOrder::PLAYER }.merge! options)
 
     add_inputs(
       [:holding_left, :holding_a] => lambda { @controlled.left },
@@ -119,11 +144,11 @@ class Player < Character
 
     lose_control
 
-    @health = MAX_HEALTH
-    @energy = MAX_ENERGY
+    @max_health = @health = MAX_HEALTH
+    @max_energy = @energy = MAX_ENERGY
 
     @speed = 1
-    @damage = 1
+    @damage = 10
   end
 
   def update
@@ -134,17 +159,20 @@ class Player < Character
       enemy.health -= damage
     end
 
-    if controlling?
-      @energy -= CONTROL_COST
-      if @energy <= 0
-        @energy = 0
-        lose_control
-      end
+    if controlling?      
+      self.energy -= ENERGY_CONTROL
     else
-      if @energy < MAX_ENERGY
-        @energy += ENERGY_HEAL
-      end
+      self.energy += ENERGY_HEAL
     end
+  end
+
+  def energy=(value)
+    @energy = [[0, value].max, @max_energy].min
+    lose_control if @energy == 0
+  end
+
+  def die
+    super
   end
 
   def controlling?
@@ -183,10 +211,10 @@ class Enemy < Character
   def initialize(options = {})  
     super(options.merge! :image => image)
 
-    @health = 40
+    @last_health = @max_health = @health = 400
     
     @speed = 0.5
-    @damage = 1
+    @damage = 10
 
     uncontrol
   end
@@ -194,17 +222,19 @@ class Enemy < Character
   def control
     @controlled = true
     self.image = TexPlay.create_image($window, SIZE, SIZE, :color => :blue)
+    self.zorder = ZOrder::CONTROLLED
   end
 
   def uncontrol
     @controlled = false
     self.image = TexPlay.create_image($window, SIZE, SIZE, :color => :red)
+    self.zorder = ZOrder::ENEMY
   end
 
   def die
     if controlled?
       uncontrol
-      Player.all.first.lose_control if Player.all.first 
+      Player.all.first.lose_control if Player.all.first
     end
     super
   end
@@ -220,9 +250,14 @@ class Enemy < Character
           enemy.health -= damage
         end
       end
-    elsif player = Player.all.first     
-      self.x -= @speed * (self.x - player.x) / (self.x - player.x).abs if self.x != player.x
-      self.y -= @speed * (self.y - player.y) / (self.y - player.y).abs if self.y != player.y
+    else
+      # Don't move if wounded.
+      if @health == @last_health and player = Player.all.first
+        # Home in on the player's location.
+        self.x -= @speed * (self.x - player.x) / (self.x - player.x).abs if self.x != player.x
+        self.y -= @speed * (self.y - player.y) / (self.y - player.y).abs if self.y != player.y
+      end
+      @last_health = @health
     end
   end
 end
