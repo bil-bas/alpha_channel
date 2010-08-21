@@ -1,7 +1,7 @@
 require 'rubygems' rescue nil
 
 require 'chingu'
-require 'texplay'
+#require 'texplay'
 
 require 'yaml' # required for ocra.
 
@@ -11,7 +11,7 @@ include Chingu
 EDITOR_ENABLED = true
 
 module ZOrder
-  BACKGROUND, LABEL, PIXEL, CONTROL, OVERLAY = (0..100).to_a
+  BACKGROUND, LABEL, PIXEL, CONTROL, PARTICLES, OVERLAY = (0..100).to_a
 end
 
 INSTALL_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
@@ -24,7 +24,6 @@ ENV['PATH'] = "#{File.join(INSTALL_DIR, 'bin')};#{ENV['PATH']}"
 class Game < Window
   def initialize
     super(640, 480, false)
-    self.caption = "Spooner LD 18 - 'Enemies as weapons'"
 
     on_input(:q) { close if holding_any? :left_control, :right_control }
   end
@@ -51,6 +50,11 @@ class Game < Window
       end
       return pos unless too_close
     end
+  end
+
+  def update
+    super
+    self.caption = "PIXHELL. (spooner.github.com LD 18 - 'Enemies as weapons') [FPS: #{fps}]"
   end
 end
 
@@ -128,15 +132,15 @@ class Level < GameState
 
       * White is good!
 
-      * Red is evil; It will hurt White!
+      * Red is evil; Red wants to hurt White!
 
       * Take control of Red, when it comes near, to make it Blue and be able to move it!
 
-      * Blue hurts Red! It also hurts Grey :(
+      * All colours hurt other colours. Black isn't too painful, though :)
 
-      * While controlling, White will become Grey, but Red will still hurt it.
+      * While controlling, White will become Yellow, but Red will still hunt it.
 
-      * Controlling Blue is strenuous and will use up your limited energy reserves.
+      * Controlling is strenuous and will use up your limited energy reserves.
 END_TEXT
 
     push_game_state GameStates::Popup.new(:text => text)
@@ -148,11 +152,16 @@ class GameOver < GameState
     super
     Text.create("GAME OVER", :x => 35, :y => 130, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 8)
     Text.create("R to restart", :x => 50, :y => 230, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 8)
-    on_input(:r) { pop_game_state; pop_game_state; push_game_state(Level.new(1) )}
+    on_input :r do
+      Sample["level.wav"].play
+      pop_game_state
+      pop_game_state
+      push_game_state(GameStates::FadeTo.new(Level.new(1), :speed => 2))
+    end
   end
 
   def draw
-    previous_game_state.draw
+    previous_game_state.draw   
     super
   end
 end
@@ -163,14 +172,10 @@ class Pixel < GameObject
   
   SIZE = 8
 
-  def self.pixel_image
-    @@image ||= TexPlay.create_image($window, SIZE, SIZE, :color => :white)
-  end
-
   attr_reader :health, :damage, :max_health, :last_health
 
   def initialize(options = {})
-    options = {:image => self.class.pixel_image}.merge! options
+    options = {:image => Image["pixel.png"]}.merge! options
     super(options)
   end
 
@@ -186,6 +191,14 @@ class Pixel < GameObject
   end
 
   def die
+    # Fall apart.
+    half_width = width / (2 * $window.factor)
+    ((x - half_width)...(x + half_width)).step(width / (4 * $window.factor)) do |x|
+      ((y - half_width)...(y + half_width)).step(width / (4 * $window.factor)) do |y|
+        PixelFragment.create(:x => x, :y => y, :color => color)
+      end
+    end
+
     destroy
   end
 
@@ -209,27 +222,23 @@ class Pixel < GameObject
   end
 
   def left
-    old = x
     self.x = [x - @speed, 0 + screen_width / 8].max
-    if enemy = colliding_with_obstacle? then self.x = old; fight(enemy); end
+    if enemy = colliding_with_obstacle? then self.x = enemy.x + SIZE + 0.001; fight(enemy); end
   end
 
   def right
-    old = x
     self.x = [x + @speed, $window.width / $window.factor - screen_width / 8].min
-    if enemy = colliding_with_obstacle? then self.x = old; fight(enemy); end
+    if enemy = colliding_with_obstacle? then self.x = enemy.x - SIZE - 0.001; fight(enemy); end
   end
 
   def up
-    old = y
     self.y = [y - @speed, 0 + screen_width / 8].max
-    if enemy = colliding_with_obstacle? then self.y = old; fight(enemy); end
+    if enemy = colliding_with_obstacle? then self.y = enemy.y + SIZE + 0.001; fight(enemy); end
   end
 
   def down
-    old = y
     self.y = [y + @speed, $window.height / $window.factor - screen_width / 8].min
-    if enemy = colliding_with_obstacle? then self.y = old; fight(enemy); end
+    if enemy = colliding_with_obstacle? then self.y = enemy.y - SIZE - 0.001; fight(enemy); end
   end
 end
 
@@ -241,8 +250,8 @@ class Player < Pixel
   MIN_CAPTURE_DISTANCE = 50
   
   MAX_HEALTH, MAX_ENERGY = 1000, 1000
-  HEALTH_HEAL, ENERGY_HEAL = 10, 5
-  ENERGY_CONTROL = 5
+  ENERGY_HEAL = 5
+  ENERGY_CONTROL = 3
 
   def initialize(options = {})
     super({:color => Color.new(255, 255, 255, 255)}.merge! options)
@@ -258,7 +267,7 @@ class Player < Pixel
     @last_health = @max_health = @health = MAX_HEALTH
     @max_energy = @energy = MAX_ENERGY
 
-    @speed = 1
+    @speed = 0.5
     @damage = 10
     @score = 0
 
@@ -345,7 +354,7 @@ class Enemy < Pixel
 
     @last_health = @max_health = @health = 400
     
-    @speed = 0.5
+    @speed = 0.3
     @damage = 10
 
     @hurt = Sample["hurt_controlled.wav"]
@@ -360,7 +369,7 @@ class Enemy < Pixel
 
   def uncontrol
     @controlled = false
-    self.color = Color.new(255, 255, 0, 0)
+    self.color = Color.new(255, 255, 0, 0) unless health == 0
     self.health = health
   end
 
@@ -404,10 +413,36 @@ end
 
 class DeadPixel < Pixel
   def initialize(options = {})
-    image = @@image
-    super({:image => image, :color => Color.new(255, 0, 0, 0)}.merge! options )
-    @original_health = @max_health = @health = 100000
-    @damage = 0.5
+    super({:color => Color.new(255, 0, 0, 0)}.merge! options )
+    @original_health = @max_health = @health = 5000
+    @damage = 2
+  end
+end
+
+class PixelFragment < Particle
+  traits :retrofy, :velocity
+
+  def initialize(options = {})
+    x = rand 360
+    velocity_x, velocity_y = Math.cos(x), Math.sin(x)
+    options = {
+      :velocity_x => velocity_x * (0.2 + rand(0.1)),
+      :velocity_y => velocity_y * (0.2 + rand(0.1)),
+      :zorder => ZOrder::PARTICLES,
+      :image => "pixel_fragment.png",
+      :scale_rate => -0.1,
+      :fade_rate => 0,
+      :rotation_rate => 1 - rand(2),
+      :mode => :default
+    }.merge! options
+    
+    super options
+  end
+
+  def update
+    super
+
+    destroy if outside_window? or factor_x <= 0.1
   end
 end
 
