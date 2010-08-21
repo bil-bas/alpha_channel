@@ -14,9 +14,12 @@ module ZOrder
   ENEMY, PLAYER, CONTROLLED, OVERLAY = (0..100).to_a
 end
 
-media_dir = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'media'))
+INSTALL_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
+media_dir =  File.join(INSTALL_DIR, 'media')
 Image.autoload_dirs << File.join(media_dir)
 Sample.autoload_dirs << File.join(media_dir)
+
+ENV['PATH'] = "#{File.join(INSTALL_DIR, 'bin')};#{ENV['PATH']}"
 
 class Game < Window
   def initialize
