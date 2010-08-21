@@ -34,9 +34,10 @@ class Level < GameState
     @file = File.join(ROOT_PATH, "#{self.class}_#{level}.yml")
     load_game_objects(:file => @file)
 
-    @player = Player.create(:x => 75, :y => 50)
-    Enemy.create(:x => 50, :y => 50)
-    Enemy.create(:x => 100, :y => 50)
+    @player = Player.create(:x => 75, :y => 75)
+    (16..104).step(16) do |x|
+      Enemy.create(:x => x, :y => 50)
+    end
 
     on_input(:e, GameStates::Edit.new(:file => @file, :except => [Player]))
 
@@ -60,14 +61,17 @@ class Level < GameState
 end
 
 class Character < GameObject
-  trait :bounding_box, :debug => true
+  trait :bounding_box, :debug => false, :scale => 0.25
   traits :collision_detection, :retrofy
+  
+  SIZE = 8
 
-  attr_reader :health
+  attr_reader :health, :damage
 
   def health=(value)
-    @health -= value
-    if health <= 0
+    @health = value
+    if @health <= 0
+      @health = 0
       die
     end
   end
@@ -96,42 +100,127 @@ end
 class Player < Character
   attr_reader :energy
 
+  MIN_CAPTURE_DISTANCE = 40
+  
+  MAX_HEALTH, MAX_ENERGY = 100, 1000
+  HEALTH_HEAL, ENERGY_HEAL = 1, 10
+  CONTROL_COST = 2
+
   def initialize(options = {})
-    image = TexPlay.create_image($window, 8, 8, :color => :white)
-    super(options.merge! :image => image)
+    super
 
     add_inputs(
-      :holding_left => lambda { @controlled.left },
-      :holding_right => lambda { @controlled.right },
-      :holding_up => lambda { @controlled.up },
-      :holding_down => lambda { @controlled.down }
+      [:holding_left, :holding_a] => lambda { @controlled.left },
+      [:holding_right, :holding_d] => lambda { @controlled.right },
+      [:holding_up, :holding_w] => lambda { @controlled.up },
+      [:holding_down, :holding_s] => lambda { @controlled.down },
+      [:space, :return] => lambda { controlling? ? lose_control : gain_control }
     )
 
-    @controlled = self
+    lose_control
 
-    @health = 100
-    @energy = 99
+    @health = MAX_HEALTH
+    @energy = MAX_ENERGY
 
-    @speed = 0.5
+    @speed = 1
+    @damage = 1
   end
 
   def update
     super
-    each_collision(Enemy) do |player, enemy|
-      @health -= 1
-      enemy.health -= 1
+    enemy = first_collision(Enemy)
+    if enemy
+      self.health -= enemy.damage
+      enemy.health -= damage
+    end
+
+    if controlling?
+      @energy -= CONTROL_COST
+      if @energy <= 0
+        @energy = 0
+        lose_control
+      end
+    else
+      if @energy < MAX_ENERGY
+        @energy += ENERGY_HEAL
+      end
+    end
+  end
+
+  def controlling?
+    @controlled != self
+  end
+
+  def lose_control
+    @controlled ||= self
+    @controlled.uncontrol if @controlled != self
+    @controlled = self
+    self.image = TexPlay.create_image($window, SIZE, SIZE, :color => :white)
+  end
+
+  def gain_control
+    nearest_distance = 99999999
+    nearest_enemy = nil
+    Enemy.all.each do |enemy|
+      distance = distance(self.x, self.y, enemy.x, enemy.y)
+      if distance < MIN_CAPTURE_DISTANCE and not self.collides?(enemy) and distance < nearest_distance
+        nearest_distance = distance
+        nearest_enemy = enemy
+      end
+    end
+
+    if nearest_enemy
+      @controlled = nearest_enemy
+      @controlled.control
+      self.image = TexPlay.create_image($window, SIZE, SIZE, :color => Color.new(255, 128, 128, 128))
     end
   end
 end
 
-class Enemy < Character 
+class Enemy < Character
+  def controlled?; @controlled; end
+
   def initialize(options = {})  
-    image = TexPlay.create_image($window, 8, 8, :color => :red)
     super(options.merge! :image => image)
 
     @health = 40
     
-    @speed = 1
+    @speed = 0.5
+    @damage = 1
+
+    uncontrol
+  end
+
+  def control
+    @controlled = true
+    self.image = TexPlay.create_image($window, SIZE, SIZE, :color => :blue)
+  end
+
+  def uncontrol
+    @controlled = false
+    self.image = TexPlay.create_image($window, SIZE, SIZE, :color => :red)
+  end
+
+  def die
+    if controlled?
+      uncontrol
+      Player.all.first.lose_control
+    end
+    super
+  end
+
+  def update
+    super
+
+    if controlled?
+      # You now damage other enemies.
+      each_collision(Enemy) do |me, enemy|
+        if enemy != self
+          self.health -= enemy.damage
+          enemy.health -= damage
+        end
+      end
+    end
   end
 end
 
