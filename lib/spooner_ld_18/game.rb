@@ -54,7 +54,7 @@ class Game < Window
 
   def update
     super
-    self.caption = "PIXHELL. (spooner.github.com LD 18 - 'Enemies as weapons') [FPS: #{fps}]"
+    self.caption = "PIXHELL (spooner.github.com LD 18 - 'Enemies as weapons') [FPS: #{fps}]"
   end
 end
 
@@ -95,7 +95,7 @@ class Level < GameState
             [@player.health, @player.energy, @player.score, @level]
 
     if @player.health == 0
-      after(1) { push_game_state GameOver } 
+      after(10) { push_game_state GameOver } 
     elsif @player.score == @level * 20 + 50
       pop_game_state
       Sample["level.wav"].play
@@ -164,6 +164,12 @@ class GameOver < GameState
     previous_game_state.draw   
     super
   end
+
+  def update
+    super
+    previous_game_state.game_objects.select { |x| x.is_a? Particle }.each { |x| x.update_trait }
+  end
+
 end
 
 class Pixel < GameObject
