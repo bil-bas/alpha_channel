@@ -40,11 +40,29 @@ class Game < Window
     super
     self.caption = current_game_state.class
   end
+
+  def random_position(extra_objects = [])
+    min_distance = {Player => 30, Block => 25, Enemy => 20}
+    all = Player.all + Enemy.all + Block.all + extra_objects
+    p all.size
+    loop do
+      pos = [rand(($window.width / $window.factor) - 16) + 8, rand(($window.height / $window.factor) - 16) + 8]
+      too_close = false
+      all.each do |other|
+        if distance(*pos, other.x, other.y) < min_distance[other.class]
+          too_close = true
+          break
+        end
+      end
+      return pos unless too_close
+    end
+  end
 end
+
+
 
 class Level < GameState
   trait :timer
-  attr_reader :game_object_map
 
   def initialize(level)
     @level = level
@@ -54,23 +72,30 @@ class Level < GameState
     @file = File.join(ROOT_PATH, "#{self.class}_#{level}.yml")
     load_game_objects(:file => @file)
 
-    @player = Player.create(:x => 75, :y => 100)
+    @player = Player.create(:x => $window.width / ($window.factor * 2), :y => $window.height / ($window.factor * 2))
 
-    every(3000) { Enemy.create(:x => rand($window.width / $window.factor), :y => rand($window.height / $window.factor)) }
+    # Bad pixels.
+    blockages = [@player]
+    (4 + rand(4)).times do
+      pos = $window.random_position(blockages)
+      blockages << Block.create(:x => pos[0], :y => pos[1])
+    end
+
+    every(3000) do
+      pos = $window.random_position
+      Enemy.create(:x => pos[0], :y => pos[1])
+    end
 
     #on_input(:e, GameStates::Edit.new(:file => @file, :except => [Player]))
     on_input(:f1) { help }
+    on_input(:p, GameStates::Pause)
     
     @status = Text.create("Status", :x => 2, :y => 2, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 2)
   end
 
-  def setup
-    @game_object_map = GameObjectMap.new(:game_objects => Enemy.all)
-  end
-
   def update
     super
-    @status.text = "Health: %3d; Energy: %3d" % [@player.health, @player.energy]
+    @status.text = "Health: %04d   Energy: %04d   Score: %04d" % [@player.health, @player.energy, @player.score]
     after(1) { $window.push_game_state GameOver } if @player.health == 0
   end
 
@@ -92,6 +117,8 @@ class Level < GameState
       * Arrow keys or WASD: Move White (or Blue).
 
       * Space or Return: Take control of Red / Relinquish control of Blue.
+           
+      * P: Pause
 
       * Control+Q: Exit game.
 
@@ -129,42 +156,75 @@ class GameOver < GameState
 end
 
 class Character < GameObject
-  trait :bounding_box, :debug => false, :scale => 0.22
+  trait :bounding_box, :debug => false, :scale => 0.25
   traits :collision_detection, :retrofy
   
   SIZE = 8
 
-  attr_reader :health, :damage, :max_health
+  attr_reader :health, :damage, :max_health, :last_health
 
   def health=(value)
     @health = [[0, value].max, max_health].min
     die if @health == 0
   end
 
+  def update
+    super
+    @last_health = @health
+  end
+
   def die
     destroy
   end
 
+  def hurts?(enemy)
+    enemy.class != self.class
+  end
+
+  def hurt_by(enemy)
+    if health == last_health and self.hurts?(enemy)
+      self.health -= enemy.damage
+      enemy.health -= damage
+      @hurt.play
+    end
+  end
+
+  def colliding_with_obstacle?
+    each_bounding_box_collision(Player, Enemy, Block) do |me, obstacle|
+      return obstacle if me != obstacle
+    end
+    return nil
+  end
+
   def left
-    self.x = [x - @speed, 0].max
+    old = x
+    self.x = [x - @speed, 0 + screen_width / 8].max
+    if enemy = colliding_with_obstacle? then self.x = old; hurt_by(enemy); end
   end
 
   def right
-    self.x = [x + @speed, $window.width / $window.factor].min
+    old = x
+    self.x = [x + @speed, $window.width / $window.factor - screen_width / 8].min
+    if enemy = colliding_with_obstacle? then self.x = old; hurt_by(enemy); end
   end
 
   def up
-    self.y = [y - @speed, 0].max
+    old = y
+    self.y = [y - @speed, 0 + screen_width / 8].max
+    if enemy = colliding_with_obstacle? then self.y = old; hurt_by(enemy); end
   end
 
   def down
-    self.y = [y + @speed, $window.height / $window.factor].min
+    old = y
+    self.y = [y + @speed, $window.height / $window.factor - screen_width / 8].min
+    if enemy = colliding_with_obstacle? then self.y = old; hurt_by(enemy); end
   end
 end
 
 class Player < Character
   trait :timer
   attr_reader :energy, :max_energy
+  attr_accessor :score
 
   MIN_CAPTURE_DISTANCE = 50
   
@@ -185,11 +245,12 @@ class Player < Character
 
     lose_control
 
-    @max_health = @health = MAX_HEALTH
+    @last_health = @max_health = @health = MAX_HEALTH
     @max_energy = @energy = MAX_ENERGY
 
     @speed = 1
     @damage = 10
+    @score = 0
 
     @hurt = Sample["hurt_player.wav"]
     @control_on = Sample["control_on.wav"]
@@ -199,12 +260,6 @@ class Player < Character
 
   def update
     super
-    enemy = first_collision(Enemy)
-    if enemy
-      self.health -= enemy.damage
-      enemy.health -= damage
-      @hurt.play
-    end
 
     if controlling?      
       self.energy -= ENERGY_CONTROL
@@ -287,11 +342,16 @@ class Enemy < Character
   end
 
   def die
-    if controlled?
-      uncontrol
-      Player.all.first.lose_control if Player.all.first
+    if player = Player.all.first       
+      player.lose_control if controlled?     
+      player.score += 10 
     end
+
     super
+  end
+
+  def hurts?(enemy)
+    super or ((enemy.class == self.class) and (controlled? or enemy.controlled?))
   end
 
   def update
@@ -308,13 +368,23 @@ class Enemy < Character
       end
     else
       # Don't move if wounded.
-      if @health == @last_health and player = Player.all.first
+      if health == last_health and player = Player.all.first
         # Home in on the player's location.
-        self.x -= @speed * (self.x - player.x) / (self.x - player.x).abs if self.x != player.x
-        self.y -= @speed * (self.y - player.y) / (self.y - player.y).abs if self.y != player.y
-      end
-      @last_health = @health
+        left if player.x < x
+        right if player.x > x
+        up if player.y < y
+        down if player.y > y
+     end
     end
+  end
+end
+
+class Block < Character
+  def initialize(options = {})
+    image = TexPlay.create_image($window, SIZE, SIZE, :color => :black)
+    super({:image => image}.merge! options )
+    @original_health = @max_health = @health = 1000
+    @damage = 0.5
   end
 end
 
