@@ -34,9 +34,9 @@ class Level < GameState
     @file = File.join(ROOT_PATH, "#{self.class}_#{level}.yml")
     load_game_objects(:file => @file)
 
-    @player = Player.create(:x => 75, :y => 75)
+    @player = Player.create(:x => 75, :y => 100)
     (16..104).step(16) do |x|
-      Enemy.create(:x => x, :y => 50)
+      Enemy.create(:x => x, :y => 25)
     end
 
     on_input(:e, GameStates::Edit.new(:file => @file, :except => [Player]))
@@ -204,7 +204,7 @@ class Enemy < Character
   def die
     if controlled?
       uncontrol
-      Player.all.first.lose_control
+      Player.all.first.lose_control if Player.all.first 
     end
     super
   end
@@ -220,6 +220,9 @@ class Enemy < Character
           enemy.health -= damage
         end
       end
+    elsif player = Player.all.first     
+      self.x -= @speed * (self.x - player.x) / (self.x - player.x).abs if self.x != player.x
+      self.y -= @speed * (self.y - player.y) / (self.y - player.y).abs if self.y != player.y
     end
   end
 end
