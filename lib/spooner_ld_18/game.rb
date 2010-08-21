@@ -14,12 +14,16 @@ module ZOrder
   ENEMY, PLAYER, CONTROLLED, OVERLAY = (0..100).to_a
 end
 
+media_dir = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'media'))
+Image.autoload_dirs << File.join(media_dir)
+Sample.autoload_dirs << File.join(media_dir)
+
 class Game < Window
   def initialize
     super(640, 480, false)
     self.caption = "Spooner LD 18 - Enemies as weapons"
 
-    on_input(:escape) { close }
+    on_input(:q) { close if holding_any? :left_control, :right_control }
   end
 
   def setup
@@ -51,8 +55,9 @@ class Level < GameState
 
     every(3000) { Enemy.create(:x => rand($window.width / $window.factor), :y => rand($window.height / $window.factor)) }
 
-    on_input(:e, GameStates::Edit.new(:file => @file, :except => [Player]))
-
+    #on_input(:e, GameStates::Edit.new(:file => @file, :except => [Player]))
+    on_input(:f1) { help }
+    
     @status = Text.create("Status", :x => 2, :y => 2, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 2)
   end
 
@@ -70,6 +75,39 @@ class Level < GameState
     super
     @status.draw
     fill(Gosu::Color.new(255, 100, 255, 100), -999)
+  end
+
+  def help
+    text =<<END_TEXT
+
+    === Spooner's LD-18 game: "Enemies as weapons" ===
+
+    Escape to close this help
+
+    = Controls =
+
+      * Arrow keys or WASD: Move White (or Blue).
+
+      * Space or Return: Take control of Red / Relinquish control of Blue.
+
+      * Control+Q: Exit game.
+
+    = How to play =
+
+      * White is good!
+
+      * Red is evil; It will hurt White!
+
+      * Take control of Red, when it comes near, to make it Blue and be able to move it!
+
+      * Blue hurts Red! It also hurts Grey :(
+
+      * While controlling, White will become Grey, but Red will still hurt it.
+
+      * Controlling Blue is strenuous and will use up your limited energy reserves.
+END_TEXT
+
+    push_game_state GameStates::Popup.new(:text => text)
   end
 end
 
@@ -149,6 +187,11 @@ class Player < Character
 
     @speed = 1
     @damage = 10
+
+    @hurt = Sample["hurt_player.wav"]
+    @control_on = Sample["control_on.wav"]
+    @control_off = Sample["control_off.wav"]
+    @control_fail = Sample["control_fail.wav"]
   end
 
   def update
@@ -157,6 +200,7 @@ class Player < Character
     if enemy
       self.health -= enemy.damage
       enemy.health -= damage
+      @hurt.play
     end
 
     if controlling?      
@@ -172,6 +216,7 @@ class Player < Character
   end
 
   def die
+    Sample["death.wav"].play
     super
   end
 
@@ -181,8 +226,11 @@ class Player < Character
 
   def lose_control
     @controlled ||= self
-    @controlled.uncontrol if @controlled != self
-    @controlled = self
+    if @controlled != self
+      @controlled.uncontrol
+      @controlled = self
+      @control_off.play
+    end
     self.image = TexPlay.create_image($window, SIZE, SIZE, :color => :white)
   end
 
@@ -201,6 +249,9 @@ class Player < Character
       @controlled = nearest_enemy
       @controlled.control
       self.image = TexPlay.create_image($window, SIZE, SIZE, :color => Color.new(255, 128, 128, 128))
+      @control_on.play
+    else
+      @control_fail.play
     end
   end
 end
@@ -216,6 +267,7 @@ class Enemy < Character
     @speed = 0.5
     @damage = 10
 
+    @hurt = Sample["hurt_controlled.wav"]
     uncontrol
   end
 
@@ -248,6 +300,7 @@ class Enemy < Character
         if enemy != self
           self.health -= enemy.damage
           enemy.health -= damage
+          @hurt.play
         end
       end
     else
