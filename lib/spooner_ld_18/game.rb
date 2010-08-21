@@ -11,7 +11,7 @@ include Chingu
 EDITOR_ENABLED = true
 
 module ZOrder
-  BACKGROUND, LABEL, PIXEL, OVERLAY = (0..100).to_a
+  BACKGROUND, LABEL, PIXEL, CONTROL, OVERLAY = (0..100).to_a
 end
 
 INSTALL_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
@@ -32,8 +32,9 @@ class Game < Window
   def setup
     retrofy
     self.factor = 4 # So 160x120
-    
-    push_game_state Level.new(1)
+
+    Sample["level.wav"].play
+    push_game_state(GameStates::FadeTo.new(Level.new(1), :speed => 2))
   end
 
   def random_position(extra_objects = [])
@@ -80,7 +81,7 @@ class Level < GameState
     on_input(:f1) { help }
     on_input(:p, GameStates::Pause)
     
-    @status = Text.create("Status", :x => 2, :y => 2, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 2)
+    @status = Text.create("", :x => 2, :y => 2, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 2)
     @level_label = Text.create("%04d" % @level, :x => 0, :y => 60, :zorder => ZOrder::LABEL, :color => 0xff00ff00, :factor => 22)
   end
 
@@ -93,6 +94,7 @@ class Level < GameState
       after(1) { push_game_state GameOver } 
     elsif @player.score == @level * 20 + 50
       pop_game_state
+      Sample["level.wav"].play
       push_game_state(GameStates::FadeTo.new(Level.new(@level + 1), :speed => 3))
     end
 
@@ -144,8 +146,8 @@ end
 class GameOver < GameState
   def initialize
     super
-    Text.create("GAME OVER", :x => 35, :y => 150, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 8)
-    Text.create("R to restart", :x => 35, :y => 200, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 8)
+    Text.create("GAME OVER", :x => 35, :y => 130, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 8)
+    Text.create("R to restart", :x => 50, :y => 230, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 8)
     on_input(:r) { pop_game_state; pop_game_state; push_game_state(Level.new(1) )}
   end
 
@@ -275,6 +277,15 @@ class Player < Pixel
       self.energy -= ENERGY_CONTROL
     else
       self.energy += ENERGY_HEAL
+    end
+  end
+
+  def draw
+    super
+    if controlling?
+      $window.scale($window.factor) do
+        $window.draw_line(self.x, self.y, @controlled.color, @controlled.x, @controlled.y, self.color, ZOrder::CONTROL)
+      end
     end
   end
 
