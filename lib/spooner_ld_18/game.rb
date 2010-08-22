@@ -30,6 +30,11 @@ ENV['PATH'] = "#{File.join(INSTALL_DIR, 'bin')};#{ENV['PATH']}"
 class Game < Window
   attr_accessor :score
 
+  # Allow others to read my private method!
+  def ms
+    self.send(:milliseconds)
+  end
+
   def initialize
     super(640, 480, false)
 
