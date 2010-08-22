@@ -24,19 +24,20 @@ class Level < GameState
     on_input(:p, GameStates::Pause)
     on_input(:f1) { push_game_state Help }
 
-    @status = Text.create("", :x => 2, :y => 2, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 2)
-    @level_label = Text.create("%04d" % @level, :x => 0, :y => 60, :zorder => ZOrder::LABEL, :color => 0xff00ff00, :factor => 22)
+    @score_label = Text.create("%08d" % $window.score, :x => 0, :y => 15, :zorder => ZOrder::LABEL, :max_width => $window.width / 11, :align => :center, :color => 0xff00ff00, :factor => 11)
+    @level_label = Text.create("%04d" % @level, :x => 10, :y => 120, :zorder => ZOrder::LABEL, :max_width => $window.width / 22, :align => :center, :color => 0xff00ff00, :factor => 22)
     @background_color = Color.new(255, 100, 255, 100)
   end
 
   def update
     super
-    @status.text = "Health: %04d   Energy: %04d   Score: %04d  Level: %04d" %
-            [@player.health, @player.energy, $window.score, @level]
+
+    $window.score += 0.02 * @level
+    @score_label.text = "%08d" % $window.score
 
     if @player.health == 0
       after(100) { push_game_state GameOver }
-    elsif $window.score == @level * Enemy::SCORE * 3
+    elsif $window.score == @level * Enemy::SCORE * 4
       pop_game_state
       Sample["level.wav"].play
       push_game_state(GameStates::FadeTo.new(Level.new(@level + 1), :speed => 3))
@@ -46,8 +47,6 @@ class Level < GameState
 
   def draw
     super
-    @status.draw
-    @level_label.draw
     fill(@background_color, ZOrder::BACKGROUND)
   end
 end

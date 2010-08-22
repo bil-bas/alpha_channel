@@ -1,8 +1,8 @@
 class GameOver < GameState
   def initialize
     super
-    Text.create("GAME OVER", :x => 35, :y => 130, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 8)
-    Text.create("R to restart", :x => 50, :y => 230, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 8)
+    Text.create("GAME OVER", :x => 0, :y => 0, :zorder => ZOrder::OVERLAY, :max_width => $window.width / 16, :align => :center, :line_spacing => 0, :color => 0xffffffff, :factor => 16)
+    Text.create("(R)estart", :x => 0, :y => $window.height / 2 - 32, :zorder => ZOrder::OVERLAY, :max_width => $window.width / 4, :align => :center, :color => 0xffffffff, :factor => 4)
 
     on_input(:f1) { push_game_state Help }
     on_input :r do
@@ -22,5 +22,4 @@ class GameOver < GameState
     super
     previous_game_state.game_objects.select { |x| x.is_a? Particle }.each { |x| x.update_trait }
   end
-
 end

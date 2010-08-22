@@ -7,7 +7,7 @@ class Pixel < GameObject
   attr_reader :health, :damage, :max_health, :last_health
 
   def initialize(options = {})
-    options = {:image => Image["pixel.png"]}.merge! options
+    options = {:image => Image["pixel.png"], :zorder => ZOrder::PIXEL}.merge! options
     super(options)
   end
 
