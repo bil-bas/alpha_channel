@@ -3,7 +3,6 @@ require 'pixel'
 class Player < Pixel
   trait :timer
   attr_reader :energy, :max_energy
-  attr_accessor :score
 
   MIN_CAPTURE_DISTANCE = 50
 
@@ -27,7 +26,6 @@ class Player < Pixel
 
     @speed = 0.5
     @damage = 10
-    @score = 0
 
     @hurt = Sample["hurt_player.wav"]
     @control_on = Sample["control_on.wav"]
@@ -51,7 +49,7 @@ class Player < Pixel
     super
     if controlling?
       $window.scale($window.factor) do
-        $window.draw_line(self.x, self.y, @controlled.color, @controlled.x, @controlled.y, self.color, ZOrder::CONTROL)
+        $window.draw_line(self.x, self.y, self.color, @controlled.x, @controlled.y, @controlled.color, ZOrder::CONTROL)
       end
     end
   end

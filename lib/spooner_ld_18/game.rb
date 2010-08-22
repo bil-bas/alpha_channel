@@ -28,6 +28,8 @@ Sample.autoload_dirs << File.join(media_dir)
 ENV['PATH'] = "#{File.join(INSTALL_DIR, 'bin')};#{ENV['PATH']}"
 
 class Game < Window
+  attr_accessor :score
+
   def initialize
     super(640, 480, false)
 
@@ -39,6 +41,9 @@ class Game < Window
     self.factor = 4 # So 160x120
 
     Sample["level.wav"].play
+
+    @score = 0
+    
     push_game_state(GameStates::FadeTo.new(Level.new(1), :speed => 2))
   end
 

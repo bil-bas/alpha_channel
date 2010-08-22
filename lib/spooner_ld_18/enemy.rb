@@ -1,6 +1,8 @@
 require 'pixel'
 
 class Enemy < Pixel
+  SCORE = 10
+
   def controlled?; not @controller.nil?; end
 
   def initialize(options = {})
@@ -30,7 +32,7 @@ class Enemy < Pixel
   def die
     if player = Player.all.first
       player.lose_control if controlled?
-      player.score += 10
+      $window.score += SCORE
     end
 
     super

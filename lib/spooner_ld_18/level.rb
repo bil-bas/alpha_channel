@@ -7,7 +7,8 @@ class Level < GameState
     super()
 
     @player = Player.create(:x => $window.width / ($window.factor * 2), :y => $window.height / ($window.factor * 2))
-
+    $window.score = 0 if @level == 1
+    
     # Bad pixels.
     blockages = [@player]
     (4 + rand(4)).times do
@@ -31,11 +32,11 @@ class Level < GameState
   def update
     super
     @status.text = "Health: %04d   Energy: %04d   Score: %04d  Level: %04d" %
-            [@player.health, @player.energy, @player.score, @level]
+            [@player.health, @player.energy, $window.score, @level]
 
     if @player.health == 0
       after(100) { push_game_state GameOver }
-    elsif @player.score == @level * 20 + 20
+    elsif $window.score == @level * Enemy::SCORE * 3
       pop_game_state
       Sample["level.wav"].play
       push_game_state(GameStates::FadeTo.new(Level.new(@level + 1), :speed => 3))
