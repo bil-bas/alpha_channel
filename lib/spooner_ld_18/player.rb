@@ -27,6 +27,7 @@ class Player < Pixel
     @control_on = Sample["control_on.wav"]
     @control_off = Sample["control_off.wav"]
     @control_fail = Sample["control_fail.wav"]
+    @death = Sample["death.wav"]
 
     lose_control
   end
@@ -92,7 +93,7 @@ class Player < Pixel
   end
 
   def die
-    Sample["death.wav"].play
+    @death.play
     super
   end
 
