@@ -40,8 +40,9 @@ class Pixel < GameObject
 
   def fight(enemy)
     if self.hurts?(enemy)
-      self.health -= enemy.damage if health == last_health
-      enemy.health -= damage if enemy.health == enemy.last_health
+      # Ensure you don't get wounded multiple times.
+      self.health = [last_health - enemy.damage, health].min
+      enemy.health = [enemy.last_health - damage, enemy.health].min
       @hurt.play
     end
   end
