@@ -77,7 +77,7 @@ class Game < Window
       pos = [rand(($window.width / $window.factor) - 16) + 8, rand(($window.height / $window.factor) - 16) + 8]
       too_close = false
       all.each do |other|
-        if distance(*pos, other.x, other.y) < min_distance[other.class]
+        if distance(pos[0], pos[1], other.x, other.y) < min_distance[other.class]
           too_close = true
           break
         end
