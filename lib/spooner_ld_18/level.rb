@@ -21,10 +21,10 @@ class Level < GameState
     on_input(:p, GameStates::Pause)
     on_input(:f1) { push_game_state Help }
 
-    small_size, large_size  = 9, 19
-    @score_label = Text.create("%08d" % $window.score, :font => FONT, :x => 0, :y => -15, :zorder => ZOrder::LABEL, :max_width => $window.width / small_size, :align => :center, :color => 0xff00ff00, :factor => small_size)
-    @level_label = Text.create("%04d" % @level, :font => FONT, :x => 10, :y => 70, :zorder => ZOrder::LABEL, :max_width => $window.width / large_size, :align => :center, :color => 0xff00ff00, :factor => large_size)
-    @high_score_label = Text.create("%08d" % $window.high_score, :font => FONT, :x => 0, :y => 325, :zorder => ZOrder::LABEL, :max_width => $window.width / small_size, :align => :center, :color => 0xff00ff00, :factor => small_size)
+    small_size, large_size  = 8, 16
+    @score_label = Text.create("%08d" % $window.score, :font => FONT, :size => FONT_SIZE, :x => 0, :y => -15, :zorder => ZOrder::LABEL, :max_width => $window.width / small_size, :align => :center, :color => 0xff00ff00, :factor => small_size)
+    @level_label = Text.create("%04d" % @level, :font => FONT, :size => FONT_SIZE, :x => 10, :y => 70, :zorder => ZOrder::LABEL, :max_width => $window.width / large_size, :align => :center, :color => 0xff00ff00, :factor => large_size)
+    @high_score_label = Text.create("%08d" % $window.high_score, :font => FONT, :size => FONT_SIZE, :x => 0, :y => 325, :zorder => ZOrder::LABEL, :max_width => $window.width / small_size, :align => :center, :color => 0xff00ff00, :factor => small_size)
     @background_color = Color.new(255, 100, 255, 100)
 
     @num_kills = 0

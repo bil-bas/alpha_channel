@@ -4,8 +4,8 @@ class GameOver < GameState
     is_high = $window.game_over
     label = is_high ? "HIGH SCORE" : "GAME OVER"
 
-    @game_over = Text.create(label, :font => FONT, :x => 0, :y => 0, :zorder => ZOrder::OVERLAY, :max_width => $window.width / 14, :align => :center, :line_spacing => 0, :color => Color::WHITE.dup, :factor => 14)
-    @restart = Text.create("(R)estart", :font => FONT, :x => 0, :y => 405, :zorder => ZOrder::OVERLAY, :max_width => $window.width / 4, :align => :center, :color => Color.new(255, 220, 220, 220), :factor => 4)
+    @game_over = Text.create(label, :font => FONT, :size => FONT_SIZE, :x => 0, :y => -10, :zorder => ZOrder::OVERLAY, :max_width => $window.width / 12, :align => :center, :line_spacing => 0, :color => Color::WHITE.dup, :factor => 12)
+    @restart = Text.create("(R)estart", :font => FONT, :size => FONT_SIZE, :x => 0, :y => 390, :zorder => ZOrder::OVERLAY, :max_width => $window.width / 4, :align => :center, :color => Color.new(255, 220, 220, 220), :factor => 4)
     
     @game_ended = $window.ms
 
