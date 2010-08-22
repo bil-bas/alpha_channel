@@ -16,10 +16,7 @@ class Level < GameState
       blockages << DeadPixel.create(:x => pos[0], :y => pos[1])
     end
 
-    every([5000 - @level * 250, 1000].max) do
-      pos = $window.random_position
-      Enemy.create(:x => pos[0], :y => pos[1])
-    end
+    after(1000) { generate_enemy }
 
     on_input(:p, GameStates::Pause)
     on_input(:f1) { push_game_state Help }
@@ -29,6 +26,12 @@ class Level < GameState
     @background_color = Color.new(255, 100, 255, 100)
 
     @num_kills = 0
+  end
+
+  def generate_enemy
+    pos = $window.random_position
+    Enemy.create(:x => pos[0], :y => pos[1])
+    after(1000 + rand([5000 - @level * 500, 1000].max)) { generate_enemy }
   end
 
   def add_kill

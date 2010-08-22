@@ -2,7 +2,7 @@ require 'pixel'
 
 class Enemy < Pixel
   INITIAL_HEALTH = 400
-  KILL_SCORE = 1000
+  KILL_SCORE = 600
   TOTAL_SCORE = INITIAL_HEALTH + KILL_SCORE 
 
   def controlled?; not @controller.nil?; end
