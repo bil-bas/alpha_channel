@@ -47,7 +47,6 @@ class Level < GameState
     if @player.health == 0
       after(1000) { push_game_state GameOver if current_game_state == self }
     elsif @num_kills >= @level + 3
-      Sample["level.wav"].play
       $window.score += @level * 1000
       switch_game_state LevelTransition.new(@level + 1)
     end

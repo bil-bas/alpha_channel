@@ -11,7 +11,6 @@ class GameOver < GameState
 
     on_input(:f1) { push_game_state Help }
     on_input :r do
-      Sample["level.wav"].play
       pop_game_state
       switch_game_state LevelTransition.new(1)
     end

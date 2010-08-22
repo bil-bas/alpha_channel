@@ -55,8 +55,6 @@ class Game < Window
 
     @particles = []
 
-    Sample["level.wav"].play
-
     @score = 0
     @high_score = File.open(HIGH_SCORE_FILE, "r") { |file| file.readline.to_i } rescue 0
     
