@@ -1,7 +1,7 @@
 require 'pixel'
 
 class Enemy < Pixel
-  SCORE = 10
+  SCORE = 1000
 
   def controlled?; not @controller.nil?; end
 
