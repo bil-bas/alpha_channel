@@ -68,11 +68,16 @@ class Enemy < Pixel
     else
       # Don't move if wounded.
       if health == last_health and player = Player.all.first
+        angle = Gosu::angle(x, y, player.x, player.y)
+        distance = distance_to(player)
+        x_offset = offset_x(angle, distance)
+        y_offset = offset_y(angle, distance)
+
         # Home in on the player's location.
-        left if player.x < x
-        right if player.x > x
-        up if player.y < y
-        down if player.y > y
+        left(-x_offset / distance) if x_offset < 0
+        right(x_offset / distance) if x_offset > 0
+        up(-y_offset / distance) if y_offset < 0
+        down(y_offset / distance) if y_offset > 0
      end
     end
   end

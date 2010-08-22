@@ -14,10 +14,6 @@ class Player < Pixel
     super({:color => Color::BLUE.dup}.merge! options)
 
     add_inputs(
-      [:holding_left, :holding_a] => lambda { @controlled.left },
-      [:holding_right, :holding_d] => lambda { @controlled.right },
-      [:holding_up, :holding_w] => lambda { @controlled.up },
-      [:holding_down, :holding_s] => lambda { @controlled.down },
       [:space, :return] => lambda { controlling? ? lose_control : gain_control }
     )
 
@@ -35,8 +31,39 @@ class Player < Pixel
     lose_control
   end
 
+  def move_controlled
+    if holding_any? :left, :a
+      if holding_any? :up, :w
+        @controlled.left(0.707)
+        @controlled.up(0.707)
+      elsif holding_any? :down, :s
+        @controlled.left(0.707)
+        @controlled.down(0.707)
+      else
+        @controlled.left
+      end
+    elsif holding_any? :right, :d
+      if holding_any? :up, :w
+        @controlled.right(0.707)
+        @controlled.up(0.707)
+      elsif holding_any? :down, :s
+        @controlled.right(0.707)
+        @controlled.down(0.707)
+      else
+        @controlled.right
+      end
+    elsif holding_any? :up, :w
+      @controlled.up
+    elsif holding_any? :down, :s
+      @controlled.down
+    end
+
+  end
+
   def update
     super
+
+    move_controlled
 
     if controlling?
       self.energy -= ENERGY_CONTROL

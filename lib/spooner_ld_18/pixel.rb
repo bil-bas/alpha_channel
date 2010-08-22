@@ -59,23 +59,23 @@ class Pixel < GameObject
     return nil
   end
 
-  def left
-    self.x = [x - @speed, 0 + screen_width / 8].max
+  def left(distance = 1)
+    self.x = [x - @speed * distance, 0 + screen_width / 8].max
     if enemy = colliding_with_obstacle? then self.x = enemy.x + SIZE + 0.001; fight(enemy); end
   end
 
-  def right
-    self.x = [x + @speed, $window.width / $window.factor - screen_width / 8].min
+  def right(distance = 1)
+    self.x = [x + @speed * distance, $window.width / $window.factor - screen_width / 8].min
     if enemy = colliding_with_obstacle? then self.x = enemy.x - SIZE - 0.001; fight(enemy); end
   end
 
-  def up
-    self.y = [y - @speed, 0 + screen_width / 8].max
+  def up(distance = 1)
+    self.y = [y - @speed * distance, 0 + screen_width / 8].max
     if enemy = colliding_with_obstacle? then self.y = enemy.y + SIZE + 0.001; fight(enemy); end
   end
 
-  def down
-    self.y = [y + @speed, $window.height / $window.factor - screen_width / 8].min
+  def down(distance = 1)
+    self.y = [y + @speed * distance, $window.height / $window.factor - screen_width / 8].min
     if enemy = colliding_with_obstacle? then self.y = enemy.y - SIZE - 0.001; fight(enemy); end
   end
 end
