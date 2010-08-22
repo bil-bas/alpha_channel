@@ -1,1 +1,0 @@
-ocra lib/spooner_ld_18.rbw
