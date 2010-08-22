@@ -2,7 +2,7 @@ class Help < GameStates::Popup
   def initialize(options = {})
     text =<<END_TEXT
 
-    === PIXHELL (Spooner's LD-18 game: "Enemies as weapons") ===
+    === #{Game::NAME} (Spooner's LD-18 game: "Enemies as weapons") ===
 
     It is hell being a pixel. Why can't they all just get along?
 

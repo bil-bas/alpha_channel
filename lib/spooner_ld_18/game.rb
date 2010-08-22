@@ -28,6 +28,7 @@ Sample.autoload_dirs << File.join(media_dir)
 ENV['PATH'] = "#{File.join(INSTALL_DIR, 'bin')};#{ENV['PATH']}"
 
 class Game < Window
+  NAME = "Alpha Channel"
   attr_accessor :score
 
   # Allow others to read my private method!
@@ -70,7 +71,7 @@ class Game < Window
 
   def update
     super
-    self.caption = "PIXHELL (spooner.github.com LD 18 - 'Enemies as weapons') F1 for help [FPS: #{fps}]"
+    self.caption = "#{NAME} (spooner.github.com LD 18 - 'Enemies as weapons') F1 for help [FPS: #{fps}]"
   end
 end
 
