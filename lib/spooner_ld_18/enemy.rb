@@ -1,7 +1,9 @@
 require 'pixel'
 
 class Enemy < Pixel
-  SCORE = 1000
+  INITIAL_HEALTH = 400
+  KILL_SCORE = 1000
+  TOTAL_SCORE = INITIAL_HEALTH + KILL_SCORE 
 
   def controlled?; not @controller.nil?; end
 
@@ -32,7 +34,8 @@ class Enemy < Pixel
   def die
     if player = Player.all.first
       player.lose_control if controlled?
-      $window.score += SCORE
+      $window.score += KILL_SCORE
+      $window.current_game_state.add_kill
     end
 
     super
@@ -40,6 +43,12 @@ class Enemy < Pixel
 
   def hurts?(enemy)
     super or ((enemy.class == self.class) and (controlled? or enemy.controlled?))
+  end
+
+  def health=(value)
+    old = health
+    super(value)
+    $window.score += old - health
   end
 
   def update

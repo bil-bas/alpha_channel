@@ -27,20 +27,24 @@ class Level < GameState
     @score_label = Text.create("%08d" % $window.score, :x => 0, :y => 15, :zorder => ZOrder::LABEL, :max_width => $window.width / 11, :align => :center, :color => 0xff00ff00, :factor => 11)
     @level_label = Text.create("%04d" % @level, :x => 10, :y => 120, :zorder => ZOrder::LABEL, :max_width => $window.width / 22, :align => :center, :color => 0xff00ff00, :factor => 22)
     @background_color = Color.new(255, 100, 255, 100)
+
+    @num_kills = 0
+  end
+
+  def add_kill
+    @num_kills += 1
   end
 
   def update
     super
 
-    $window.score += 0.02 * @level
     @score_label.text = "%08d" % $window.score
 
     if @player.health == 0
       push_game_state GameOver
-    elsif $window.score == @level * Enemy::SCORE * 4
-      pop_game_state
+    elsif @num_kills >= @level + 3
       Sample["level.wav"].play
-      push_game_state(GameStates::FadeTo.new(Level.new(@level + 1), :speed => 3))
+      switch_game_state GameStates::FadeTo.new(Level.new(@level + 1), :speed => 3)
     end
 
   end
