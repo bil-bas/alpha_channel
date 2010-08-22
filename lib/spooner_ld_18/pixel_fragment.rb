@@ -15,6 +15,8 @@ class PixelFragment < Particle
       :mode => :default
     }.merge! options
 
+    $window.add_particle self
+
     super options
   end
 
@@ -22,5 +24,10 @@ class PixelFragment < Particle
     super
 
     destroy if outside_window? or factor_x <= 0.1
+  end
+
+  def destroy
+    $window.remove_particle self
+    super
   end
 end

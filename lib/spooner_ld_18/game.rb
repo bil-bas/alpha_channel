@@ -29,6 +29,7 @@ ENV['PATH'] = "#{File.join(INSTALL_DIR, 'bin')};#{ENV['PATH']}"
 
 class Game < Window
   NAME = "Alpha Channel"
+  attr_reader :particles
   attr_accessor :score
 
   # Allow others to read my private method!
@@ -45,6 +46,8 @@ class Game < Window
   def setup
     retrofy
     self.factor = 4 # So 160x120
+
+    @particles = []
 
     Sample["level.wav"].play
 
@@ -72,6 +75,14 @@ class Game < Window
   def update
     super
     self.caption = "#{NAME} (spooner.github.com LD 18 - 'Enemies as weapons') F1 for help [FPS: #{fps}]"
+  end
+
+  def add_particle(particle)
+    @particles << particle
+  end
+
+  def remove_particle(particle)
+    @particles.delete particle
   end
 end
 

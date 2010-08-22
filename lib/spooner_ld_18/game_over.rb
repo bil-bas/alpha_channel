@@ -22,7 +22,7 @@ class GameOver < GameState
 
   def update
     super
-    previous_game_state.game_objects.select { |x| x.is_a? Particle }.each { |x| x.update_trait }
+    $window.particles.each { |x| x.update_trait }
     @game_over.alpha = ((Math.sin(($window.ms - @game_ended) / 300.0) * 50) + 155).round
   end
 end

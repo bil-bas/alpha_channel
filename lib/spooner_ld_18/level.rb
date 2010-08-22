@@ -36,7 +36,7 @@ class Level < GameState
     @score_label.text = "%08d" % $window.score
 
     if @player.health == 0
-      after(100) { push_game_state GameOver }
+      push_game_state GameOver
     elsif $window.score == @level * Enemy::SCORE * 4
       pop_game_state
       Sample["level.wav"].play
