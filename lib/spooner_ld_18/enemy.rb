@@ -1,17 +1,22 @@
 require 'pixel'
 
 class Enemy < Pixel
-  INITIAL_HEALTH = 400
+  INITIAL_HEALTH = 10
+  MAX_HEALTH = 400
   KILL_SCORE = 600
-  TOTAL_SCORE = INITIAL_HEALTH + KILL_SCORE 
+  TOTAL_SCORE = MAX_HEALTH + KILL_SCORE
+
+  HEAL_AMOUNT = 5
 
   def controlled?; not @controller.nil?; end
 
   def initialize(options = {})
-    options = { :color => Color::RED.dup, :max_health => 400 }.merge! options
+    options = { :color => Color::RED.dup }.merge! options
     super options
 
-    @last_health = @max_health = @health = 400
+    @max_health = MAX_HEALTH
+    @last_health = @health = INITIAL_HEALTH
+    @amount_to_heal = MAX_HEALTH - INITIAL_HEALTH
 
     @speed = 0.3
     @damage = 10
@@ -48,7 +53,7 @@ class Enemy < Pixel
   def health=(value)
     old = health
     super(value)
-    $window.score += old - health
+    $window.score += old - health if old > health
   end
 
   def update
@@ -59,15 +64,11 @@ class Enemy < Pixel
       color.red = 255 - color.blue
       # You now damage other enemies.
       each_collision(Enemy) do |me, enemy|
-        if enemy != self
-          self.health -= enemy.damage
-          enemy.health -= damage
-          @hurt.play
-        end
+        fight(enemy) if enemy != self
       end
     else
       # Don't move if wounded.
-      if health == last_health and player = Player.all.first
+      if health >= last_health and player = Player.all.first
         angle = Gosu::angle(x, y, player.x, player.y)
         distance = distance_to(player)
         x_offset = offset_x(angle, distance)
@@ -78,7 +79,12 @@ class Enemy < Pixel
         right(x_offset / distance) if x_offset > 0
         up(-y_offset / distance) if y_offset < 0
         down(y_offset / distance) if y_offset > 0
-     end
+      end
+    end
+
+    if @amount_to_heal > 0
+      self.health += HEAL_AMOUNT
+      @amount_to_heal -= HEAL_AMOUNT
     end
   end
 end

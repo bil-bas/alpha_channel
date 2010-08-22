@@ -21,7 +21,7 @@ class Player < Pixel
     @max_energy = @energy = MAX_ENERGY
 
     @speed = 0.5
-    @damage = 10
+    @damage = 5
 
     @hurt = Sample["hurt_player.wav"]
     @control_on = Sample["control_on.wav"]
