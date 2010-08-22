@@ -43,7 +43,12 @@ class Pixel < GameObject
       # Ensure you don't get wounded multiple times.
       self.health = [last_health - enemy.damage, health].min
       enemy.health = [enemy.last_health - damage, enemy.health].min
-      @hurt.play
+      @hurt.play(0.5)
+      
+      if rand(100) < 40
+        color = rand(100) < 50 ? self.color : enemy.color
+        PixelFragment.create(:x => x - (x - enemy.x) / 2, :y => y - (y - enemy.y) / 2, :color => color.dup, :scale_rate => -0.2)
+      end
     end
   end
 
