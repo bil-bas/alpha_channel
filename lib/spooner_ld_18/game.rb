@@ -1,14 +1,11 @@
 require 'rubygems' rescue nil
 
 require 'chingu'
-#require 'texplay'
 
 require 'yaml' # required for ocra.
 
 include Gosu
 include Chingu
-
-EDITOR_ENABLED = true
 
 module ZOrder
   BACKGROUND, LABEL, PIXEL, CONTROL, PARTICLES, OVERLAY = (0..100).to_a
@@ -87,6 +84,7 @@ class Level < GameState
     
     @status = Text.create("", :x => 2, :y => 2, :zorder => ZOrder::OVERLAY, :color => 0xa0ffffff, :factor => 2)
     @level_label = Text.create("%04d" % @level, :x => 0, :y => 60, :zorder => ZOrder::LABEL, :color => 0xff00ff00, :factor => 22)
+    @background_color = Color.new(255, 100, 255, 100)
   end
 
   def update
@@ -95,8 +93,8 @@ class Level < GameState
             [@player.health, @player.energy, @player.score, @level]
 
     if @player.health == 0
-      after(10) { push_game_state GameOver } 
-    elsif @player.score == @level * 20 + 50
+      after(100) { push_game_state GameOver } 
+    elsif @player.score == @level * 20 + 20
       pop_game_state
       Sample["level.wav"].play
       push_game_state(GameStates::FadeTo.new(Level.new(@level + 1), :speed => 3))
@@ -107,22 +105,22 @@ class Level < GameState
   def draw
     super
     @status.draw
-    @level_label.draw if @level_label
-    fill(Color.new(255, 100, 255, 100), ZOrder::BACKGROUND)
+    @level_label.draw
+    fill(@background_color, ZOrder::BACKGROUND)
   end
 
   def help
     text =<<END_TEXT
 
-    === Spooner's LD-18 game: "Enemies as weapons" ===
+    === PIXHELL (Spooner's LD-18 game: "Enemies as weapons") ===
 
-    Escape to close this help
+    It is hell being a pixel. Why can't they all just get along?
 
     = Controls =
 
-      * Arrow keys or WASD: Move White (or Blue).
+      * Arrow keys or WASD: Move self (or a controlled Red).
 
-      * Space or Return: Take control of Red / Relinquish control of Blue.
+      * Space or Return: Take/relinquish control of Red.
            
       * P: Pause
 
@@ -130,17 +128,16 @@ class Level < GameState
 
     = How to play =
 
-      * White is good!
+      * Red is evil; Red wants to hurt you!
 
-      * Red is evil; Red wants to hurt White!
+      * Take control of Red, when it comes near, and use it to protect yourself from the other Reds!
 
-      * Take control of Red, when it comes near, to make it Blue and be able to move it!
+      * Controlling Red is strenuous and will use up your limited energy reserves (Blueness).
 
-      * All colours hurt other colours. Black isn't too painful, though :)
+      * All colours hurt colours that aren't the same. Green isn't too painful, though :)
 
-      * While controlling, White will become Yellow, but Red will still hunt it.
 
-      * Controlling is strenuous and will use up your limited energy reserves.
+    (Escape to close this help)
 END_TEXT
 
     push_game_state GameStates::Popup.new(:text => text)
@@ -260,7 +257,7 @@ class Player < Pixel
   ENERGY_CONTROL = 3
 
   def initialize(options = {})
-    super({:color => Color.new(255, 255, 255, 255)}.merge! options)
+    super({:color => Color::BLUE.dup}.merge! options)
 
     add_inputs(
       [:holding_left, :holding_a] => lambda { @controlled.left },
@@ -305,8 +302,13 @@ class Player < Pixel
   end
 
   def energy=(value)
-    @energy = [[0, value].max, @max_energy].min
-    lose_control if @energy == 0
+    @energy = [[0, value].max, max_energy].min
+    if controlling?
+      lose_control if @energy == 0
+    else
+      color.blue = (((@energy * 155.0) / max_energy) + 100).to_i unless controlling?
+      color.red = color.green = 255 - color.blue
+    end 
   end
 
   def die
@@ -322,11 +324,11 @@ class Player < Pixel
     @controlled ||= self
     if @controlled != self
       @controlled.uncontrol
-      @controlled = self
       @control_off.play
     end
-    self.color = Color.new(255, 255, 255, 255)
-    self.health = health
+    @controlled = self
+    color.red = color.green = 0
+    self.energy = energy # Get colour back.
   end
 
   def gain_control
@@ -342,9 +344,8 @@ class Player < Pixel
 
     if nearest_enemy
       @controlled = nearest_enemy
-      @controlled.control
-      self.color = Color.new(255, 255, 255, 0)
-      self.health = health
+      @controlled.control(self)
+      color.blue = color.red = color.green = 255 # Blueness shoots over to the enemy.
       @control_on.play
     else
       @control_fail.play
@@ -353,10 +354,11 @@ class Player < Pixel
 end
 
 class Enemy < Pixel
-  def controlled?; @controlled; end
+  def controlled?; not @controller.nil?; end
 
-  def initialize(options = {})  
-    super(options)
+  def initialize(options = {})
+    options = { :color => Color::RED.dup, :max_health => 400 }.merge! options
+    super options
 
     @last_health = @max_health = @health = 400
     
@@ -367,16 +369,15 @@ class Enemy < Pixel
     uncontrol
   end
 
-  def control
-    @controlled = true
-    self.color = Color.new(255, 0, 0, 255)
-    self.health = health
+  def control(controller)
+    @controller = controller
+    color.red = 0
   end
 
   def uncontrol
-    @controlled = false
-    self.color = Color.new(255, 255, 0, 0) unless health == 0
-    self.health = health
+    @controller = nil
+    color.red = 255
+    color.blue = 0
   end
 
   def die
@@ -396,6 +397,8 @@ class Enemy < Pixel
     super
 
     if controlled?
+      color.blue = (((@controller.energy * 155.0) / @controller.max_energy) + 100).to_i
+      color.red = 255 - color.blue
       # You now damage other enemies.
       each_collision(Enemy) do |me, enemy|
         if enemy != self
@@ -419,7 +422,7 @@ end
 
 class DeadPixel < Pixel
   def initialize(options = {})
-    super({:color => Color.new(255, 0, 0, 0)}.merge! options )
+    super({:color => Color.new(255, 0, 180, 0)}.merge! options )
     @original_health = @max_health = @health = 5000
     @damage = 2
   end
