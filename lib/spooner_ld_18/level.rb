@@ -1,6 +1,8 @@
 class Level < GameState
   trait :timer
 
+  LABEL_COLOR = 0xff00ff00
+
   def initialize(level)
     @level = level
 
@@ -20,11 +22,10 @@ class Level < GameState
 
     on_input(:p, GameStates::Pause)
     on_input(:f1) { push_game_state Help }
+    on_input(:f12) { push_game_state GameOver }
 
-    small_size, large_size  = 8, 16
-    @score_label = Text.create("%08d" % $window.score, :font => FONT, :size => FONT_SIZE, :x => 0, :y => -15, :zorder => ZOrder::LABEL, :max_width => $window.width / small_size, :align => :center, :color => 0xff00ff00, :factor => small_size)
-    @level_label = Text.create("%04d" % @level, :font => FONT, :size => FONT_SIZE, :x => 10, :y => 70, :zorder => ZOrder::LABEL, :max_width => $window.width / large_size, :align => :center, :color => 0xff00ff00, :factor => large_size)
-    @high_score_label = Text.create("%08d" % $window.high_score, :font => FONT, :size => FONT_SIZE, :x => 0, :y => 325, :zorder => ZOrder::LABEL, :max_width => $window.width / small_size, :align => :center, :color => 0xff00ff00, :factor => small_size)
+    @score_font = Font.new($window, FONT, 120)
+    @level_font = Font.new($window, FONT, 240)
     @background_color = Color.new(255, 100, 255, 100)
 
     @num_kills = 0
@@ -43,8 +44,6 @@ class Level < GameState
   def update
     super
 
-    @score_label.text = "%08d" % $window.score
-
     if @player.health == 0
       after(1000) { push_game_state GameOver if current_game_state == self }
     elsif @num_kills >= @level + 3
@@ -58,6 +57,15 @@ class Level < GameState
   def draw
     super
     fill(@background_color, ZOrder::BACKGROUND)
+
+    write_text(@score_font, "%08d" % $window.score, 0)
+    write_text(@level_font, "%04d" % @level, 100)
+    write_text(@score_font, "%08d" % $window.high_score, 330)
+  end
+
+  def write_text(font, text, y)
+    x = 10 + ($window.width - font.text_width(text)) / 2
+    font.draw(text, x, y, ZOrder::LABEL, 1, 1, LABEL_COLOR)
   end
 
   def finalize

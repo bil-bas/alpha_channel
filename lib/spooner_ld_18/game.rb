@@ -30,7 +30,6 @@ BIN_DIR = File.join(INSTALL_DIR, 'bin')
 ENV['PATH'] = "#{BIN_DIR};#{ENV['PATH']}"
 
 FONT = File.join(INSTALL_DIR, 'media', 'SWFIT_SL.TTF')
-FONT_SIZE = 16
 
 class Game < Window
   NAME = "Alpha Channel"
