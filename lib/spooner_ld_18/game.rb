@@ -7,6 +7,7 @@ require 'yaml' # required for ocra.
 include Gosu
 include Chingu
 
+require 'level_transition'
 require 'dead_pixel'
 require 'enemy'
 require 'help'
@@ -29,8 +30,10 @@ ENV['PATH'] = "#{File.join(INSTALL_DIR, 'bin')};#{ENV['PATH']}"
 
 class Game < Window
   NAME = "Alpha Channel"
-  attr_reader :particles
+  attr_reader :particles, :high_score
   attr_accessor :score
+
+  HIGH_SCORE_FILE = File.join(INSTALL_DIR, 'high_score.dat')
 
   # Allow others to read my private method!
   def ms
@@ -52,8 +55,19 @@ class Game < Window
     Sample["level.wav"].play
 
     @score = 0
+    @high_score = File.open(HIGH_SCORE_FILE, "r") { |file| file.readline.to_i } rescue 0
     
-    push_game_state(GameStates::FadeTo.new(Level.new(1), :speed => 2))
+    push_game_state(LevelTransition.new(1))
+  end
+
+  def game_over
+    if @score > @high_score
+      @high_score = @score
+      File.open(HIGH_SCORE_FILE, "w") { |file| file.puts @high_score } rescue nil
+      true
+    else
+      false
+    end  
   end
 
   def random_position(extra_objects = [])

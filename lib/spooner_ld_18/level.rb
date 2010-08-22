@@ -21,8 +21,9 @@ class Level < GameState
     on_input(:p, GameStates::Pause)
     on_input(:f1) { push_game_state Help }
 
-    @score_label = Text.create("%08d" % $window.score, :x => 0, :y => 15, :zorder => ZOrder::LABEL, :max_width => $window.width / 11, :align => :center, :color => 0xff00ff00, :factor => 11)
-    @level_label = Text.create("%04d" % @level, :x => 10, :y => 120, :zorder => ZOrder::LABEL, :max_width => $window.width / 22, :align => :center, :color => 0xff00ff00, :factor => 22)
+    @score_label = Text.create("%08d" % $window.score, :x => 0, :y => -15, :zorder => ZOrder::LABEL, :max_width => $window.width / 11, :align => :center, :color => 0xff00ff00, :factor => 11)
+    @level_label = Text.create("%04d" % @level, :x => 10, :y => 70, :zorder => ZOrder::LABEL, :max_width => $window.width / 22, :align => :center, :color => 0xff00ff00, :factor => 22)
+    @high_score_label = Text.create("%08d" % $window.high_score, :x => 0, :y => 325, :zorder => ZOrder::LABEL, :max_width => $window.width / 11, :align => :center, :color => 0xff00ff00, :factor => 11)
     @background_color = Color.new(255, 100, 255, 100)
 
     @num_kills = 0
@@ -44,10 +45,11 @@ class Level < GameState
     @score_label.text = "%08d" % $window.score
 
     if @player.health == 0
-      push_game_state GameOver
+      after(1000) { push_game_state GameOver if current_game_state == self }
     elsif @num_kills >= @level + 3
       Sample["level.wav"].play
-      switch_game_state GameStates::FadeTo.new(Level.new(@level + 1), :speed => 3)
+      $window.score += @level * 1000
+      switch_game_state LevelTransition.new(@level + 1)
     end
 
   end
@@ -55,5 +57,9 @@ class Level < GameState
   def draw
     super
     fill(@background_color, ZOrder::BACKGROUND)
+  end
+
+  def finalize
+    game_objects.sync
   end
 end
