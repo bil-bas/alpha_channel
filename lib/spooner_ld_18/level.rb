@@ -24,8 +24,8 @@ class Level < GameState
     on_input(:f1) { push_game_state Help }
     on_input(:f12) { push_game_state GameOver }
 
-    @score_font = Font.new($window, FONT, 120)
-    @level_font = Font.new($window, FONT, 240)
+    @score_font = Font.create_for_os(FONT, 120)
+    @level_font = Font.create_for_os(FONT, 240)
     @background_color = Color.new(255, 100, 255, 100)
 
     @num_kills = 0

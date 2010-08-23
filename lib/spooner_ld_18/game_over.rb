@@ -2,8 +2,8 @@ class GameOver < GameState
   def initialize
     super
 
-    @game_over_font = Font.new($window, FONT, 240)
-    @info_font = Font.new($window, FONT, 36)
+    @game_over_font = Font.create_for_os(FONT, 240)
+    @info_font = Font.create_for_os(FONT, 36)
 
     @game_ended = $window.ms
 

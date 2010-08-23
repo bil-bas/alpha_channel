@@ -7,6 +7,7 @@ require 'yaml' # required for ocra.
 include Gosu
 include Chingu
 
+require 'font'
 require 'level_transition'
 require 'dead_pixel'
 require 'enemy'
