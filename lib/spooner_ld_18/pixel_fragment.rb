@@ -8,7 +8,7 @@ class PixelFragment < Particle
       :velocity_x => velocity_x * (0.2 + rand(0.1)),
       :velocity_y => velocity_y * (0.2 + rand(0.1)),
       :zorder => ZOrder::PARTICLES,
-      :image => "pixel_fragment.png",
+      :image => Image["pixel_fragment.png"],
       :scale_rate => -0.1,
       :fade_rate => 0,
       :rotation_rate => 1 - rand(2),
