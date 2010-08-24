@@ -20,13 +20,13 @@ class GameOver < GameState
     previous_game_state.draw
     super
 
-    write_text(@game_over_font, @words[0], -10, @color)
+    write_text(@game_over_font, @words[0], 40, @color)
     write_text(@game_over_font, @words[1],  200, @color)
     write_text(@info_font, "(R)estart", 420, Color.new(255, 220, 220, 220))
   end
 
   def write_text(font, text, y, color)
-    x = 20 + ($window.width - font.text_width(text)) / 2
+    x = ($window.width - font.text_width(text)) / 2
     font.draw(text, x, y, ZOrder::OVERLAY, 1, 1, color)
   end
 

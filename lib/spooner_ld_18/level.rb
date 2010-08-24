@@ -57,9 +57,9 @@ class Level < GameState
     super
     fill(@background_color, ZOrder::BACKGROUND)
 
-    write_text(@score_font, "%08d" % $window.score, 0)
-    write_text(@level_font, "%04d" % @level, 100)
-    write_text(@score_font, "%08d" % $window.high_score, 330)
+    write_text(@score_font, "%08d" % $window.score, 40)
+    write_text(@level_font, "%04d" % @level, 140)
+    write_text(@score_font, "%08d" % $window.high_score, 340)
   end
 
   def write_text(font, text, y)
