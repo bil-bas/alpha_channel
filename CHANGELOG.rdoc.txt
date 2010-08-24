@@ -1,0 +1,13 @@
+= Changelog
+
+== v1.1 (2010-08-24)
+
+  Ludum Dare #18 entry compatibility update
+
+* Fixed CTD in Linux.
+* Fixed font rendering in Linux.
+* Made OS X executable.
+
+== v1.0 (2010-08-22)
+
+  Ludum Dare #18 entry
