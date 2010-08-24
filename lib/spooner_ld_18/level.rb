@@ -63,7 +63,7 @@ class Level < GameState
   end
 
   def write_text(font, text, y)
-    x = 10 + ($window.width - font.text_width(text)) / 2
+    x = ($window.width - font.text_width(text)) / 2
     font.draw(text, x, y, ZOrder::LABEL, 1, 1, LABEL_COLOR)
   end
 
