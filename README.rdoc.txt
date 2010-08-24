@@ -77,7 +77,7 @@ Runs in a 640x480 window.
 
 * Gosu and Chingu gems (libraries) for graphics and sound [Included in executable versions].
 * fmod.dll (used indirectly via Gosu; uses SDL when not on Windows) [INCLUDED]
-* pixelated.ttf (Free font found at http://www.adobeflash.com/download/fonts/pixel/) [INCLUDED]
+* pixelated.ttf (font by Affinity and Epsilon - benepsilon {at} gmail.com) [INCLUDED]
 
 
 == License
