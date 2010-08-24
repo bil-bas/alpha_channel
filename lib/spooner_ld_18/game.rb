@@ -30,7 +30,7 @@ Sample.autoload_dirs << File.join(media_dir)
 BIN_DIR = File.join(INSTALL_DIR, 'bin')
 ENV['PATH'] = "#{BIN_DIR};#{ENV['PATH']}"
 
-FONT = File.join(INSTALL_DIR, 'media', 'SWFIT_SL.TTF')
+FONT = File.join(INSTALL_DIR, 'media', 'pixelated.ttf')
 
 class Game < Window
   NAME = "Alpha Channel"
