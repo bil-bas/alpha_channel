@@ -35,7 +35,7 @@ class GameOver < GameState
 
   def update
     super
-    $window.particles.each { |x| x.update_trait }
+    $window.particles.each { |x| x.update_trait; x.update }
     @color =  Color::WHITE.dup
     @color.alpha = ((Math.cos(($window.ms - @game_ended) / 300.0) * 50) + 155).round
   end

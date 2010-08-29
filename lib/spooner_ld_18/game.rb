@@ -1,6 +1,7 @@
 require 'rubygems' rescue nil
 
 require 'chingu'
+require 'chipmunk'
 require 'texplay'
 TexPlay.set_options :caching => false
 

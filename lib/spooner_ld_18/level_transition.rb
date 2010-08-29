@@ -10,6 +10,6 @@ class LevelTransition < GameStates::FadeTo
   # Ensure that particles keep moving.
   def update
     super
-    $window.particles.each { |x| x.update_trait }
+    $window.particles.each { |x| x.update_trait; x.update }
   end
 end

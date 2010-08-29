@@ -29,11 +29,35 @@ class Level < GameState
     @background_color = Color.new(255, 100, 255, 100)
 
     @num_kills = 0
+
+    # Set up Chipmunk physics.
+    @space = CP::Space.new
+    @space.damping = 0.05
+
+    blockages.each do |object|
+      @space.add_body object.shape.body
+      @space.add_shape object.shape
+    end
+
+    @space.add_collision_func(:pixel, :pixel) do |shape1, shape2|
+      pixel1 = Pixel.all.find { |p| p.shape == shape1 }
+      pixel2 = Pixel.all.find { |p| p.shape == shape2 }
+      
+      pixel1.fight(pixel2) if pixel1 and pixel2 and pixel1.hurts?(pixel2)
+
+      true # We always want a collision.
+    end
+
+    @dt = 1.0 / 60.0
   end
 
   def generate_enemy
     pos = $window.random_position
-    Enemy.create(:x => pos[0], :y => pos[1])
+    enemy = Enemy.create(:x => pos[0], :y => pos[1])
+    
+    @space.add_body enemy.shape.body
+    @space.add_shape enemy.shape
+
     after(500 + rand([4000 - @level * 250, 500].max)) { generate_enemy }
   end
 
@@ -51,6 +75,8 @@ class Level < GameState
       switch_game_state LevelTransition.new(@level + 1)
     end
 
+    period = $window.milliseconds_since_last_tick / 10000.0
+    10.times { @space.step period }
   end
 
   def draw

@@ -8,7 +8,7 @@ class Player < Pixel
 
   MAX_HEALTH, MAX_ENERGY = 1000, 1000
   ENERGY_HEAL = 5
-  ENERGY_CONTROL = 3
+  ENERGY_CONTROL = 5
 
   def initialize(options = {})
     super({:color => Color::BLUE.dup}.merge! options)
@@ -35,30 +35,27 @@ class Player < Pixel
   def move_controlled
     if holding_any? :left, :a
       if holding_any? :up, :w
-        @controlled.left(0.707)
-        @controlled.up(0.707)
+        @controlled.move(-0.707, -0.707)
       elsif holding_any? :down, :s
-        @controlled.left(0.707)
-        @controlled.down(0.707)
+        @controlled.move(-0.707, 0.707)
       else
-        @controlled.left
+        @controlled.move(-1, 0)
       end
     elsif holding_any? :right, :d
       if holding_any? :up, :w
-        @controlled.right(0.707)
-        @controlled.up(0.707)
+        @controlled.move(0.707, -0.707)
       elsif holding_any? :down, :s
-        @controlled.right(0.707)
-        @controlled.down(0.707)
+        @controlled.move(0.707, 0.707)
       else
-        @controlled.right
+        @controlled.move(1, 0)
       end
     elsif holding_any? :up, :w
-      @controlled.up
+      @controlled.move(0, -1)
     elsif holding_any? :down, :s
-      @controlled.down
+      @controlled.move(0, 1)
+    else
+      @controlled.move(0, 0)
     end
-
   end
 
   def update
@@ -115,7 +112,7 @@ class Player < Pixel
     nearest_enemy = nil
     Enemy.all.each do |enemy|
       distance = distance(self.x, self.y, enemy.x, enemy.y)
-      if distance < MIN_CAPTURE_DISTANCE and not self.collides?(enemy) and distance < nearest_distance
+      if distance < MIN_CAPTURE_DISTANCE and distance < nearest_distance
         nearest_distance = distance
         nearest_enemy = enemy
       end

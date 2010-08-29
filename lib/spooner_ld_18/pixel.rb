@@ -1,19 +1,25 @@
 class Pixel < GameObject
-  trait :bounding_box, :debug => false
-  traits :collision_detection
-
   SIZE = 32
 
   attr_reader :health, :damage, :max_health, :last_health
+  
+  attr_reader :shape
 
   def initialize(options = {})
     @@image ||=  TexPlay.create_image($window, SIZE, SIZE, :color => :white)
     options = {:image => @@image, :zorder => ZOrder::PIXEL}.merge! options
     super(options)
-    cache_bounding_box
+
+    body = CP::Body.new(100, 1000000)
+    shape_array = [CP::Vec2.new(-width / 2, -height / 2), CP::Vec2.new(-width / 2, height / 2), CP::Vec2.new(width / 2, height / 2), CP::Vec2.new(width / 2, -height / 2)]
+    @shape = CP::Shape::Poly.new(body, shape_array, CP::Vec2.new(0,0))
+    @shape.body.p = CP::Vec2.new(x, y)
+    @shape.collision_type = :pixel
   end
 
   def health=(value)
+    return if @health == 0
+
     @health = [[0, value].max, max_health].min
     self.alpha = ((@health * 155.0 / max_health) + 100).to_i
     die if @health == 0
@@ -22,6 +28,7 @@ class Pixel < GameObject
   def update
     super
     @last_health = @health
+    self.x, self.y = @shape.body.p.x, @shape.body.p.y
   end
 
   def die
@@ -45,51 +52,19 @@ class Pixel < GameObject
       # Ensure you don't get wounded multiple times.
       self.health = [last_health - enemy.damage, health].min
       enemy.health = [enemy.last_health - damage, enemy.health].min
-      @hurt.play(0.1)
-      
-      if rand(100) < 40
+           
+      if rand(100) < 10
+        @hurt.play(0.1)
         color = rand(100) < 50 ? self.color : enemy.color
-        PixelFragment.create(:x => x - (x - enemy.x) / 2, :y => y - (y - enemy.y) / 2, :color => color.dup, :scale_rate => -0.02)
+        unless $window.particles.size > 100
+          PixelFragment.create(:x => x - (x - enemy.x) / 2, :y => y - (y - enemy.y) / 2, :color => color.dup, :scale_rate => -0.02)
+        end
       end
     end
   end
 
-  def colliding_with_obstacle?
-    each_bounding_box_collision(Player, Enemy, DeadPixel) do |me, obstacle|
-      return obstacle if me != obstacle
-    end
-    return nil
-  end
-
-  def left(distance = 1)
-    self.x = [x - @speed * distance, width / 2].max
-    if enemy = colliding_with_obstacle?
-      self.x = enemy.x + SIZE + 0.001
-      fight(enemy);
-    end
-  end
-
-  def right(distance = 1)
-    self.x = [x + @speed * distance, $window.width - width / 2].min
-    if enemy = colliding_with_obstacle?
-      self.x = enemy.x - SIZE - 0.001
-      fight(enemy)
-    end
-  end
-
-  def up(distance = 1)
-    self.y = [y - @speed * distance, height / 2].max
-    if enemy = colliding_with_obstacle?
-      self.y = enemy.y + SIZE + 0.001
-      fight(enemy)
-    end
-  end
-
-  def down(distance = 1)
-    self.y = [y + @speed * distance, $window.height - height / 2].min
-    if enemy = colliding_with_obstacle?
-      self.y = enemy.y - SIZE - 0.001
-      fight(enemy)
-    end
+  def move(x, y)
+    @shape.body.reset_forces
+    @shape.body.apply_force(CP::Vec2.new(x * @speed * 20000, y * @speed * 20000), CP::Vec2.new(0, 0))
   end
 end

@@ -62,10 +62,6 @@ class Enemy < Pixel
     if controlled?
       color.blue = (((@controller.energy * 155.0) / @controller.max_energy) + 100).to_i
       color.red = 255 - color.blue
-      # You now damage other enemies.
-      each_collision(Enemy) do |me, enemy|
-        fight(enemy) if enemy != self
-      end
     else
       # Don't move if wounded.
       if health >= last_health and player = Player.all.first
@@ -75,10 +71,7 @@ class Enemy < Pixel
         y_offset = offset_y(angle, distance)
 
         # Home in on the player's location.
-        left(-x_offset / distance) if x_offset < 0
-        right(x_offset / distance) if x_offset > 0
-        up(-y_offset / distance) if y_offset < 0
-        down(y_offset / distance) if y_offset > 0
+        move(x_offset / distance, y_offset / distance)
       end
     end
 
