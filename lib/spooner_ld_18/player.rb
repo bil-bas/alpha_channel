@@ -20,7 +20,7 @@ class Player < Pixel
 
     @max_energy = @energy = MAX_ENERGY
 
-    @speed = 2
+    @speed = 0.8
     @damage = 5
 
     @hurt = Sample["hurt_player.wav"]
@@ -108,7 +108,7 @@ class Player < Pixel
   end
 
   def gain_control
-    nearest_distance = 99999999
+    nearest_distance = Float::INFINITY
     nearest_enemy = nil
     Enemy.all.each do |enemy|
       distance = distance(self.x, self.y, enemy.x, enemy.y)

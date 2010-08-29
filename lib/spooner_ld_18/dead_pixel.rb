@@ -11,7 +11,7 @@ class DeadPixel < Pixel
     
     @damage = 0.5
 
-    shape.body.mass *= 10 # Dead pixels are a lot harder to push around.
+    shape.body.mass = Float::INFINITY # Dead pixels are a lot harder to push around.
   end
 
   def safe_distance
