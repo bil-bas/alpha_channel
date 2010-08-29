@@ -14,6 +14,9 @@ class GameOver < GameState
       pop_game_state
       switch_game_state LevelTransition.new(1)
     end
+    on_input :q do
+      $window.close
+    end
   end
 
   def draw
@@ -22,7 +25,7 @@ class GameOver < GameState
 
     write_text(@game_over_font, @words[0], 40, @color)
     write_text(@game_over_font, @words[1],  200, @color)
-    write_text(@info_font, "(R)estart", 420, Color.new(255, 220, 220, 220))
+    write_text(@info_font, "(R)estart or (Q)uit", 420, Color.new(255, 235, 235, 235))
   end
 
   def write_text(font, text, y, color)
