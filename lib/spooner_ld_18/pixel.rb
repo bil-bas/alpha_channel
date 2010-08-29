@@ -9,6 +9,7 @@ class Pixel < GameObject
   def initialize(options = {})
     options = {:image => Image["pixel.png"], :zorder => ZOrder::PIXEL}.merge! options
     super(options)
+    cache_bounding_box
   end
 
   def health=(value)
