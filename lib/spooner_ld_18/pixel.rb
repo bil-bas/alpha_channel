@@ -19,8 +19,8 @@ class Pixel < GameObject
     self.health = health # get correct colour shown.
 
     body = CP::Body.new(100, 1000000)
-    shape_array = [CP::Vec2.new(-width / 2, -height / 2), CP::Vec2.new(-width / 2, height / 2), CP::Vec2.new(width / 2, height / 2), CP::Vec2.new(width / 2, -height / 2)]
-    @shape = CP::Shape::Poly.new(body, shape_array, CP::Vec2.new(0,0))
+    vertices = [CP::Vec2.new(-width / 2, -height / 2), CP::Vec2.new(-width / 2, height / 2), CP::Vec2.new(width / 2, height / 2), CP::Vec2.new(width / 2, -height / 2)]
+    @shape = CP::Shape::Poly.new(body, vertices, CP::Vec2.new(0,0))
     @shape.body.p = CP::Vec2.new(x, y)
     @shape.collision_type = :pixel
   end

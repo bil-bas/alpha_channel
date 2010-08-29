@@ -1,3 +1,5 @@
+require 'wall'
+
 class Level < GameState
   trait :timer
 
@@ -46,6 +48,15 @@ class Level < GameState
       pixel1.fight(pixel2) if pixel1 and pixel2 and pixel1.hurts?(pixel2)
 
       true # We always want a collision.
+    end
+
+    [
+      [0, 0, 0, $window.height], # Left
+      [0, $window.height, $window.width, $window.height], # Bottom
+      [$window.width, $window.height, $window.width, 0], # Right
+      [$window.width, 0, 0, 0] # Top
+    ].each do |x1, y1, x2, y2|
+      wall = Wall.new(@space, x1, y1, x2, y2)
     end
 
     @dt = 1.0 / 60.0
