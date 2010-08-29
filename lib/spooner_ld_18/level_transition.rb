@@ -4,7 +4,7 @@ class LevelTransition < GameStates::FadeTo
 
     @@sound ||= Sample["level.wav"]
 
-    @@sound.play
+    @@sound.play(0.5)
   end
 
   # Ensure that particles keep moving.

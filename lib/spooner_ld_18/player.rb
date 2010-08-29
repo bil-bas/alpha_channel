@@ -93,7 +93,7 @@ class Player < Pixel
   end
 
   def die
-    @death.play
+    @death.play(0.5)
     super
   end
 
@@ -105,7 +105,7 @@ class Player < Pixel
     @controlled ||= self
     if @controlled != self
       @controlled.uncontrol
-      @control_off.play
+      @control_off.play(0.5)
     end
     @controlled = self
     color.red = color.green = 0
@@ -127,9 +127,9 @@ class Player < Pixel
       @controlled = nearest_enemy
       @controlled.control(self)
       color.blue = color.red = color.green = 255 # Blueness shoots over to the enemy.
-      @control_on.play
+      @control_on.play(0.5)
     else
-      @control_fail.play
+      @control_fail.play(0.5)
     end
   end
 end

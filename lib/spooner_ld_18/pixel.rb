@@ -43,7 +43,7 @@ class Pixel < GameObject
       # Ensure you don't get wounded multiple times.
       self.health = [last_health - enemy.damage, health].min
       enemy.health = [enemy.last_health - damage, enemy.health].min
-      @hurt.play(0.5)
+      @hurt.play(0.1)
       
       if rand(100) < 40
         color = rand(100) < 50 ? self.color : enemy.color
