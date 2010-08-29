@@ -1,14 +1,22 @@
 class Pixel < GameObject
+  INITIAL_HEALTH = 10
+  PHASE_IN_DURATION = 3 * 1000 # Number of ms to phase in over.
   SIZE = 32
 
   attr_reader :health, :damage, :max_health, :last_health
   
   attr_reader :shape
 
-  def initialize(options = {})
+  def initialize(max_health, options = {})
     @@image ||=  TexPlay.create_image($window, SIZE, SIZE, :color => :white)
     options = {:image => @@image, :zorder => ZOrder::PIXEL}.merge! options
     super(options)
+
+    @max_health = max_health
+    @last_health = @health = INITIAL_HEALTH
+    @amount_to_heal = @max_health - INITIAL_HEALTH
+    @amount_left_to_heal = @amount_to_heal
+    self.health = health # get correct colour shown.
 
     body = CP::Body.new(100, 1000000)
     shape_array = [CP::Vec2.new(-width / 2, -height / 2), CP::Vec2.new(-width / 2, height / 2), CP::Vec2.new(width / 2, height / 2), CP::Vec2.new(width / 2, -height / 2)]
@@ -27,7 +35,15 @@ class Pixel < GameObject
 
   def update
     super
+
+    if @amount_left_to_heal > 0
+      heal_amount = @amount_to_heal * $window.milliseconds_since_last_tick / PHASE_IN_DURATION
+      self.health += heal_amount
+      @amount_left_to_heal -= heal_amount
+    end
+    
     @last_health = @health
+    
     self.x, self.y = @shape.body.p.x, @shape.body.p.y
   end
 

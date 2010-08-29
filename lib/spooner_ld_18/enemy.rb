@@ -1,22 +1,15 @@
 require 'pixel'
 
 class Enemy < Pixel
-  INITIAL_HEALTH = 10
   MAX_HEALTH = 400
   KILL_SCORE = 600
   TOTAL_SCORE = MAX_HEALTH + KILL_SCORE
-
-  HEAL_AMOUNT = 5
 
   def controlled?; not @controller.nil?; end
 
   def initialize(options = {})
     options = { :color => Color::RED.dup }.merge! options
-    super options
-
-    @max_health = MAX_HEALTH
-    @last_health = @health = INITIAL_HEALTH
-    @amount_to_heal = MAX_HEALTH - INITIAL_HEALTH
+    super(MAX_HEALTH, options)
 
     @speed = 1.2
     @damage = 10
@@ -73,11 +66,6 @@ class Enemy < Pixel
         # Home in on the player's location.
         move(x_offset / distance, y_offset / distance)
       end
-    end
-
-    if @amount_to_heal > 0
-      self.health += HEAL_AMOUNT
-      @amount_to_heal -= HEAL_AMOUNT
     end
   end
 

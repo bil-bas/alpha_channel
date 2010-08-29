@@ -11,13 +11,13 @@ class Player < Pixel
   ENERGY_CONTROL = 5
 
   def initialize(options = {})
-    super({:color => Color::BLUE.dup}.merge! options)
+    options = {:color => Color::BLUE.dup}.merge! options
+    super(MAX_HEALTH, options)
 
     add_inputs(
       [:space, :return] => lambda { controlling? ? lose_control : gain_control }
     )
 
-    @last_health = @max_health = @health = MAX_HEALTH
     @max_energy = @energy = MAX_ENERGY
 
     @speed = 2

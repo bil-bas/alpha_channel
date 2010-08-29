@@ -1,9 +1,14 @@
 require 'pixel'
 
 class DeadPixel < Pixel
+  MAX_HEALTH = 5000
+  
   def initialize(options = {})
-    super({:color => Color.new(255, 0, 180, 0)}.merge! options )
-    @original_health = @max_health = @health = 5000
+    options = {
+            :color => Color.new(255, 0, 180, 0)
+    }.merge! options
+    super(MAX_HEALTH, options)
+    
     @damage = 0.5
 
     shape.body.mass *= 10 # Dead pixels are a lot harder to push around.
