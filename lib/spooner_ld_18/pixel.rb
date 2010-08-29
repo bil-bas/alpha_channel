@@ -7,12 +7,13 @@ class Pixel < GameObject
   
   attr_reader :shape
 
-  def initialize(max_health, options = {})
+  def initialize(space, max_health, options = {})
+    @space, @max_health = space, max_health
+    
     @@image ||=  TexPlay.create_image($window, SIZE, SIZE, :color => :white)
     options = {:image => @@image, :zorder => ZOrder::PIXEL}.merge! options
     super(options)
 
-    @max_health = max_health
     @last_health = @health = INITIAL_HEALTH
     @amount_to_heal = @max_health - INITIAL_HEALTH
     @amount_left_to_heal = @amount_to_heal
@@ -23,6 +24,9 @@ class Pixel < GameObject
     @shape = CP::Shape::Poly.new(body, vertices, CP::Vec2.new(0,0))
     @shape.body.p = CP::Vec2.new(x, y)
     @shape.collision_type = :pixel
+
+    @space.add_body @shape.body
+    @space.add_shape @shape
   end
 
   def health=(value)
@@ -55,6 +59,9 @@ class Pixel < GameObject
         PixelFragment.create(:x => x, :y => y, :color => color)
       end
     end
+
+    @space.remove_shape @shape
+    @space.remove_body @shape.body
 
     destroy
   end

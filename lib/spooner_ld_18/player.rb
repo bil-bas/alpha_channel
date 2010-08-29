@@ -10,9 +10,9 @@ class Player < Pixel
   ENERGY_HEAL = 5
   ENERGY_CONTROL = 5
 
-  def initialize(options = {})
+  def initialize(space, options = {})
     options = {:color => Color::BLUE.dup}.merge! options
-    super(MAX_HEALTH, options)
+    super(space, MAX_HEALTH, options)
 
     add_inputs(
       [:space, :return] => lambda { controlling? ? lose_control : gain_control }

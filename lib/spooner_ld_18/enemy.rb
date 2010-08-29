@@ -7,9 +7,9 @@ class Enemy < Pixel
 
   def controlled?; not @controller.nil?; end
 
-  def initialize(options = {})
+  def initialize(space, options = {})
     options = { :color => Color::RED.dup }.merge! options
-    super(MAX_HEALTH, options)
+    super(space, MAX_HEALTH, options)
 
     @speed = 1.2
     @damage = 10

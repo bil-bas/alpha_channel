@@ -10,14 +10,18 @@ class Level < GameState
 
     super()
 
-    @player = Player.create(:x => $window.width / 2, :y => $window.height / 2)
+    # Set up Chipmunk physics.
+    @space = CP::Space.new
+    @space.damping = 0.05
+
+    @player = Player.create(@space, :x => $window.width / 2, :y => $window.height / 2)
     $window.score = 0 if @level == 1
     
     # Bad pixels.
     blockages = [@player]
     (3 + rand(10)).times do
       pos = $window.random_position(blockages)
-      blockages << DeadPixel.create(:x => pos[0], :y => pos[1])
+      blockages << DeadPixel.create(@space, :x => pos[0], :y => pos[1])
     end
 
     after(1000) { generate_enemy }
@@ -31,10 +35,6 @@ class Level < GameState
     @background_color = Color.new(255, 100, 255, 100)
 
     @num_kills = 0
-
-    # Set up Chipmunk physics.
-    @space = CP::Space.new
-    @space.damping = 0.05
 
     blockages.each do |object|
       @space.add_body object.shape.body
@@ -64,10 +64,7 @@ class Level < GameState
 
   def generate_enemy
     pos = $window.random_position
-    enemy = Enemy.create(:x => pos[0], :y => pos[1])
-    
-    @space.add_body enemy.shape.body
-    @space.add_shape enemy.shape
+    enemy = Enemy.create(@space, :x => pos[0], :y => pos[1])
 
     after(500 + rand([4000 - @level * 250, 500].max)) { generate_enemy }
   end

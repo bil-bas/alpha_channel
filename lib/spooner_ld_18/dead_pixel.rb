@@ -3,11 +3,11 @@ require 'pixel'
 class DeadPixel < Pixel
   MAX_HEALTH = 5000
   
-  def initialize(options = {})
+  def initialize(space, options = {})
     options = {
             :color => Color.new(255, 0, 180, 0)
     }.merge! options
-    super(MAX_HEALTH, options)
+    super(space, MAX_HEALTH, options)
     
     @damage = 0.5
 
