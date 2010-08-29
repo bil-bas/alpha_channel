@@ -6,4 +6,8 @@ class DeadPixel < Pixel
     @original_health = @max_health = @health = 5000
     @damage = 1
   end
+
+  def safe_distance
+    SIZE * 2
+  end
 end

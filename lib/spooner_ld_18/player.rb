@@ -4,7 +4,7 @@ class Player < Pixel
   trait :timer
   attr_reader :energy, :max_energy
 
-  MIN_CAPTURE_DISTANCE = 50
+  MIN_CAPTURE_DISTANCE = SIZE * 6
 
   MAX_HEALTH, MAX_ENERGY = 1000, 1000
   ENERGY_HEAL = 5
@@ -129,5 +129,9 @@ class Player < Pixel
     else
       @control_fail.play(0.5)
     end
+  end
+
+  def safe_distance
+    SIZE * 4
   end
 end

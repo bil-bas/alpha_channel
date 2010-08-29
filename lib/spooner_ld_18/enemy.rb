@@ -87,4 +87,8 @@ class Enemy < Pixel
       @amount_to_heal -= HEAL_AMOUNT
     end
   end
+
+  def safe_distance
+    SIZE * 3
+  end
 end
