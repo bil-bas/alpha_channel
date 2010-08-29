@@ -23,7 +23,7 @@ class GameOver < GameState
     previous_game_state.draw
     super
 
-    write_text(@game_over_font, @words[0], 40, @color)
+    write_text(@game_over_font, @words[0], 80, @color)
     write_text(@game_over_font, @words[1],  200, @color)
     write_text(@info_font, "(R)estart or (Q)uit", 420, Color.new(255, 235, 235, 235))
   end
