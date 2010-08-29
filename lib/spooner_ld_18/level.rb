@@ -8,7 +8,7 @@ class Level < GameState
 
     super()
 
-    @player = Player.create(:x => $window.width / ($window.factor * 2), :y => $window.height / ($window.factor * 2))
+    @player = Player.create(:x => $window.width / 2, :y => $window.height / 2)
     $window.score = 0 if @level == 1
     
     # Bad pixels.

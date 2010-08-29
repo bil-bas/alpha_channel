@@ -18,7 +18,7 @@ class Enemy < Pixel
     @last_health = @health = INITIAL_HEALTH
     @amount_to_heal = MAX_HEALTH - INITIAL_HEALTH
 
-    @speed = 0.3
+    @speed = 1.2
     @damage = 10
 
     @hurt = Sample["hurt_controlled.wav"]

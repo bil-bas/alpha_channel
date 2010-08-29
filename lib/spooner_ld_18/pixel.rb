@@ -1,13 +1,14 @@
 class Pixel < GameObject
-  trait :bounding_box, :debug => false, :scale => 0.25
-  traits :collision_detection, :retrofy
+  trait :bounding_box, :debug => false
+  traits :collision_detection
 
-  SIZE = 8
+  SIZE = 32
 
   attr_reader :health, :damage, :max_health, :last_health
 
   def initialize(options = {})
-    options = {:image => Image["pixel.png"], :zorder => ZOrder::PIXEL}.merge! options
+    @@image ||=  TexPlay.create_image($window, SIZE, SIZE, :color => :white)
+    options = {:image => @@image, :zorder => ZOrder::PIXEL}.merge! options
     super(options)
     cache_bounding_box
   end
@@ -25,9 +26,9 @@ class Pixel < GameObject
 
   def die
     # Fall apart.
-    half_width = width / (2 * $window.factor)
-    ((x - half_width)...(x + half_width)).step(width / (4 * $window.factor)) do |x|
-      ((y - half_width)...(y + half_width)).step(width / (4 * $window.factor)) do |y|
+    half_width = width / 2
+    ((x - half_width)...(x + half_width)).step(width / 4) do |x|
+      ((y - half_width)...(y + half_width)).step(width / 4) do |y|
         PixelFragment.create(:x => x, :y => y, :color => color)
       end
     end
@@ -48,7 +49,7 @@ class Pixel < GameObject
       
       if rand(100) < 40
         color = rand(100) < 50 ? self.color : enemy.color
-        PixelFragment.create(:x => x - (x - enemy.x) / 2, :y => y - (y - enemy.y) / 2, :color => color.dup, :scale_rate => -0.2)
+        PixelFragment.create(:x => x - (x - enemy.x) / 2, :y => y - (y - enemy.y) / 2, :color => color.dup, :scale_rate => -0.02)
       end
     end
   end
@@ -61,7 +62,7 @@ class Pixel < GameObject
   end
 
   def left(distance = 1)
-    self.x = [x - @speed * distance, 0 + screen_width / 8].max
+    self.x = [x - @speed * distance, width / 2].max
     if enemy = colliding_with_obstacle?
       self.x = enemy.x + SIZE + 0.001
       fight(enemy);
@@ -69,7 +70,7 @@ class Pixel < GameObject
   end
 
   def right(distance = 1)
-    self.x = [x + @speed * distance, $window.width / $window.factor - screen_width / 8].min
+    self.x = [x + @speed * distance, $window.width - width / 2].min
     if enemy = colliding_with_obstacle?
       self.x = enemy.x - SIZE - 0.001
       fight(enemy)
@@ -77,7 +78,7 @@ class Pixel < GameObject
   end
 
   def up(distance = 1)
-    self.y = [y - @speed * distance, 0 + screen_width / 8].max
+    self.y = [y - @speed * distance, height / 2].max
     if enemy = colliding_with_obstacle?
       self.y = enemy.y + SIZE + 0.001
       fight(enemy)
@@ -85,7 +86,7 @@ class Pixel < GameObject
   end
 
   def down(distance = 1)
-    self.y = [y + @speed * distance, $window.height / $window.factor - screen_width / 8].min
+    self.y = [y + @speed * distance, $window.height - height / 2].min
     if enemy = colliding_with_obstacle?
       self.y = enemy.y - SIZE - 0.001
       fight(enemy)

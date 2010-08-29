@@ -1,6 +1,8 @@
 require 'rubygems' rescue nil
 
 require 'chingu'
+require 'texplay'
+TexPlay.set_options :caching => false
 
 require 'yaml' # required for ocra.
 
@@ -52,7 +54,6 @@ class Game < Window
 
   def setup
     retrofy
-    self.factor = 4 # So 160x120
 
     @particles = []
 
@@ -73,10 +74,11 @@ class Game < Window
   end
 
   def random_position(extra_objects = [])
-    min_distance = {Player => 30, DeadPixel => 25, Enemy => 20}
+    size = Pixel::SIZE
+    min_distance = {Player => size * 4, DeadPixel => size * 3, Enemy => size * 2}
     all = Player.all + Enemy.all + DeadPixel.all + extra_objects
     loop do
-      pos = [rand(($window.width / $window.factor) - 16) + 8, rand(($window.height / $window.factor) - 16) + 8]
+      pos = [rand($window.width - size * 2) + size, rand($window.height - size * 2) + size]
       too_close = false
       all.each do |other|
         if distance(pos[0], pos[1], other.x, other.y) < min_distance[other.class]

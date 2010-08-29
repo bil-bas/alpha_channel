@@ -20,7 +20,7 @@ class Player < Pixel
     @last_health = @max_health = @health = MAX_HEALTH
     @max_energy = @energy = MAX_ENERGY
 
-    @speed = 0.5
+    @speed = 2
     @damage = 5
 
     @hurt = Sample["hurt_player.wav"]
@@ -76,9 +76,7 @@ class Player < Pixel
   def draw
     super
     if controlling?
-      $window.scale($window.factor) do
-        $window.draw_line(self.x, self.y, self.color, @controlled.x, @controlled.y, @controlled.color, ZOrder::CONTROL)
-      end
+      $window.draw_line(self.x, self.y, self.color, @controlled.x, @controlled.y, @controlled.color, ZOrder::CONTROL)
     end
   end
 
