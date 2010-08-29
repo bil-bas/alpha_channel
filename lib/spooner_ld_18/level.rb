@@ -13,7 +13,7 @@ class Level < GameState
     
     # Bad pixels.
     blockages = [@player]
-    (4 + rand(4)).times do
+    (3 + rand(10)).times do
       pos = $window.random_position(blockages)
       blockages << DeadPixel.create(:x => pos[0], :y => pos[1])
     end
@@ -34,7 +34,7 @@ class Level < GameState
   def generate_enemy
     pos = $window.random_position
     Enemy.create(:x => pos[0], :y => pos[1])
-    after(1000 + rand([5000 - @level * 500, 1000].max)) { generate_enemy }
+    after(500 + rand([4000 - @level * 250, 500].max)) { generate_enemy }
   end
 
   def add_kill
@@ -46,7 +46,7 @@ class Level < GameState
 
     if @player.health == 0
       after(1000) { push_game_state GameOver if current_game_state == self }
-    elsif @num_kills >= @level + 3
+    elsif @num_kills >= (@level / 3) + 4
       $window.score += @level * 1000
       switch_game_state LevelTransition.new(@level + 1)
     end
