@@ -1,0 +1,1 @@
+@alpha_channel.exe --full-screen

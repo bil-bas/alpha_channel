@@ -22,7 +22,7 @@ require 'pixel_fragment'
 require 'player'
 
 module ZOrder
-  BACKGROUND, LABEL, PIXEL, CONTROL, PARTICLES, OVERLAY = (0..100).to_a
+  BACKGROUND, LABEL, SCAN_LINES, PIXEL, CONTROL, PARTICLES, OVERLAY = (0..100).to_a
 end
 
 INSTALL_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
@@ -47,8 +47,8 @@ class Game < Window
     self.send(:milliseconds)
   end
 
-  def initialize
-    super(640, 480, false)
+  def initialize(full_screen)
+    super(640, 480, full_screen)
 
     on_input(:q) { close if holding_any? :left_control, :right_control }
   end
@@ -100,8 +100,21 @@ class Game < Window
   def remove_particle(particle)
     @particles.delete particle
   end
+
+  def self.run
+    return if defined? Ocra
+
+    full_screen = case ARGV
+                    when []
+                      false
+                    when ["--full-screen"], ["-f"]
+                      true
+                    else
+                      return "Usage:\n  #{File.basename($0)} [--full-screen]"
+                      nil
+                  end
+
+    Game.new(full_screen).show
+  end
 end
 
-exit if defined? Ocra
-
-Game.new.show

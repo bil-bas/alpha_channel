@@ -14,9 +14,9 @@ Author: Bil Bas (http://spooner.github.com) (bil dot bagpuss {at} gmail.com)
 
 == How to run the game
 
-Windows: alpha_channel.exe
-OS X: alpha_channel.app
-Linux: "ruby lib/spooner_ld_18.rbw" (see below under _compatibility_ for requirements).
+Windows: "alpha_channel.exe" (or "alpha_channel_full_screen.bat" to play full-screen).
+OS X: "alpha_channel.app [--full-screen]"
+Linux: "ruby lib/spooner_ld_18.rbw [--full-screen]" (see below under _compatibility_ for requirements).
 
 == Ingame help (View by pressing F1)
 
@@ -47,7 +47,7 @@ Linux: "ruby lib/spooner_ld_18.rbw" (see below under _compatibility_ for require
 
 == Compatibility
 
-Runs in a 640x480 window.
+Runs in a 640x480 window (or full-screen at that resolution).
 
 * Windows: Native executable (.exe) available.
 * OS X: Native executable (.app) available.

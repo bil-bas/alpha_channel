@@ -107,12 +107,14 @@ class Level < GameState
     super
     fill(BACKGROUND_COLOR, ZOrder::BACKGROUND)
 
+    #
     write_text(@score_font, "%08d" % $window.score, 36)
     write_text(@level_font, "%02d" % @level, 92)
     write_text(@score_font, "%08d" % $window.high_score, 344)
 
+    # Draw scan-lines over both.
     (0..$window.height).step(4) do |y|
-      $window.draw_line(0, y, Color::BLACK, $window.width, y, Color::BLACK, ZOrder::LABEL)
+      $window.draw_line(0, y, Color::BLACK, $window.width, y, Color::BLACK, ZOrder::SCAN_LINES)
     end
   end
 
