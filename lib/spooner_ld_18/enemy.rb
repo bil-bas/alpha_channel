@@ -8,6 +8,7 @@ class Enemy < Pixel
   def force; 1.2; end
   def num_kills; 1; end
   def initial_color; Color::RED; end
+  def intensity; 0.4; end
 
   def controlled?; not @controller.nil?; end
 

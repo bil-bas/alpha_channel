@@ -7,6 +7,7 @@ class DeadPixel < Enemy
   def num_kills; 0; end
   def initial_color; Color.new(255, 0, 255, 0); end
   def control_cost; 10; end
+  def intensity; 0.2; end
   
   def initialize(space, options = {})
     super(space, options)

@@ -3,6 +3,7 @@ class PixelFragment < Particle
 
   def initialize(options = {})
     @@image ||= TexPlay.create_image($window, Pixel::SIZE / 4, Pixel::SIZE / 4, :color => :white)
+    make_glow unless defined? @@glow
 
     x = rand 360
     velocity_x, velocity_y = Math.cos(x), Math.sin(x)
@@ -22,6 +23,22 @@ class PixelFragment < Particle
     super options
   end
 
+  def make_glow
+    @@glow = TexPlay.create_image($window, @@image.width * 9, @@image.height * 9, :color => :white)
+
+    center = @@glow.width / 2
+    radius =  @@glow.width / 2
+
+    @@glow.each do |c, x, y|
+      distance = distance(center, center, x, y)
+      c[3] = if distance > radius
+        0
+      else
+        (1 - Math.sin(distance / radius * Math::PI / 2)) / 8
+      end
+    end
+  end
+
   def update
     super
 
@@ -31,5 +48,10 @@ class PixelFragment < Particle
   def destroy
     $window.remove_particle self
     super
+  end
+
+  def draw
+    super
+    @@glow.draw(x - @@glow.width / 2, y - @@glow.height / 2, zorder + 1, 1, 1, color, :additive)
   end
 end

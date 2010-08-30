@@ -8,6 +8,7 @@ class Boss < Enemy
   def force; 5; end
   def num_kills; 1000; end # Always ends the level.
   def initial_color; Color.new(255, 255, 255, 0); end
+  def intensity; 0.7; end
 
   def initialize(space, options = {})
     super space, options

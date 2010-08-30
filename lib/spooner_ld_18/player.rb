@@ -11,6 +11,7 @@ class Player < Pixel
   def damage; 5; end
   def safe_distance; SIZE * 4; end
   def initial_color; Color::BLUE; end
+  def intensity; 1; end
 
   MAX_ENERGY = 1000
   ENERGY_HEAL = 5
@@ -126,7 +127,7 @@ class Player < Pixel
     if nearest_enemy
       @controlled = nearest_enemy
       @controlled.control(self)
-      color.blue = color.red = color.green = 255 # Blueness shoots over to the enemy.
+      color.blue = color.red = color.green = 50 # Blueness shoots over to the enemy.
       @control_on.play(0.5)
     else
       @control_fail.play(0.5)

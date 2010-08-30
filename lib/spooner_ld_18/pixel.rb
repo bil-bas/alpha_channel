@@ -10,9 +10,12 @@ class Pixel < GameObject
   attr_reader :shape
 
   def initialize(space, options = {})
-    @space,  = space
+    @space = space
 
     @@image ||=  TexPlay.create_image($window, SIZE, SIZE, :color => :white)
+
+    make_glow unless defined? @@glow
+
     options = {:image => @@image, :zorder => ZOrder::PIXEL}.merge! options
     super(options)
 
@@ -29,6 +32,22 @@ class Pixel < GameObject
 
     @space.add_body @shape.body
     @space.add_shape @shape
+  end
+
+  def make_glow
+    @@glow = TexPlay.create_image($window, @@image.width * 7, @@image.height * 7, :color => :white)
+
+    center = @@glow.width / 2
+    radius =  @@glow.width / 2
+
+    @@glow.each do |c, x, y|
+      distance = distance(center, center, x, y)
+      c[3] = if distance > radius
+        0
+      else
+        1 - Math.sin(distance / radius * Math::PI / 2)
+      end
+    end
   end
 
   def health=(value)
@@ -51,6 +70,13 @@ class Pixel < GameObject
     @last_health = @health
     
     self.x, self.y = @shape.body.p.x, @shape.body.p.y
+  end
+
+  def draw
+    super
+    color = self.color.dup
+    color.alpha = (color.alpha * intensity).to_i
+    @@glow.draw(x - @@glow.width / 2, y - @@glow.height / 2, zorder + 1, 1, 1, color, :additive)    
   end
 
   def die
