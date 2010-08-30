@@ -60,14 +60,25 @@ class Enemy < Pixel
       color.green = [initial_color.green - color.blue, 0].max
     else
       # Don't move if wounded.
-      if health >= last_health and player = Player.all.first
-        angle = Gosu::angle(x, y, player.x, player.y)
-        distance = distance_to(player)
-        x_offset = offset_x(angle, distance)
-        y_offset = offset_y(angle, distance)
+      if health >= last_health
+        # Run AWAY from the boss or TOWARDS the player.
+        if boss = Boss.all.first and self != boss and (not boss.controlled?) and distance_to(boss) < 100
+          target = boss
+          direction = -1
+        elsif player = Player.all.first
+          target = player
+          direction = +1
+        end
 
-        # Home in on the player's location.
-        move(x_offset / distance, y_offset / distance)
+        if target
+          angle = Gosu::angle(x, y, target.x, target.y)
+          distance = distance_to(target)
+          x_offset = direction * offset_x(angle, distance)
+          y_offset = direction * offset_y(angle, distance)
+
+          # Home in on the player's location.
+          move(x_offset / distance, y_offset / distance)
+        end
       end
     end
   end
