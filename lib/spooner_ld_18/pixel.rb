@@ -88,7 +88,7 @@ class Pixel < GameObject
 
   def move(x, y)
     @shape.body.reset_forces
-    @shape.body.apply_force(CP::Vec2.new(x * speed * 20000, y * speed * 20000), CP::Vec2.new(0, 0))
+    @shape.body.apply_force(CP::Vec2.new(x * force * 20000, y * force * 20000), CP::Vec2.new(0, 0))
   end
 
   def spark(color, x, y)

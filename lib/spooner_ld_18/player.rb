@@ -7,7 +7,7 @@ class Player < Pixel
   MIN_CAPTURE_DISTANCE = SIZE * 6
 
   def max_health; 1000; end
-  def speed; 1.6; end
+  def force; 1.6; end
   def damage; 5; end
   def safe_distance; SIZE * 4; end
   def initial_color; Color::BLUE; end
