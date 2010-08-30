@@ -14,4 +14,8 @@ class DeadPixel < Enemy
 
     shape.body.mass *= 100 # Dead pixels are a lot harder to push around.
   end
+
+  def on_spawn
+    # Do nothing
+  end
 end

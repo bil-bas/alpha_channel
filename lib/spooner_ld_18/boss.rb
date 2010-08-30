@@ -15,4 +15,8 @@ class Boss < Enemy
 
     shape.body.mass *= 4
   end
+
+  def on_spawn
+    Sample["boss_spawn.wav"].play(0.4)
+  end
 end

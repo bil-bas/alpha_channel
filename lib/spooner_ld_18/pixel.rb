@@ -32,6 +32,12 @@ class Pixel < GameObject
 
     @space.add_body @shape.body
     @space.add_shape @shape
+
+    on_spawn
+  end
+
+  def on_spawn
+    # By default, do nothing.
   end
 
   def make_glow

@@ -19,6 +19,10 @@ class Enemy < Pixel
     uncontrol
   end
 
+  def on_spawn
+    Sample["enemy_spawn.wav"].play(0.2)
+  end
+
   def control(controller)
     @controller = controller
     color.red = color.blue = color.green = 0
