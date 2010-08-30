@@ -81,15 +81,37 @@ class Pixel < GameObject
       if rand(100) < 10
         @hurt.play(0.1)
         color = rand(100) < 50 ? self.color : enemy.color
-        unless $window.particles.size > 100
-          PixelFragment.create(:x => x - (x - enemy.x) / 2, :y => y - (y - enemy.y) / 2, :color => color.dup, :scale_rate => -0.02)
-        end
-      end
+        spark(color, x - (x - enemy.x) / 2, y - (y - enemy.y) / 2)
+       end
     end
   end
 
   def move(x, y)
     @shape.body.reset_forces
     @shape.body.apply_force(CP::Vec2.new(x * speed * 20000, y * speed * 20000), CP::Vec2.new(0, 0))
+  end
+
+  def spark(color, x, y)
+    unless $window.particles.size > 100
+      PixelFragment.create(:x => x, :y => y, :color => color.dup, :scale_rate => -0.02)
+    end
+  end
+
+  def hit_wall(wall)
+    # Ensure you don't get wounded multiple times.
+    self.health = [last_health - wall.damage, health].min
+
+    if rand(100) < 10
+      @hurt.play(0.1)
+
+      x_pos, y_pos = case wall.side
+        when :left then [x - SIZE / 2, y]
+        when :right then [x + SIZE / 2, y]
+        when :top then [x, y - SIZE / 2]
+        when :bottom then [x, y + SIZE / 2]
+      end
+
+      spark(color, x_pos, y_pos)
+    end
   end
 end

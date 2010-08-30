@@ -52,12 +52,19 @@ class Level < GameState
     end
 
     [
-      [0, 0, 0, $window.height], # Left
-      [0, $window.height, $window.width, $window.height], # Bottom
-      [$window.width, $window.height, $window.width, 0], # Right
-      [$window.width, 0, 0, 0] # Top
-    ].each do |x1, y1, x2, y2|
-      wall = Wall.new(@space, x1, y1, x2, y2)
+      [0, 0, 0, $window.height, :left],
+      [0, $window.height, $window.width, $window.height, :bottom],
+      [$window.width, $window.height, $window.width, 0, :right],
+      [$window.width, 0, 0, 0, :top]
+    ].each do |x1, y1, x2, y2, side|
+      wall = Wall.create(@space, x1, y1, x2, y2, side)
+    end
+
+    @space.add_collision_func(:pixel, :wall) do |pixel_shape, side_shape|
+      pixel = Pixel.all.find { |p| p.shape == pixel_shape }
+      wall = Wall.all.find {|w| w.shape == side_shape }
+      pixel.hit_wall(wall) if pixel and wall
+      true # We always want a collision.
     end
 
     @dt = 1.0 / 60.0
