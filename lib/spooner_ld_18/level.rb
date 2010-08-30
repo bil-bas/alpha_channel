@@ -1,5 +1,6 @@
 require 'wall'
 require 'boss'
+require 'pause_game'
 
 class Level < GameState
   trait :timer
@@ -28,7 +29,7 @@ class Level < GameState
 
     after(1000) { generate_enemy }
 
-    on_input(:p, GameStates::Pause)
+    on_input(:p, PauseGame)
     on_input(:f1) { push_game_state Help }
     on_input(:f12) { push_game_state GameOver }
 

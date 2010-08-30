@@ -34,6 +34,7 @@ BIN_DIR = File.join(INSTALL_DIR, 'bin')
 ENV['PATH'] = "#{BIN_DIR};#{ENV['PATH']}"
 
 FONT = File.join(INSTALL_DIR, 'media', 'pixelated.ttf')
+Text.font = FONT
 
 class Game < Window
   NAME = "Alpha Channel"
