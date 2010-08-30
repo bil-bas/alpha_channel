@@ -1,21 +1,16 @@
-require 'pixel'
+require 'enemy'
 
-class DeadPixel < Pixel
-  MAX_HEALTH = 5000
+class DeadPixel < Enemy
+  def max_health; 5000; end
+  def damage; 0.5; end
+  def speed; controlled? ? 100 : 0; end
+  def num_kills; 0; end
+  def initial_color; Color.new(255, 0, 255, 0); end
   
   def initialize(space, options = {})
-    options = {
-            :color => Color.new(255, 0, 180, 0)
-    }.merge! options
-    super(space, MAX_HEALTH, options)
-    
-    @damage = 0.5
+    super(space, options)
 
-    shape.body.mass = Float::INFINITY # Dead pixels are a lot harder to push around.
-  end
-
-  def safe_distance
-    SIZE * 2
+    shape.body.mass *= 100 # Dead pixels are a lot harder to push around.
   end
 
   def fight(other)

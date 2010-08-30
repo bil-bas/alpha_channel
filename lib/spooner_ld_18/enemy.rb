@@ -1,18 +1,18 @@
 require 'pixel'
 
 class Enemy < Pixel
-  MAX_HEALTH = 400
-  KILL_SCORE = 600
-  TOTAL_SCORE = MAX_HEALTH + KILL_SCORE
+  def control_cost; 5; end
+  def max_health; 400; end
+  def kill_score; 600; end
+  def damage; 10; end
+  def speed; 1.2; end
+  def num_kills; 1; end
+  def initial_color; Color::RED; end
 
   def controlled?; not @controller.nil?; end
 
   def initialize(space, options = {})
-    options = { :color => Color::RED.dup }.merge! options
-    super(space, MAX_HEALTH, options)
-
-    @speed = 1.2
-    @damage = 10
+    super(space, options)
 
     @hurt = Sample["hurt_controlled.wav"]
     uncontrol
@@ -20,20 +20,21 @@ class Enemy < Pixel
 
   def control(controller)
     @controller = controller
-    color.red = 0
+    color.red = color.blue = color.green = 0
   end
 
   def uncontrol
     @controller = nil
-    color.red = 255
-    color.blue = 0
+    color.red = initial_color.red
+    color.green = initial_color.green
+    color.blue = initial_color.blue
   end
 
   def die
     if player = Player.all.first
       player.lose_control if controlled?
-      $window.score += KILL_SCORE
-      $window.current_game_state.add_kill
+      $window.score += kill_score
+      $window.current_game_state.add_kills num_kills
     end
 
     super
@@ -54,7 +55,8 @@ class Enemy < Pixel
 
     if controlled?
       color.blue = (((@controller.energy * 155.0) / @controller.max_energy) + 100).to_i
-      color.red = 255 - color.blue
+      color.red = [initial_color.red - color.blue, 0].max
+      color.green = [initial_color.green - color.blue, 0].max
     else
       # Don't move if wounded.
       if health >= last_health and player = Player.all.first
@@ -67,9 +69,5 @@ class Enemy < Pixel
         move(x_offset / distance, y_offset / distance)
       end
     end
-  end
-
-  def safe_distance
-    SIZE * 3
   end
 end

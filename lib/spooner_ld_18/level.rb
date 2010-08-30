@@ -1,9 +1,11 @@
 require 'wall'
+require 'boss'
 
 class Level < GameState
   trait :timer
 
-  LABEL_COLOR = 0xff00ff00
+  LABEL_COLOR = Color.new(255, 0, 50, 0)
+  BACKGROUND_COLOR = Color.new(255, 0, 30, 0)
 
   def initialize(level)
     @level = level
@@ -32,7 +34,6 @@ class Level < GameState
 
     @score_font = Font.create_for_os(FONT, 120)
     @level_font = Font.create_for_os(FONT, 240)
-    @background_color = Color.new(255, 100, 255, 100)
 
     @num_kills = 0
 
@@ -63,14 +64,21 @@ class Level < GameState
   end
 
   def generate_enemy
-    pos = $window.random_position
-    enemy = Enemy.create(@space, :x => pos[0], :y => pos[1])
+    x, y = $window.random_position
+    
+    enemy_type = if rand(100) < 10 and Boss.all.empty?
+      Boss # Only one boss at a time.
+    else
+      Enemy
+    end
+
+    enemy_type.create(@space, :x => x, :y => y)
 
     after(500 + rand([4000 - @level * 250, 500].max)) { generate_enemy }
   end
 
-  def add_kill
-    @num_kills += 1
+  def add_kills(value)
+    @num_kills += value
   end
 
   def update
@@ -78,7 +86,8 @@ class Level < GameState
 
     if @player.health == 0
       after(1000) { push_game_state GameOver if current_game_state == self }
-    elsif @num_kills >= (@level / 3) + 4
+    elsif Boss.all.empty? and @num_kills >= (@level / 3) + 4
+      # Only win if the boss has been killed or enough reds are killed.
       $window.score += @level * 1000
       switch_game_state LevelTransition.new(@level + 1)
     end
@@ -89,7 +98,7 @@ class Level < GameState
 
   def draw
     super
-    fill(@background_color, ZOrder::BACKGROUND)
+    fill(BACKGROUND_COLOR, ZOrder::BACKGROUND)
 
     write_text(@score_font, "%08d" % $window.score, 40)
     write_text(@level_font, "%04d" % @level, 140)

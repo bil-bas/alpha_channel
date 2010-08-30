@@ -6,13 +6,17 @@ class Player < Pixel
 
   MIN_CAPTURE_DISTANCE = SIZE * 6
 
-  MAX_HEALTH, MAX_ENERGY = 1000, 1000
+  def max_health; 1000; end
+  def speed; 0.8; end
+  def damage; 5; end
+  def safe_distance; SIZE * 4; end
+  def initial_color; Color::BLUE; end
+
+  MAX_ENERGY = 1000
   ENERGY_HEAL = 5
-  ENERGY_CONTROL = 5
 
   def initialize(space, options = {})
-    options = {:color => Color::BLUE.dup}.merge! options
-    super(space, MAX_HEALTH, options)
+    super(space, options)
 
     add_inputs(
       [:space, :return] => lambda { controlling? ? lose_control : gain_control }
@@ -20,8 +24,6 @@ class Player < Pixel
 
     @max_energy = @energy = MAX_ENERGY
 
-    @speed = 0.8
-    @damage = 5
 
     @hurt = Sample["hurt_player.wav"]
     @control_on = Sample["control_on.wav"]
@@ -61,10 +63,11 @@ class Player < Pixel
   def update
     super
 
+    @shape.body.reset_forces # Ensure the player, even if they are controlling something else, has forces removed.
     move_controlled
 
     if controlling?
-      self.energy -= ENERGY_CONTROL
+      self.energy -= @controlled.control_cost
     else
       self.energy += ENERGY_HEAL
     end
@@ -126,9 +129,5 @@ class Player < Pixel
     else
       @control_fail.play(0.5)
     end
-  end
-
-  def safe_distance
-    SIZE * 4
   end
 end

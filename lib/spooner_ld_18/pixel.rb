@@ -3,19 +3,21 @@ class Pixel < GameObject
   PHASE_IN_DURATION = 3 * 1000 # Number of ms to phase in over.
   SIZE = 32
 
-  attr_reader :health, :damage, :max_health, :last_health
+  def safe_distance; SIZE * 2; end
+
+  attr_reader :health, :last_health
   
   attr_reader :shape
 
-  def initialize(space, max_health, options = {})
-    @space, @max_health = space, max_health
-    
+  def initialize(space, options = {})
+    @space,  = space
+
     @@image ||=  TexPlay.create_image($window, SIZE, SIZE, :color => :white)
     options = {:image => @@image, :zorder => ZOrder::PIXEL}.merge! options
     super(options)
 
     @last_health = @health = INITIAL_HEALTH
-    @amount_to_heal = @max_health - INITIAL_HEALTH
+    @amount_to_heal = max_health - INITIAL_HEALTH
     @amount_left_to_heal = @amount_to_heal
     self.health = health # get correct colour shown.
 
@@ -88,6 +90,6 @@ class Pixel < GameObject
 
   def move(x, y)
     @shape.body.reset_forces
-    @shape.body.apply_force(CP::Vec2.new(x * @speed * 20000, y * @speed * 20000), CP::Vec2.new(0, 0))
+    @shape.body.apply_force(CP::Vec2.new(x * speed * 20000, y * speed * 20000), CP::Vec2.new(0, 0))
   end
 end
