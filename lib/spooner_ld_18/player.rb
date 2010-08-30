@@ -7,7 +7,7 @@ class Player < Pixel
   MIN_CAPTURE_DISTANCE = SIZE * 6
 
   def max_health; 1000; end
-  def speed; 0.8; end
+  def speed; 1.6; end
   def damage; 5; end
   def safe_distance; SIZE * 4; end
   def initial_color; Color::BLUE; end
@@ -30,6 +30,8 @@ class Player < Pixel
     @control_off = Sample["control_off.wav"]
     @control_fail = Sample["control_fail.wav"]
     @death = Sample["death.wav"]
+
+    shape.body.mass *= 2
 
     lose_control
   end
