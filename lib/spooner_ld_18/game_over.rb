@@ -25,7 +25,7 @@ class GameOver < GameState
 
     write_text(@game_over_font, @words[0], 80, @color)
     write_text(@game_over_font, @words[1],  200, @color)
-    write_text(@info_font, "(R)estart or (Q)uit", 420, Color.new(255, 235, 235, 235))
+    write_text(@info_font, "(R)estart or (Q)uit", 420, Color.new(255, 200, 200, 200))
   end
 
   def write_text(font, text, y, color)
@@ -37,6 +37,6 @@ class GameOver < GameState
     super
     $window.particles.each { |x| x.update_trait; x.update }
     @color =  Color::WHITE.dup
-    @color.alpha = ((Math.cos(($window.ms - @game_ended) / 300.0) * 50) + 155).round
+    @color.alpha = ((Math.cos(($window.ms - @game_ended) / 300.0) * 80) + 100).round
   end
 end

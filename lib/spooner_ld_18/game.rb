@@ -54,8 +54,6 @@ class Game < Window
   end
 
   def setup
-    retrofy
-
     @particles = []
 
     @score = 0

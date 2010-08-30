@@ -33,7 +33,7 @@ class Level < GameState
     on_input(:f12) { push_game_state GameOver }
 
     @score_font = Font.create_for_os(FONT, 120)
-    @level_font = Font.create_for_os(FONT, 240)
+    @level_font = Font.create_for_os(FONT, 360)
 
     @num_kills = 0
 
@@ -101,7 +101,7 @@ class Level < GameState
     fill(BACKGROUND_COLOR, ZOrder::BACKGROUND)
 
     write_text(@score_font, "%08d" % $window.score, 40)
-    write_text(@level_font, "%04d" % @level, 140)
+    write_text(@level_font, "%02d" % @level, 90)
     write_text(@score_font, "%08d" % $window.high_score, 340)
   end
 
