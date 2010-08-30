@@ -35,7 +35,7 @@ class Pixel < GameObject
   end
 
   def make_glow
-    @@glow = TexPlay.create_image($window, @@image.width * 7, @@image.height * 7, :color => :white)
+    @@glow = TexPlay.create_image($window, @@image.width * 5, @@image.height * 5, :color => :white)
 
     center = @@glow.width / 2
     radius =  @@glow.width / 2
@@ -48,6 +48,9 @@ class Pixel < GameObject
         1 - Math.sin(distance / radius * Math::PI / 2)
       end
     end
+    edge = (@@glow.width - @@image.width) / 2
+    @@glow.rect edge, edge, edge + @@image.width - 1, edge + @@image.height - 1,
+                :fill => true, :color => :alpha
   end
 
   def health=(value)
