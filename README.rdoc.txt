@@ -25,25 +25,30 @@ Linux: "ruby lib/spooner_ld_18.rbw [--full-screen]" (see below under _compatibil
 
     = How to play =
 
-      * Red is evil; Red wants to hurt you!
+      * Red is evil; Red wants to hurt Blue!
+        Yellow is so nasty, it makes Red look nice by comparison!
+        Thankfully, Green is too busy thinking to even notice Blue.
 
-      * Take control of Red, when it comes near, and use it to protect yourself from the other Reds!
+      * Take control of other pixels, and use them to protect yourself!
 
-      * Controlling Red is strenuous and will use up your limited energy reserves (Blueness).
+      * Controlling is very strenuous and will use up your limited
+        energy reserves (Blueness).
 
-      * All colours hurt colours that aren't the same. Green isn't too painful, though :)
+      * Pixels hurt pixels that aren't the same colour.
+        It has always been like that, but no-one knows exactly why...
+        Yellow is so dangerous, that even Red avoids it, but Green is more
+        interested in musing on the nature of the Great Electron Gun.
 
 
     = Controls =
 
-      * Arrow keys or WASD: Move self (or a controlled Red).
+      * ARROW KEYS OR WASD: Move self (or a controlled Pixel).
 
-      * Space or Return: Take/relinquish control of Red.
+      * SPACE OR RETURN: Take/relinquish control of a another Pixel.
 
       * P: Pause
 
-      * Control+Q: Exit game.
-
+      * CONTROL+Q: Exit game.
 
 == Compatibility
 
