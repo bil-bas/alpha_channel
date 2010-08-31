@@ -5,8 +5,9 @@ require 'pause_game'
 class Level < GameState
   trait :timer
 
-  LABEL_COLOR = Color.new(255, 0, 50, 0)
-  BACKGROUND_COLOR = Color.new(255, 0, 30, 0)
+  LABEL_COLOR = Color.new(255, 0, 65, 0)
+  SCAN_LINES_COLOR = Color.new(255, 0, 0, 0)
+  BACKGROUND_COLOR = Color.new(255, 0, 40, 0)
 
   def initialize(level)
     @level = level
@@ -115,7 +116,7 @@ class Level < GameState
 
     # Draw scan-lines over both.
     (0..$window.height).step(4) do |y|
-      $window.draw_line(0, y, Color::BLACK, $window.width, y, Color::BLACK, ZOrder::SCAN_LINES)
+      $window.draw_line(0, y, SCAN_LINES_COLOR, $window.width, y, SCAN_LINES_COLOR, ZOrder::SCAN_LINES)
     end
   end
 

@@ -1,4 +1,7 @@
 class GameOver < GameState
+  MAIN_COLOR = Color.new(255, 175, 225, 175)
+  OPTIONS_COLOR = Color.new(255, 125, 150, 125)
+
   def initialize
     super
 
@@ -8,6 +11,8 @@ class GameOver < GameState
     @game_ended = $window.ms
 
     @words = $window.game_over ? ["HIGH", "SCORE"] : ["GAME", "OVER"]
+
+    @color = MAIN_COLOR
 
     on_input(:f1) { push_game_state Help }
     on_input :r do
@@ -25,7 +30,7 @@ class GameOver < GameState
 
     write_text(@game_over_font, @words[0], 80, @color)
     write_text(@game_over_font, @words[1],  200, @color)
-    write_text(@info_font, "(R)estart or (Q)uit", 420, Color.new(255, 200, 200, 200))
+    write_text(@info_font, "(R)estart or (Q)uit", 430, OPTIONS_COLOR)
   end
 
   def write_text(font, text, y, color)
@@ -36,7 +41,6 @@ class GameOver < GameState
   def update
     super
     $window.particles.each { |x| x.update_trait; x.update }
-    @color =  Color::WHITE.dup
     @color.alpha = ((Math.cos(($window.ms - @game_ended) / 300.0) * 80) + 100).round
   end
 end
