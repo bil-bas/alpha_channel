@@ -95,6 +95,7 @@ class Player < Pixel
 
   def die
     @death.play(0.5)
+    lose_control
     super
   end
 
