@@ -14,7 +14,9 @@ class GameOver < GameState
 
     @color = MAIN_COLOR
 
-    on_input(:f1) { push_game_state Help }
+    $window.lives = 0
+
+    on_input([:f1, :h], Help)
     on_input :r do
       pop_game_state
       switch_game_state LevelTransition.new(1)

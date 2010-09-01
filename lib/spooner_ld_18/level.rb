@@ -5,17 +5,19 @@ require 'pause_game'
 class Level < GameState
   trait :timer
 
+  attr_reader :level
+
   LABEL_COLOR = Color.new(255, 0, 65, 0)
   SCAN_LINES_COLOR = Color.new(255, 0, 0, 0)
   BACKGROUND_COLOR = Color.new(255, 0, 40, 0)
 
   def initialize(level, options = {})
-    options = { :died => false }.merge! options    
+    options = { :died => false }.merge! options
+    
     @level = level
     @died = options[:died]
-    super()
 
-    $window.score = 0
+    super()
 
     # Set up Chipmunk physics.
     @space = CP::Space.new
@@ -75,6 +77,7 @@ class Level < GameState
     if @died
       $window.lives -= 1
     elsif @level == 1
+      $window.score = 0
       $window.lives = Game::INITIAL_LIVES
     end
   end
@@ -83,7 +86,7 @@ class Level < GameState
     x, y = $window.random_position
 
     # Boss spawns on 5/10/15/20, only after you've killed someone.
-    enemy_type = if (@level % 5) == 0 and @num_kills > 0 and Boss.all.empty?
+    enemy_type = if (@level % 4) == 0 and @num_kills > 0 and Boss.all.empty?
       Boss # Only one boss at a time.
     else
       Enemy
@@ -103,11 +106,11 @@ class Level < GameState
 
     if @player.health == 0
       if $window.lives == 1
-        after(1000) { $window.lives -= 1; push_game_state GameOver if current_game_state == self }
+        after(1000) { push_game_state GameOver if current_game_state == self }
       else
         switch_game_state(LevelTransition.new(@level, :died => true))
       end
-    elsif Boss.all.empty? and @num_kills >= (@level / 3) + 4
+    elsif Boss.all.empty? and @num_kills >= (@level / 4) + 5
       # Only win if the boss has been killed or enough reds are killed.
       $window.score += @level * 1000
       switch_game_state LevelTransition.new(@level + 1)

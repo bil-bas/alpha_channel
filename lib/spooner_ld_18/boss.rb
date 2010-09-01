@@ -1,11 +1,11 @@
 require 'enemy'
 
 class Boss < Enemy
-  def control_cost; 15; end
+  def control_cost; $window.current_game_state.level / 2 + 5; end
   def max_health; 1000; end
-  def kill_score; 10000; end
-  def damage; 25; end
-  def force; 5; end
+  def kill_score; $window.current_game_state.level * 1000; end
+  def damage; $window.current_game_state.level + 10; end
+  def force; 4.5; end
   def num_kills; 1000; end # Always ends the level.
   def initial_color; Color.new(255, 255, 255, 0); end
   def intensity; 0.7; end
