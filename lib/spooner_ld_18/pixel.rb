@@ -41,19 +41,23 @@ class Pixel < GameObject
   end
 
   def make_glow
-    @@glow = TexPlay.create_image($window, @@image.width * 5, @@image.height * 5, :color => :white)
+    @@glow = TexPlay.create_image($window, @@image.width * 5, @@image.height * 5)
 
+    #
     center = @@glow.width / 2
     radius =  @@glow.width / 2
+    pixel_width = @@image.width / 2 # Radius of the pixel.
+    pixel_radius = radius - pixel_width # Radius of the glow outside the pixel itself.
 
-    @@glow.each do |c, x, y|
-      distance = distance(center, center, x, y)
-      c[3] = if distance > radius
-        0
-      else
-        1 - Math.sin(distance / radius * Math::PI / 2)
-      end
-    end
+    @@glow.circle center, center, radius, :color => :white, :filled => true,
+      :color_control => lambda {|source, dest, x, y|
+        # Glow starts at the edge of the pixel (well, its radius, since glow is circular, not rectangular)
+        distance = distance(center, center, x, y) - pixel_width
+        dest[3] = (1 - (distance / pixel_radius)) ** 2
+        dest
+    }
+
+    # Cut out the sprite itself, so we don't super-illuminate.
     edge = (@@glow.width - @@image.width) / 2
     @@glow.rect edge, edge, edge + @@image.width - 1, edge + @@image.height - 1,
                 :fill => true, :color => :alpha
@@ -93,7 +97,7 @@ class Pixel < GameObject
     half_width = width / 2
     ((x - half_width)...(x + half_width)).step(width / 4) do |x|
       ((y - half_width)...(y + half_width)).step(width / 4) do |y|
-        PixelFragment.create(:x => x, :y => y, :color => color)
+        PixelFragment.create(intensity, :x => x, :y => y, :color => color)
       end
     end
 
@@ -128,7 +132,7 @@ class Pixel < GameObject
 
   def spark(color, x, y)
     unless $window.particles.size > 100
-      PixelFragment.create(:x => x, :y => y, :color => color.dup, :scale_rate => -0.02)
+      PixelFragment.create(intensity, :x => x, :y => y, :color => color.dup, :scale_rate => -0.02)
     end
   end
 

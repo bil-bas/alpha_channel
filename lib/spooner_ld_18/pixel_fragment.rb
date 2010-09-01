@@ -1,7 +1,9 @@
 class PixelFragment < Particle
   traits :velocity
 
-  def initialize(options = {})
+  def initialize(intensity, options = {})
+    @intensity = intensity
+    
     @@image ||= TexPlay.create_image($window, Pixel::SIZE / 4, Pixel::SIZE / 4, :color => :white)
     make_glow unless defined? @@glow
 
@@ -24,19 +26,17 @@ class PixelFragment < Particle
   end
 
   def make_glow
-    @@glow = TexPlay.create_image($window, @@image.width * 9, @@image.height * 9, :color => :white)
+    @@glow = TexPlay.create_image($window, @@image.width * 10, @@image.height * 10)
 
     center = @@glow.width / 2
     radius =  @@glow.width / 2
 
-    @@glow.each do |c, x, y|
-      distance = distance(center, center, x, y)
-      c[3] = if distance > radius
-        0
-      else
-        (1 - Math.sin(distance / radius * Math::PI / 2)) / 8
-      end
-    end
+    @@glow.circle center, center, radius, :color => :white, :filled => true,
+      :color_control => lambda {|source, dest, x, y|
+        distance = distance(center, center, x, y)
+        dest[3] = ((1 - (distance / radius)) ** 2) / 8.0
+        dest
+      }
   end
 
   def update
@@ -52,6 +52,8 @@ class PixelFragment < Particle
 
   def draw
     super
-    @@glow.draw(x - @@glow.width / 2, y - @@glow.height / 2, zorder + 1, 1, 1, color, :additive)
+    color = self.color.dup
+    color.alpha = (color.alpha * @intensity).to_i
+    @@glow.draw(x - @@glow.width / 2, y - @@glow.height / 2, zorder + 0.01, 1, 1, color, :additive)
   end
 end
