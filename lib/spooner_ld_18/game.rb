@@ -22,7 +22,7 @@ require 'pixel_fragment'
 require 'player'
 
 module ZOrder
-  BACKGROUND, LABEL, SCAN_LINES, CONTROL, PIXEL, PARTICLES, OVERLAY = (0..100).to_a
+  BACKGROUND, LABEL, LIVES, SCAN_LINES, CONTROL, PIXEL, PARTICLES, OVERLAY = (0..100).to_a
 end
 
 INSTALL_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
@@ -38,8 +38,10 @@ Text.font = FONT
 
 class Game < Window
   NAME = "Alpha Channel"
+  INITIAL_LIVES = 3
+  
   attr_reader :particles, :high_score
-  attr_accessor :score
+  attr_accessor :score, :lives
 
   HIGH_SCORE_FILE = File.join(INSTALL_DIR, 'high_score.dat')
 
@@ -56,7 +58,7 @@ class Game < Window
 
   def setup
     @particles = []
-
+    @lives = 0
     @score = 0
     @high_score = File.open(HIGH_SCORE_FILE, "r") { |file| file.readline.to_i } rescue 0
     

@@ -5,13 +5,16 @@ class Player < Pixel
   attr_reader :energy, :max_energy
 
   MIN_CAPTURE_DISTANCE = SIZE * 6
+  INITIAL_COLOR = Color.new(255, 50, 50, 255)
 
   def max_health; 1000; end
   def force; 1.6; end
   def damage; 5; end
   def safe_distance; SIZE * 4; end
-  def initial_color; Color.new(255, 50, 50, 255); end
+  def initial_color; INITIAL_COLOR; end
   def intensity; 1; end
+
+  def self.image; @@image; end
 
   MAX_ENERGY = 1000
   ENERGY_HEAL = 5

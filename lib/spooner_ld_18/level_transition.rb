@@ -1,10 +1,11 @@
 class LevelTransition < GameStates::FadeTo
-  def initialize(level)
-    super(Level.new(level), :speed => 3)
+  def initialize(level, options = {})
+    options = { :died => false }.merge! options
+    
+    super(Level.new(level, options), :speed => 3)
 
     @@sound ||= Sample["level.wav"]
-
-    @@sound.play(0.5)
+    @@sound.play(0.5) unless options[:died]
   end
 
   # Ensure that particles keep moving.

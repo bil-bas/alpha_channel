@@ -19,4 +19,9 @@ class Boss < Enemy
   def on_spawn
     Sample["boss_spawn.wav"].play(0.4)
   end
+
+  def die
+    $window.lives += 1
+    super
+  end
 end

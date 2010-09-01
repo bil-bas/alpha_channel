@@ -9,18 +9,20 @@ class Level < GameState
   SCAN_LINES_COLOR = Color.new(255, 0, 0, 0)
   BACKGROUND_COLOR = Color.new(255, 0, 40, 0)
 
-  def initialize(level)
+  def initialize(level, options = {})
+    options = { :died => false }.merge! options    
     @level = level
-
+    @died = options[:died]
     super()
+
+    $window.score = 0
 
     # Set up Chipmunk physics.
     @space = CP::Space.new
     @space.damping = 0.05
 
     @player = Player.create(@space, :x => $window.width / 2, :y => $window.height / 2)
-    $window.score = 0 if @level == 1
-    
+
     # Bad pixels.
     blockages = [@player]
     (3 + rand(10)).times do
@@ -31,8 +33,7 @@ class Level < GameState
     after(1000) { generate_enemy }
 
     on_input(:p, PauseGame)
-    on_input(:f1) { push_game_state Help }
-    on_input(:f12) { push_game_state GameOver }
+    on_input([:f1, :h], Help)
 
     @score_font = Font.create_for_os(FONT, 120)
     @level_font = Font.create_for_os(FONT, 360)
@@ -68,8 +69,14 @@ class Level < GameState
       pixel.hit_wall(wall) if pixel and wall
       true # We always want a collision.
     end
-
-    @dt = 1.0 / 60.0
+  end
+  
+  def setup
+    if @died
+      $window.lives -= 1
+    elsif @level == 1
+      $window.lives = Game::INITIAL_LIVES
+    end
   end
 
   def generate_enemy
@@ -95,7 +102,11 @@ class Level < GameState
     super
 
     if @player.health == 0
-      after(1000) { push_game_state GameOver if current_game_state == self }
+      if $window.lives == 1
+        after(1000) { $window.lives -= 1; push_game_state GameOver if current_game_state == self }
+      else
+        switch_game_state(LevelTransition.new(@level, :died => true))
+      end
     elsif Boss.all.empty? and @num_kills >= (@level / 3) + 4
       # Only win if the boss has been killed or enough reds are killed.
       $window.score += @level * 1000
@@ -109,6 +120,17 @@ class Level < GameState
   def draw
     super
     fill(BACKGROUND_COLOR, ZOrder::BACKGROUND)
+
+    # Draw the current number of lives.
+    life_color = Player::INITIAL_COLOR.dup
+    life_color.alpha = (life_color.alpha * 0.35).to_i
+
+    # Remaining lives are shown as a block.
+    spare_lives = $window.lives - 1
+    left = ($window.width - spare_lives * Player::SIZE * 2) / 2.0 
+    spare_lives.times do |i|
+      Player.image.draw left + (i * 2 * Player::SIZE), - Player::SIZE / 4, ZOrder::LIVES, 1.5, 1, LABEL_COLOR
+    end
 
     #
     write_text(@score_font, "%08d" % $window.score, 36)
