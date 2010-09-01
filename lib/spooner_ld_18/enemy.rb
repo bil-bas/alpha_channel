@@ -60,8 +60,8 @@ class Enemy < Pixel
 
     if controlled?
       color.blue = (((@controller.energy * 155.0) / @controller.max_energy) + 100).to_i
-      color.red = [initial_color.red - color.blue, 0].max
-      color.green = [initial_color.green - color.blue, 0].max
+      color.red = [initial_color.red - color.blue, 50].max
+      color.green = [initial_color.green - color.blue, 50].max
     else
       # Don't move if wounded.
       if health >= last_health

@@ -10,7 +10,7 @@ class Player < Pixel
   def force; 1.6; end
   def damage; 5; end
   def safe_distance; SIZE * 4; end
-  def initial_color; Color::BLUE; end
+  def initial_color; Color.new(255, 50, 50, 255); end
   def intensity; 1; end
 
   MAX_ENERGY = 1000
@@ -88,8 +88,8 @@ class Player < Pixel
     if controlling?
       lose_control if @energy == 0
     else
-      color.blue = (((@energy * 155.0) / max_energy) + 100).to_i unless controlling?
-      color.red = color.green = 255 - color.blue
+      color.blue = (((@energy * 205) / max_energy) + 50.0).to_i unless controlling?
+      color.red = color.green = 50
     end
   end
 
@@ -109,7 +109,6 @@ class Player < Pixel
       @control_off.play(0.5)
     end
     @controlled = self
-    color.red = color.green = 0
     self.energy = energy # Get colour back.
   end
 
@@ -127,7 +126,7 @@ class Player < Pixel
     if nearest_enemy
       @controlled = nearest_enemy
       @controlled.control(self)
-      color.blue = color.red = color.green = 50 # Blueness shoots over to the enemy.
+      color.blue = color.red = color.green = 75 # Blueness shoots over to the enemy.
       @control_on.play(0.5)
     else
       @control_fail.play(0.5)

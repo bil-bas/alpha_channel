@@ -59,7 +59,7 @@ Runs in a 640x480 window (or full-screen at that resolution).
 * Linux: Can run from Ruby source + libraries + Ruby gems 
   * Install Ruby 1.9.2 (or 1.9.1 or 1.8.7)
   * Install libraries needed by Gosu (see http://code.google.com/p/gosu/wiki/GettingStartedOnLinux) 
-  * Install ruby libraries "sudo gem install gosu chingu".
+  * Install ruby libraries "sudo gem install gosu chingu chipmunk".
   * "ruby lib/spooner_ld_18.rbw"
 
 
