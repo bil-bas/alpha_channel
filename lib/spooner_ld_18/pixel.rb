@@ -116,12 +116,10 @@ class Pixel < GameObject
       # Ensure you don't get wounded multiple times.
       self.health = [last_health - enemy.damage, health].min
       enemy.health = [enemy.last_health - damage, enemy.health].min
-           
-      if rand(100) < 10
-        @hurt.play(0.1)
-        color = rand(100) < 50 ? self.color : enemy.color
-        spark(color, x - (x - enemy.x) / 2, y - (y - enemy.y) / 2)
-       end
+
+      @hurt.play(0.1)
+      color = rand(100) < 50 ? self.color : enemy.color
+      spark(color, x - (x - enemy.x) / 2, y - (y - enemy.y) / 2)
     end
   end
 
@@ -140,17 +138,15 @@ class Pixel < GameObject
     # Ensure you don't get wounded multiple times.
     self.health = [last_health - wall.damage, health].min
 
-    if rand(100) < 10
-      @hurt.play(0.1)
+    @hurt.play(0.1)
 
-      x_pos, y_pos = case wall.side
-        when :left then [x - SIZE / 2, y]
-        when :right then [x + SIZE / 2, y]
-        when :top then [x, y - SIZE / 2]
-        when :bottom then [x, y + SIZE / 2]
-      end
-
-      spark(color, x_pos, y_pos)
+    x_pos, y_pos = case wall.side
+      when :left then [x - SIZE / 2, y]
+      when :right then [x + SIZE / 2, y]
+      when :top then [x, y - SIZE / 2]
+      when :bottom then [x, y + SIZE / 2]
     end
+
+    spark(color, x_pos, y_pos)
   end
 end

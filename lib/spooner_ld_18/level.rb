@@ -101,8 +101,8 @@ class Level < GameState
       switch_game_state LevelTransition.new(@level + 1)
     end
 
-    period = $window.milliseconds_since_last_tick / 10000.0
-    10.times { @space.step period }
+    period = $window.milliseconds_since_last_tick / 1000.0
+    @space.step period
   end
 
   def draw
