@@ -112,7 +112,9 @@ class Pixel < GameObject
   end
 
   def fight(enemy)
-    if self.hurts?(enemy)
+    if enemy.is_a? Player
+      enemy.fight self # Makes the sound right if the player is hit.
+    elsif self.hurts?(enemy)
       # Ensure you don't get wounded multiple times.
       self.health = [last_health - enemy.damage, health].min
       enemy.health = [enemy.last_health - damage, enemy.health].min
