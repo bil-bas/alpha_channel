@@ -74,8 +74,9 @@ class Level < GameState
 
   def generate_enemy
     x, y = $window.random_position
-    
-    enemy_type = if rand(100) < 10 and Boss.all.empty?
+
+    # Boss spawns on 5/10/15/20, only after you've killed someone.
+    enemy_type = if (@level % 5) == 0 and @num_kills > 0 and Boss.all.empty?
       Boss # Only one boss at a time.
     else
       Enemy
@@ -83,7 +84,7 @@ class Level < GameState
 
     enemy_type.create(@space, :x => x, :y => y)
 
-    after(500 + rand([4000 - @level * 250, 500].max)) { generate_enemy }
+    after(500 + rand([4000 - @level * 250, 250].max)) { generate_enemy }
   end
 
   def add_kills(value)
