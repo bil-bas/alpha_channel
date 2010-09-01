@@ -22,7 +22,7 @@ require 'pixel_fragment'
 require 'player'
 
 module ZOrder
-  BACKGROUND, LABEL, SCAN_LINES, PIXEL, CONTROL, PARTICLES, OVERLAY = (0..100).to_a
+  BACKGROUND, LABEL, SCAN_LINES, CONTROL, PIXEL, PARTICLES, OVERLAY = (0..100).to_a
 end
 
 INSTALL_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))

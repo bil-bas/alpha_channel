@@ -34,6 +34,8 @@ class Player < Pixel
 
     shape.body.mass *= 2
 
+    make_beam unless defined? @@beam
+
     lose_control
   end
 
@@ -79,7 +81,26 @@ class Player < Pixel
   def draw
     super
     if controlling?
-      $window.draw_line(self.x, self.y, self.color, @controlled.x, @controlled.y, @controlled.color, ZOrder::CONTROL)
+      distance = distance_to(@controlled)
+      beam_color = Color.new(0, 0, 0, 0)
+      color_self = color
+      color_controlled = @controlled.color
+      
+      (1..distance).step(8) do |dist|
+        controlled_proportion = dist / distance
+        self_proportion = 1 - controlled_proportion
+        x_pos = x + ((@controlled.x - x) * controlled_proportion)
+        y_pos = y + ((@controlled.y - y) * controlled_proportion)
+
+        beam_color.red = (color_self.red * self_proportion + color_controlled.red * controlled_proportion).to_i
+        beam_color.blue = (color_self.blue * self_proportion + color_controlled.blue * controlled_proportion).to_i
+        beam_color.green = (color_self.green * self_proportion + color_controlled.green * controlled_proportion).to_i
+        beam_color.alpha = (color_self.alpha * self_proportion + color_controlled.alpha * controlled_proportion).to_i
+
+        thickness = 1 + controlled_proportion * 2
+        @@beam.draw(x_pos - (@@beam.width * thickness / 2), y_pos - (@@beam.width * thickness / 2), ZOrder::CONTROL,
+                    thickness, thickness, beam_color, :additive)
+      end
     end
   end
 
@@ -132,5 +153,20 @@ class Player < Pixel
     else
       @control_fail.play(0.5)
     end
+  end
+
+  def make_beam
+    @@beam = TexPlay.create_image($window, @@image.width, @@image.height)
+
+    center = @@beam.width / 2
+    radius =  @@beam.width / 2
+
+    @@beam.circle center, center, radius, :color => :white, :filled => true,
+      :color_control => lambda {|source, dest, x, y|
+        # Glow starts at the edge of the pixel (well, its radius, since glow is circular, not rectangular)
+        distance = distance(center, center, x, y)
+        dest[3] = ((1 - (distance / radius)) ** 2) / 2
+        dest
+    }
   end
 end
