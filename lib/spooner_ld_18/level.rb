@@ -119,7 +119,8 @@ class Level < GameState
 
     enemy_type.create(@space, :x => x, :y => y)
 
-    after(500 + rand(4000 - @level * 150)) { generate_enemy }
+    # Spawn faster per level, but slower if boss is out. 
+    after(500 + rand(4000 - @level * 150 + (Boss.all.empty? ? 0 : 2000))) { generate_enemy }
   end
 
   def add_kills(value)
