@@ -3,9 +3,8 @@ class TheAntiPixel < Boss
   ATTRACTION_RANGE = 200
   ATTRACTION_FORCE = 0.4
 
-  def auto_heal; 30; end
   def control_cost; 100; end # Uncontrollable.
-  def max_health; 1000; end
+  def max_health; 30000; end
   def kill_score; 25000; end
   def damage; 5; end
   def force; 1; end
