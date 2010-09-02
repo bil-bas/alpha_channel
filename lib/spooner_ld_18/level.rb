@@ -3,6 +3,7 @@ require 'boss'
 require 'the_anti_pixel'
 require 'vampire_pixel'
 require 'shooter_pixel'
+require 'omni_pixel'
 require 'pause_game'
 
 class Level < GameState
@@ -18,8 +19,8 @@ class Level < GameState
           4 => Boss,
           8 => VampirePixel,
           12 => ShooterPixel,
-          16 => VampirePixel,
-          20 => TheAntiPixel,
+          16 => TheAntiPixel,
+          20 => OmniPixel,
   }
 
   INITIAL_LEVEL = 1
@@ -137,6 +138,7 @@ class Level < GameState
     elsif Boss.all.empty? and @num_kills >= (@level / 4) + 5
       # Only win if the boss has been killed or enough reds are killed.
       $window.score += @level * 1000
+      $window.lives += 1 if BOSS_LEVELS[@level]
       switch_game_state LevelTransition.new(@level + 1)
     end
 

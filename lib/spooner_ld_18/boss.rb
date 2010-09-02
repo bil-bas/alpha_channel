@@ -23,11 +23,6 @@ class Boss < Enemy
     Sample["boss_spawn.wav"].play(0.4)
   end
 
-  def die
-    $window.lives += 1
-    super
-  end
-
   def update
     super
     boss_update

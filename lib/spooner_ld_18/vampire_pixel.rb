@@ -18,7 +18,7 @@ class VampirePixel < Boss
 
     super
 
-    if pixel.health == 0 and not pixel.is_a? Player  and not pixel_controlled
+    if pixel.health == 0 and not pixel.is_a? Player  and not (controlled? or pixel_controlled)
       vampire = self.class.create(@space, :x => pixel.x, :y => pixel.y)
       vampire.health = max_health / 2 # Start a bit stronger, so they don't instantly die
     end
