@@ -164,7 +164,6 @@ class Player < Pixel
 
     @@beam.circle center, center, radius, :color => :white, :filled => true,
       :color_control => lambda {|source, dest, x, y|
-        # Glow starts at the edge of the pixel (well, its radius, since glow is circular, not rectangular)
         distance = distance(center, center, x, y)
         dest[3] = ((1 - (distance / radius)) ** 2) / 2
         dest

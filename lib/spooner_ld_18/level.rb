@@ -2,6 +2,7 @@ require 'wall'
 require 'boss'
 require 'the_anti_pixel'
 require 'vampire_pixel'
+require 'shooter_pixel'
 require 'pause_game'
 
 class Level < GameState
@@ -16,7 +17,7 @@ class Level < GameState
   BOSS_LEVELS =  {
           4 => Boss,
           8 => VampirePixel,
-          12 => Boss,
+          12 => ShooterPixel,
           16 => VampirePixel,
           20 => TheAntiPixel,
   }
@@ -49,6 +50,13 @@ class Level < GameState
 
     on_input(:p, PauseGame)
     on_input([:f1, :h], Help)
+
+    # Switch to boss levels (debugging).
+    (1..5).each do |button|
+      on_input :"#{button}" do       
+        switch_game_state LevelTransition.new(button * 4) if holding?(:left_control)
+      end
+    end
 
     @score_font = Font.create_for_os(FONT, 120)
     @level_font = Font.create_for_os(FONT, 360)
