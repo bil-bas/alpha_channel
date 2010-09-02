@@ -12,6 +12,7 @@ class TheAntiPixel < Boss
   def initial_color; Color.new(0, 0, 0, 0); end
   def intensity; 0.5; end
   def solid?; false; end
+  def play_hurt?; false; end # Stop too much grinding as we eat.
 
   # Appears black, glows white.
   def glow_color

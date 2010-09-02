@@ -8,6 +8,7 @@ class Pixel < GameObject
   def controlled?; false; end
   def solid?; true; end
   def safe_distance; SIZE * 2; end
+  def play_hurt?; true; end
 
   # The color a pixel glows is based on its colour affected by
   # its intensity, since some colours naturally glow more.
@@ -133,7 +134,7 @@ class Pixel < GameObject
       self.health -= enemy.damage
       enemy.health -= damage
 
-      @hurt.play(0.1)
+      @hurt.play(0.1) if play_hurt?
       color = rand(100) < 50 ? self.color : enemy.color
       spark(color, x - (x - enemy.x) / 2, y - (y - enemy.y) / 2)
     end
