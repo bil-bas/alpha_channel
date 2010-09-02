@@ -1,6 +1,7 @@
 require 'wall'
 require 'boss'
 require 'the_anti_pixel'
+require 'vampire_pixel'
 require 'pause_game'
 
 class Level < GameState
@@ -14,9 +15,9 @@ class Level < GameState
   
   BOSS_LEVELS =  {
           4 => Boss,
-          8 => Boss,
+          8 => VampirePixel,
           12 => Boss,
-          16 => Boss,
+          16 => VampirePixel,
           20 => TheAntiPixel,
   }
 

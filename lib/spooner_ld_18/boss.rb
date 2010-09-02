@@ -4,10 +4,10 @@ class Boss < Enemy
   FEAR_RANGE = 100
   FEAR_FORCE = 1
 
-  def control_cost; $window.current_game_state.level / 2 + 5; end
+  def control_cost; 15; end
   def max_health; 1000; end
-  def kill_score; $window.current_game_state.level * 1000; end
-  def damage; $window.current_game_state.level + 10; end
+  def kill_score; 5000; end
+  def damage; 20; end
   def force; 4.5; end
   def num_kills; 1000; end # Always ends the level.
   def initial_color; Color.new(255, 255, 255, 0); end

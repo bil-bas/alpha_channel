@@ -3,17 +3,30 @@ class Pixel < GameObject
   PHASE_IN_DURATION = 3 * 1000 # Number of ms to phase in over.
   SIZE = 32
 
+  attr_reader :health, :last_health, :shape
+
+  def controlled?; false; end
   def solid?; true; end
   def safe_distance; SIZE * 2; end
+
+  # The color a pixel glows is based on its colour affected by
+  # its intensity, since some colours naturally glow more.
   def glow_color
     glow = color.dup
     glow.alpha = (color.alpha * intensity).to_i
     glow
   end
 
-  attr_reader :health, :last_health
-  
-  attr_reader :shape
+  # All pixels auto-healup to maximum when they are spawned in.
+  def auto_heal
+    if @amount_left_to_heal > 0
+      heal_amount = @amount_to_heal * $window.milliseconds_since_last_tick / PHASE_IN_DURATION
+      @amount_left_to_heal -= heal_amount
+      heal_amount
+    else
+      0
+    end
+  end
 
   def initialize(space, options = {})
     @space = space
@@ -80,11 +93,7 @@ class Pixel < GameObject
   def update
     super
 
-    if @amount_left_to_heal > 0
-      heal_amount = @amount_to_heal * $window.milliseconds_since_last_tick / PHASE_IN_DURATION
-      self.health += heal_amount
-      @amount_left_to_heal -= heal_amount
-    end
+    self.health += auto_heal
 
     @last_health = @health
     
@@ -117,7 +126,9 @@ class Pixel < GameObject
 
   def fight(enemy)
     if enemy.is_a? Player
-      enemy.fight self # Makes the sound right if the player is hit.
+      enemy.fight self # Give priority to the player.
+    elsif enemy.is_a? Boss and not (self.is_a? Boss or self.is_a? Player)
+      enemy.fight self # Give priority to a boss, unless I am one.
     elsif self.hurts?(enemy)
       self.health -= enemy.damage
       enemy.health -= damage

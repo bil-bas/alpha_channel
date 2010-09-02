@@ -2,8 +2,8 @@ require 'boss'
 class TheAntiPixel < Boss
   ATTRACTION_RANGE = 200
   ATTRACTION_FORCE = 0.4
-  AUTO_HEAL = 30
 
+  def auto_heal; 30; end
   def control_cost; 100; end # Uncontrollable.
   def max_health; 1000; end
   def kill_score; 25000; end
@@ -21,8 +21,6 @@ class TheAntiPixel < Boss
   end
 
   def boss_update
-    self.health += AUTO_HEAL
-
     # Pull all nearby pixels in closer.
     Pixel.all.each do |pixel|
       distance = distance_to(pixel)
