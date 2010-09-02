@@ -3,7 +3,13 @@ class Pixel < GameObject
   PHASE_IN_DURATION = 3 * 1000 # Number of ms to phase in over.
   SIZE = 32
 
+  def solid?; true; end
   def safe_distance; SIZE * 2; end
+  def glow_color
+    glow = color.dup
+    glow.alpha = (color.alpha * intensity).to_i
+    glow
+  end
 
   attr_reader :health, :last_health
   
@@ -79,7 +85,7 @@ class Pixel < GameObject
       self.health += heal_amount
       @amount_left_to_heal -= heal_amount
     end
-    
+
     @last_health = @health
     
     self.x, self.y = @shape.body.p.x, @shape.body.p.y
@@ -87,9 +93,7 @@ class Pixel < GameObject
 
   def draw
     super
-    color = self.color.dup
-    color.alpha = (color.alpha * intensity).to_i
-    @@glow.draw(x - @@glow.width / 2, y - @@glow.height / 2, zorder + 1, 1, 1, color, :additive)    
+    @@glow.draw(x - @@glow.width / 2, y - @@glow.height / 2, zorder + 1, 1, 1, glow_color, :additive)
   end
 
   def die
@@ -115,9 +119,8 @@ class Pixel < GameObject
     if enemy.is_a? Player
       enemy.fight self # Makes the sound right if the player is hit.
     elsif self.hurts?(enemy)
-      # Ensure you don't get wounded multiple times.
-      self.health = [last_health - enemy.damage, health].min
-      enemy.health = [enemy.last_health - damage, enemy.health].min
+      self.health -= enemy.damage
+      enemy.health -= damage
 
       @hurt.play(0.1)
       color = rand(100) < 50 ? self.color : enemy.color
@@ -125,9 +128,19 @@ class Pixel < GameObject
     end
   end
 
-  def move(x, y)
-    @shape.body.reset_forces
-    @shape.body.apply_force(CP::Vec2.new(x * force * 20000, y * force * 20000), CP::Vec2.new(0, 0))
+  def move(right, down)
+    push(x + right, y + down, force)
+  end
+
+  # Push towards a particular position (negative force to pull).
+  def push(x, y, push_force)
+    angle = Gosu::angle(self.x, self.y, x, y)
+    distance = distance(self.x, self.y, x, y)
+    x_offset = offset_x(angle, distance)
+    y_offset = offset_y(angle, distance)
+
+    @shape.body.apply_force(CP::Vec2.new((x_offset / distance) * push_force * 20000, (y_offset / distance) * push_force * 20000),
+                            CP::Vec2.new(0, 0))
   end
 
   def spark(color, x, y)

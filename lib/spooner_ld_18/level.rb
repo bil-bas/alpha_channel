@@ -1,5 +1,6 @@
 require 'wall'
 require 'boss'
+require 'the_anti_pixel'
 require 'pause_game'
 
 class Level < GameState
@@ -10,6 +11,17 @@ class Level < GameState
   LABEL_COLOR = Color.new(255, 0, 65, 0)
   SCAN_LINES_COLOR = Color.new(255, 0, 0, 0)
   BACKGROUND_COLOR = Color.new(255, 0, 40, 0)
+  
+  BOSS_LEVELS =  {
+          4 => Boss,
+          8 => Boss,
+          12 => Boss,
+          16 => Boss,
+          20 => TheAntiPixel,
+  }
+
+  INITIAL_LEVEL = 1
+  LAST_LEVEL = 20
 
   def initialize(level, options = {})
     options = { :died => false }.merge! options
@@ -50,10 +62,13 @@ class Level < GameState
     @space.add_collision_func(:pixel, :pixel) do |shape1, shape2|
       pixel1 = Pixel.all.find { |p| p.shape == shape1 }
       pixel2 = Pixel.all.find { |p| p.shape == shape2 }
-      
-      pixel1.fight(pixel2) if pixel1 and pixel2 and pixel1.hurts?(pixel2)
 
-      true # We always want a collision.
+      if pixel1 and pixel2
+        pixel1.fight(pixel2) if  pixel1.hurts?(pixel2)
+        pixel1.solid? and pixel2.solid? # Only collide if both are solid.
+      else
+        false # Either pixel has already been destroyed, so don't collide.
+      end
     end
 
     [
@@ -76,7 +91,7 @@ class Level < GameState
   def setup
     if @died
       $window.lives -= 1
-    elsif @level == 1
+    elsif @level == INITIAL_LEVEL
       $window.score = 0
       $window.lives = Game::INITIAL_LIVES
     end
@@ -86,15 +101,15 @@ class Level < GameState
     x, y = $window.random_position
 
     # Boss spawns on 5/10/15/20, only after you've killed someone.
-    enemy_type = if (@level % 4) == 0 and @num_kills > 0 and Boss.all.empty?
-      Boss # Only one boss at a time.
+    enemy_type = if BOSS_LEVELS[@level] and @num_kills > 0 and Boss.all.empty?
+      BOSS_LEVELS[@level] # Only one boss at a time.
     else
       Enemy
     end
 
     enemy_type.create(@space, :x => x, :y => y)
 
-    after(500 + rand([4000 - @level * 250, 250].max)) { generate_enemy }
+    after(500 + rand(4000 - @level * 150)) { generate_enemy }
   end
 
   def add_kills(value)
@@ -118,6 +133,8 @@ class Level < GameState
 
     period = $window.milliseconds_since_last_tick / 1000.0
     @space.step period
+
+    Pixel.all.each {|p| p.shape.body.reset_forces }
   end
 
   def draw

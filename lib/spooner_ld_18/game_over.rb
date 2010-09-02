@@ -19,7 +19,7 @@ class GameOver < GameState
     on_input([:f1, :h], Help)
     on_input :r do
       pop_game_state
-      switch_game_state LevelTransition.new(1)
+      switch_game_state LevelTransition.new(Level::INITIAL_LEVEL)
     end
     on_input :q do
       $window.close

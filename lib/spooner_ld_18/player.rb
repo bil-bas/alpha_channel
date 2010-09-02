@@ -63,8 +63,6 @@ class Player < Pixel
       @controlled.move(0, -1)
     elsif holding_any? :down, :s
       @controlled.move(0, 1)
-    else
-      @controlled.move(0, 0)
     end
   end
 

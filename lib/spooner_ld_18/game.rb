@@ -62,7 +62,7 @@ class Game < Window
     @score = 0
     @high_score = File.open(HIGH_SCORE_FILE, "r") { |file| file.readline.to_i } rescue 0
     
-    push_game_state(LevelTransition.new(1))
+    push_game_state(LevelTransition.new(Level::INITIAL_LEVEL))
   end
 
   def game_over

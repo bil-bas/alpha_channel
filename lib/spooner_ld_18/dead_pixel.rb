@@ -1,7 +1,7 @@
 require 'enemy'
 
 class DeadPixel < Enemy
-  def max_health; 5000; end
+  def max_health; 10000; end
   def damage; 0.5; end
   def force; controlled? ? 42 : 0; end
   def num_kills; 0; end
