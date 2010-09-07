@@ -5,7 +5,7 @@ class ShooterPixel < Boss
   INITIAL_COLOR = Color.new(255, 255, 0, 255)
   SHOOT_FORCE = 100
   PUSH_FORCE = 1
-  MIN_SHOOT_DELAY = 1000
+  MIN_SHOOT_DELAY = 2000
 
   def force; 1.2; end
   def damage; 5; end

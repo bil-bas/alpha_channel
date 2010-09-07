@@ -30,7 +30,7 @@ class Boss < Enemy
 
   def boss_update
     Enemy.all.each do |pixel|
-     if pixel != self and not pixel.controlled? and distance_to(pixel) < FEAR_RANGE
+     if pixel != self and not controlled? and not pixel.controlled? and distance_to(pixel) < FEAR_RANGE
         pixel.push(x, y, - FEAR_FORCE * (FEAR_RANGE / distance_to(pixel)))
       end
     end
