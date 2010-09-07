@@ -20,7 +20,7 @@ class Boss < Enemy
   end
 
   def on_spawn
-    Sample["boss_spawn.wav"].play(0.4)
+    Sample["boss_spawn.ogg"].play(0.4)
   end
 
   def update

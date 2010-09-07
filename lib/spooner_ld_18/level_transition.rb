@@ -4,7 +4,7 @@ class LevelTransition < GameStates::FadeTo
     
     super(Level.new(level, options), :speed => 3)
 
-    @@sound ||= Sample["level.wav"]
+    @@sound ||= Sample["level.ogg"]
     @@sound.play(0.5) unless options[:died]
   end
 

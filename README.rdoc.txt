@@ -59,7 +59,7 @@ Runs in a 640x480 window (or full-screen at that resolution).
 * Linux: Can run from Ruby source + libraries + Ruby gems 
   * Install Ruby 1.9.2 (or 1.9.1 or 1.8.7)
   * Install libraries needed by Gosu (see http://code.google.com/p/gosu/wiki/GettingStartedOnLinux) 
-  * Install ruby libraries "sudo gem install gosu chingu chipmunk".
+  * Install Ruby gem libraries "sudo gem install gosu chingu chipmunk".
   * "ruby lib/spooner_ld_18.rbw"
 
 
@@ -74,7 +74,7 @@ Runs in a 640x480 window (or full-screen at that resolution).
 
 * Ruby 1.9.2 (will also run on 1.9.1 or 1.8.7)
 * Developed using JetBrains RubyMine IDE
-* Sounds created with dfxr
+* Sounds created with sfxr and converted to Ogg Vorbis format with Audacity.
 * Windows executable created with the Ocra gem.
 
 

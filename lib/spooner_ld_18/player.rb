@@ -29,11 +29,11 @@ class Player < Pixel
     @max_energy = @energy = MAX_ENERGY
 
 
-    @hurt = Sample["hurt_player.wav"]
-    @control_on = Sample["control_on.wav"]
-    @control_off = Sample["control_off.wav"]
-    @control_fail = Sample["control_fail.wav"]
-    @death = Sample["death.wav"]
+    @hurt = Sample["hurt_player.ogg"]
+    @control_on = Sample["control_on.ogg"]
+    @control_off = Sample["control_off.ogg"]
+    @control_fail = Sample["control_fail.ogg"]
+    @death = Sample["death.ogg"]
 
     shape.body.mass *= 2
 

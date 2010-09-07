@@ -15,12 +15,12 @@ class Enemy < Pixel
   def initialize(space, options = {})
     super(space, options)
 
-    @hurt = Sample["hurt_controlled.wav"]
+    @hurt = Sample["hurt_controlled.ogg"]
     uncontrol
   end
 
   def on_spawn
-    Sample["enemy_spawn.wav"].play(0.2)
+    Sample["enemy_spawn.ogg"].play(0.2)
   end
 
   def control(controller)
