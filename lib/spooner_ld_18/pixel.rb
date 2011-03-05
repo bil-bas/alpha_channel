@@ -9,6 +9,7 @@ class Pixel < GameObject
   def solid?; true; end
   def safe_distance; SIZE * 2; end
   def play_hurt?; true; end
+  def distance_to(other); distance(x, y, other.x, other.y); end
 
   # The color a pixel glows is based on its colour affected by
   # its intensity, since some colours naturally glow more.

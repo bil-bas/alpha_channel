@@ -70,8 +70,9 @@ class Level < GameState
     end
 
     @space.add_collision_func(:pixel, :pixel) do |shape1, shape2|
-      pixel1 = Pixel.all.find { |p| p.shape == shape1 }
-      pixel2 = Pixel.all.find { |p| p.shape == shape2 }
+      pixels = game_objects.of_class(Pixel)
+      pixel1 = pixels.find { |p| p.shape == shape1 }
+      pixel2 = pixels.find { |p| p.shape == shape2 }
 
       if pixel1 and pixel2
         pixel1.fight(pixel2) if  pixel1.hurts?(pixel2)
@@ -91,7 +92,7 @@ class Level < GameState
     end
 
     @space.add_collision_func(:pixel, :wall) do |pixel_shape, side_shape|
-      pixel = Pixel.all.find { |p| p.shape == pixel_shape }
+      pixel = game_objects.of_class(Pixel).find { |p| p.shape == pixel_shape }
       wall = Wall.all.find {|w| w.shape == side_shape }
       pixel.hit_wall(wall) if pixel and wall
       true # We always want a collision.
@@ -146,7 +147,7 @@ class Level < GameState
     period = $window.milliseconds_since_last_tick / 1000.0
     @space.step period
 
-    Pixel.all.each {|p| p.shape.body.reset_forces }
+	game_objects.of_class(Pixel).each {|p| p.shape.body.reset_forces }
   end
 
   def draw
@@ -178,9 +179,5 @@ class Level < GameState
   def write_text(font, text, y)
     x = ($window.width - font.text_width(text)) / 2
     font.draw(text, x, y, ZOrder::LABEL, 1, 1, LABEL_COLOR)
-  end
-
-  def finalize
-    game_objects.sync
   end
 end
