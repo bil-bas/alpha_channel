@@ -1,4 +1,5 @@
-require 'boss'
+require_relative 'boss'
+
 class TheAntiPixel < Boss
   ATTRACTION_RANGE = 200
   ATTRACTION_FORCE = 0.4

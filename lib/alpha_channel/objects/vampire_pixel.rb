@@ -1,4 +1,5 @@
-require 'boss'
+require_relative 'boss'
+
 class VampirePixel < Boss
   def max_health; 400; end
   def kill_score; 2000; end

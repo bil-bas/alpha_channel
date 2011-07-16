@@ -1,4 +1,4 @@
-require 'boss'
+require_relative 'boss'
 
 class OmniPixel < ShooterPixel
   NUM_LIVES = 3

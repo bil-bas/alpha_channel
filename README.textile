@@ -1,4 +1,4 @@
-= Alpha Channel
+h1. Alpha Channel
 
 Spooner's entry for Ludum Dare 18 - "Enemies as weapons"
 
@@ -12,13 +12,13 @@ Best, though, is play and figure it out for yourself! Press F1 for in-game help.
 License: GPL v3
 Author: Bil Bas (http://spooner.github.com) (bil dot bagpuss {at} gmail.com)
 
-== How to run the game
+h2. How to run the game
 
-Windows: "alpha_channel.exe" (or "alpha_channel_full_screen.bat" to play full-screen).
-OS X: "alpha_channel.app [--full-screen]"
-Linux: "ruby lib/spooner_ld_18.rbw [--full-screen]" (see below under _compatibility_ for requirements).
+* Windows: <pre>alpha_channel.exe</pre>.
+* OS X: <pre>alpha_channel.app</pre>
+* Linux: <pre>ruby bin/spooner_ld_18.rbw</pre> (see below under _compatibility_ for requirements).
 
-== Ingame help (View by pressing F1)
+h3. Ingame help (View by pressing F1)
 
     It is hell being a pixel. Why can't they all just get along?
 
@@ -50,42 +50,41 @@ Linux: "ruby lib/spooner_ld_18.rbw [--full-screen]" (see below under _compatibil
 
       * CONTROL+Q: Exit game.
 
-== Compatibility
+h2. Compatibility
 
 Runs in a 640x480 window (or full-screen at that resolution).
 
 * Windows: Native executable (.exe) available.
 * OS X: Native executable (.app) available.
 * Linux: Can run from Ruby source + libraries + Ruby gems 
-  * Install Ruby 1.9.2 (or 1.9.1 or 1.8.7)
+  * Install Ruby 1.9.2
   * Install libraries needed by Gosu (see http://code.google.com/p/gosu/wiki/GettingStartedOnLinux) 
-  * Install Ruby gem dependencies "bundle install" (may need to "sudo gem install bundler" beforehand).
-  * "ruby lib/spooner_ld_18.rbw"
+  * Install Ruby gem dependencies <pre>bundle install</pre> (may need to <pre>sudo gem install bundler</pre> beforehand).
+  * <pre>ruby bin/alpha_channel.rbw</pre>
 
 
-== Where to get a copy of the game from
+h2. Where to get a copy of the game from
 
-* Project: http://github.com/Spooner/spooner_ld_18
-* Downloads (including Windows exe): http://github.com/Spooner/spooner_ld_18/downloads
-* Repository: git://github.com/Spooner/spooner_ld_18.git
+* Project: http://github.com/Spooner/alpha_channel
+* Downloads (including Windows exe): http://github.com/Spooner/alpha_channel/downloads
+* Repository: git://github.com/Spooner/alpha_channel.git
 
 
-== Tools used
+h2. Tools used
 
-* Ruby 1.9.2 (will also run on 1.9.1 or 1.8.7)
+* Ruby 1.9.2
 * Developed using JetBrains RubyMine IDE
 * Sounds created with sfxr and converted to Ogg Vorbis format with Audacity.
 * Windows executable created with the Ocra gem.
 
 
-== External assets
+h2. External assets
 
-* Gosu and Chingu gems (libraries) for graphics and sound [Included in executable versions].
-* fmod.dll (used indirectly via Gosu; uses SDL when not on Windows) [INCLUDED]
+* Gosu, Texplay, Chipmunk and Chingu gems (libraries) [Included in executable versions].
 * pixelated.ttf (font by Affinity and Epsilon - benepsilon {at} gmail.com) [INCLUDED]
 
 
-== License
+h2. License
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
