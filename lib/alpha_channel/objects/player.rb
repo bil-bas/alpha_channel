@@ -1,4 +1,4 @@
-require 'pixel'
+require_relative 'pixel'
 
 class Player < Pixel
   trait :timer

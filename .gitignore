@@ -1,6 +1,10 @@
 /doc/rdoc
 /logs
 /.idea
-/spooner_ld_18.exe
+/.yardoc
+/doc
+/pkg
 /high_score.dat
-/alpha_channel.exe
+readme.html
+*.exe
+*.log

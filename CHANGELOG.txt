@@ -1,5 +1,11 @@
 = Changelog
 
+== v1.2 (2011-07-16)
+
+  - Vastly improved visuals.
+  - FIXED: Some sound effects are EXTREMELY loud.
+  - FIXED: Glitching when lots of pixels are touching.
+  
 == v1.1 (2010-08-24)
 
   Ludum Dare #18 entry compatibility update
