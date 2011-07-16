@@ -1,4 +1,4 @@
-require 'pixel'
+require_relative 'pixel'
 
 class Enemy < Pixel
   def control_cost; 5; end

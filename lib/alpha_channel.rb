@@ -1,0 +1,1 @@
+require_relative 'alpha_channel/game'

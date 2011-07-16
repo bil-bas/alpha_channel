@@ -10,30 +10,29 @@ require 'yaml' # required for ocra.
 include Gosu
 include Chingu
 
-require 'font'
-require 'level_transition'
-require 'dead_pixel'
-require 'enemy'
-require 'help'
-require 'game_over'
-require 'help'
-require 'level'
-require 'pixel_fragment'
-require 'player'
+require_relative 'font'
+require_relative 'states/level_transition'
+require_relative 'objects/dead_pixel'
+require_relative 'objects/enemy'
+require_relative 'states/help'
+require_relative 'states/game_over'
+require_relative 'states/help'
+require_relative 'states/level'
+require_relative 'objects/pixel_fragment'
+require_relative 'objects/player'
 
 module ZOrder
   BACKGROUND, LABEL, LIVES, SCAN_LINES, CONTROL, PIXEL, PARTICLES, OVERLAY = (0..100).to_a
 end
 
-INSTALL_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
-media_dir =  File.join(INSTALL_DIR, 'media')
-Image.autoload_dirs << File.join(media_dir)
-Sample.autoload_dirs << File.join(media_dir)
+media_dir =  File.join(EXTRACT_PATH, 'media')
+Image.autoload_dirs << File.join(media_dir, 'image')
+Sample.autoload_dirs << File.join(media_dir, 'sound')
 
-BIN_DIR = File.join(INSTALL_DIR, 'bin')
+BIN_DIR = File.join(EXTRACT_PATH, 'bin')
 ENV['PATH'] = "#{BIN_DIR};#{ENV['PATH']}"
 
-FONT = File.join(INSTALL_DIR, 'media', 'pixelated.ttf')
+FONT = File.join(EXTRACT_PATH, 'media/font/pixelated.ttf')
 Text.font = FONT
 
 class Game < Window
@@ -43,7 +42,7 @@ class Game < Window
   attr_reader :particles, :high_score
   attr_accessor :score, :lives
 
-  HIGH_SCORE_FILE = File.join(INSTALL_DIR, 'high_score.dat')
+  HIGH_SCORE_FILE = File.join(ROOT_PATH, 'high_score.dat')
 
   # Allow others to read my private method!
   def ms
@@ -105,19 +104,7 @@ class Game < Window
   end
 
   def self.run
-    return if defined? Ocra
-
-    full_screen = case ARGV
-                    when []
-                      false
-                    when ["--full-screen"], ["-f"]
-                      true
-                    else
-                      return "Usage:\n  #{File.basename($0)} [--full-screen]"
-                      nil
-                  end
-
-    Game.new(full_screen).show
+    new(false).show
   end
 end
 

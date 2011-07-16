@@ -1,4 +1,4 @@
-require 'enemy'
+require_relative 'enemy'
 
 class Boss < Enemy
   FEAR_RANGE = 100

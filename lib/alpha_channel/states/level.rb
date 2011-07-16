@@ -1,10 +1,10 @@
-require 'wall'
-require 'boss'
-require 'the_anti_pixel'
-require 'vampire_pixel'
-require 'shooter_pixel'
-require 'omni_pixel'
-require 'pause_game'
+require_relative '../wall'
+require_relative '../objects/boss'
+require_relative '../objects/the_anti_pixel'
+require_relative '../objects/vampire_pixel'
+require_relative '../objects/shooter_pixel'
+require_relative '../objects/omni_pixel'
+require_relative 'pause_game'
 
 class Level < GameState
   trait :timer

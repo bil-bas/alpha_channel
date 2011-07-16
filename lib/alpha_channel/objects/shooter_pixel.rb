@@ -1,4 +1,5 @@
-require 'boss'
+require_relative 'boss'
+
 class ShooterPixel < Boss
   SHOOT_RANGE = 125
   PUSH_RANGE = 75

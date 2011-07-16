@@ -1,4 +1,4 @@
-require 'enemy'
+require_relative 'enemy'
 
 class DeadPixel < Enemy
   def max_health; 10000; end
