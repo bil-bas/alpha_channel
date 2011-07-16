@@ -13,7 +13,7 @@ class ShooterPixel < Boss
   def intensity; 0.5; end
 
   def boss_update
-    return unless player = Player.all.first
+    return unless player = parent.player
 
     nearest_distance = Float::INFINITY
     if player

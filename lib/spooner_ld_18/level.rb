@@ -9,7 +9,7 @@ require 'pause_game'
 class Level < GameState
   trait :timer
 
-  attr_reader :level
+  attr_reader :level, :player
 
   LABEL_COLOR = Color.new(255, 0, 65, 0)
   SCAN_LINES_COLOR = Color.new(255, 0, 0, 0)
@@ -106,6 +106,10 @@ class Level < GameState
       $window.score = 0
       $window.lives = Game::INITIAL_LIVES
     end
+  end
+  
+  def finalize
+    game_objects.each(&:destroy)
   end
 
   def generate_enemy

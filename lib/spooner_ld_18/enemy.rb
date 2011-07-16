@@ -36,7 +36,7 @@ class Enemy < Pixel
   end
 
   def die
-    if player = Player.all.first
+    if player = parent.player
       player.lose_control if controlled?
       $window.score += kill_score
       $window.current_game_state.add_kills num_kills
@@ -64,7 +64,7 @@ class Enemy < Pixel
       color.green = [initial_color.green - color.blue, 50].max
     elsif force > 0
       # Move towards the player.
-      player = Player.all.first
+      player = parent.player
       push(player.x, player.y, force) if player
     end
   end
