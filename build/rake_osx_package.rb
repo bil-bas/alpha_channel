@@ -5,8 +5,7 @@
 GAME_URL = "com.github.spooner.#{APP}"
 OSX_APP = "#{APP.capitalize}.app"
 
-# Clipboard is required via fidgit.
-OSX_GEMS = %w[chingu fidgit clipboard r18n-core r18n-desktop]
+OSX_GEMS = %w[chingu]
 
 RELEASE_FOLDER_OSX = "#{RELEASE_FOLDER_BASE}_OSX_10_6"
 
