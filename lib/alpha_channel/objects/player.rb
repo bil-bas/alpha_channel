@@ -138,7 +138,7 @@ class Player < Pixel
   def gain_control
     nearest_distance = Float::INFINITY
     nearest_enemy = nil
-    Enemy.all.each do |enemy|
+    parent.game_objects.of_class(Enemy).each do |enemy|
       distance = distance(self.x, self.y, enemy.x, enemy.y)
       if distance < MIN_CAPTURE_DISTANCE and distance < nearest_distance
         nearest_distance = distance
