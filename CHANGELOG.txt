@@ -1,5 +1,12 @@
 = Changelog
 
+== v1.2.2 (2011-11-23)
+  - Updated Windows executable to use Ruby 1.9.3 (should start up faster)
+  - Fixed: Game breaks when paused (pressed 'P') or in help (pressed 'F1') (Thanks Jwosty)
+
+== v1.2.1 (2011-07-17)
+  - Hotfix for bad release build.
+
 == v1.2 (2011-07-16)
 
   - Vastly improved visuals.

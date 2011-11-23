@@ -1,3 +1,5 @@
+Config = RbConfig # 1.9.3 hack
+
 require 'rake/clean'
 require 'redcloth'
 

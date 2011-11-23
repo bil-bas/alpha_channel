@@ -1,4 +1,4 @@
-require 'rubygems' rescue nil
+Config = RbConfig # 1.9.3 hack
 
 require 'chingu'
 require 'chipmunk'
