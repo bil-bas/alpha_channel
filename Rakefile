@@ -39,7 +39,7 @@ file EXECUTABLE => :ocra
 
 desc "Use Ocra to generate #{EXECUTABLE} (Windows only) v#{RELEASE_VERSION}"
 task ocra: SOURCE_FOLDER_FILES do
-  system "ocra bin/#{APP}.rbw --windows --icon media/icon.ico lib/**/*.* media/**/*.* bin/**/*.*"
+  system "ocra bin/#{APP}.rbw --windows --icon media/icon.ico --no-enc lib/**/*.* media/**/*.* bin/**/*.*"
 end
 
 # Making a release.
