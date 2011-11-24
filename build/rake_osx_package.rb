@@ -40,6 +40,8 @@ task osx_app: :readme do
   puts "--- Copying App"
   mkdir_p TMP_OSX_PKG_DIR
 
+  raise "ERROR: Could not find #{BASE_OSX_APP}" unless File.exists? BASE_OSX_APP
+
   cp_r BASE_OSX_APP, TMP_OSX_APP
 
   # Copy my source files.

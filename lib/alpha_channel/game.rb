@@ -1,4 +1,4 @@
-Config = RbConfig # 1.9.3 hack
+Config = RbConfig if RUBY_VERSION > '1.9.2'
 
 require 'chingu'
 require 'chipmunk'
