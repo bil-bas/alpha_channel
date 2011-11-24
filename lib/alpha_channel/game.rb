@@ -5,6 +5,17 @@ require 'chipmunk'
 require 'texplay'
 TexPlay.set_options :caching => false
 
+begin
+  require 'bundler/setup' unless defined?(OSX_EXECUTABLE) or ENV['OCRA_EXECUTABLE']
+
+rescue LoadError
+  $stderr.puts "Bundler gem not installed. To install:\n  gem install bundler"
+  exit
+rescue Exception
+  $stderr.puts "Gem dependencies not met. To install:\n  bundle install"
+  exit
+end
+
 require 'yaml' # required for ocra.
 
 include Gosu

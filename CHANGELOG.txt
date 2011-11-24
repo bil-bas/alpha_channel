@@ -1,5 +1,8 @@
 = Changelog
 
+== 1.2.4 (2011-11-24)
+  - Hopefully fixed issue with openal in ocra package (I think - thanks jlnr and dahrkael)
+
 == 1.2.3 (2011-11-24)
   - Fixed for ruby 1.9.2
   - Added message when building OSX if required file is missing.
