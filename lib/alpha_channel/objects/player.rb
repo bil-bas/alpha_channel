@@ -157,7 +157,8 @@ class Player < Pixel
   end
 
   def make_beam
-    @@beam = TexPlay.create_image($window, @@image.width, @@image.height)
+    @@beam = TexPlay.create_image($window, @@image.width, @@image.height, color: :alpha)
+    @@beam.refresh_cache
 
     center = @@beam.width / 2
     radius =  @@beam.width / 2

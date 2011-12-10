@@ -10,6 +10,7 @@ AND make sure you don't run out of energy, freeing your slave! Sometimes running
 Best, though, is play and figure it out for yourself! Press F1 for in-game help.
 
 License: GPL v3
+Website: http://spooner.github.com/games/alpha_channel/
 Author: Bil Bas (http://spooner.github.com) (bil dot bagpuss {at} gmail.com)
 
 h2. How to run the game
