@@ -1,5 +1,10 @@
 = Changelog
 
+== 1.2.5 (2011-12-10)
+  - Fixed occasional graphical glitches.
+  - OSX package now runs on OS X 10.5 or later.
+  - Linux version now works with Ruby 1.9.3
+
 == 1.2.4 (2011-11-24)
   - Hopefully fixed issue with openal in ocra package (I think - thanks jlnr and dahrkael)
 
@@ -24,9 +29,9 @@
 
   Ludum Dare #18 entry compatibility update
 
-* Fixed CTD in Linux.
-* Fixed font rendering in Linux.
-* Made OS X executable.
+  -  Fixed CTD in Linux.
+  - Fixed font rendering in Linux.
+  - Made OS X executable.
 
 == v1.0 (2010-08-22)
 

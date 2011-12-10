@@ -22,6 +22,7 @@ include Gosu
 include Chingu
 
 require_relative 'font'
+require_relative 'version'
 require_relative 'states/level_transition'
 require_relative 'objects/dead_pixel'
 require_relative 'objects/enemy'
@@ -103,7 +104,7 @@ class Game < Window
 
   def update
     super
-    self.caption = "#{NAME} (spooner.github.com LD 18 - 'Enemies as weapons') F1 for help [FPS: #{fps}]"
+    self.caption = "#{NAME} v#{AlphaChannel::VERSION} - F1 for help [FPS: #{fps}]"
   end
 
   def add_particle(particle)
