@@ -21,4 +21,4 @@ DEPENDENCIES
   chingu (~> 0.9rc7)
   chipmunk (~> 5.3.4.5)
   gosu (~> 0.7.40)
-  texplay (~> 0.4.2)
+  texplay (~> 0.3)
