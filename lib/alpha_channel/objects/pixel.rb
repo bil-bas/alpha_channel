@@ -64,6 +64,8 @@ class Pixel < GameObject
   def make_glow
     @@glow = TexPlay.create_image($window, @@image.width * 5, @@image.height * 5, color: :alpha)
     @@glow.refresh_cache
+    @@glow.clear color: :alpha
+
     #
     center = @@glow.width / 2
     radius =  @@glow.width / 2
