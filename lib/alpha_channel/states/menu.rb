@@ -23,7 +23,9 @@ class Menu < Screen
     color.alpha = Math::sin(milliseconds / 400.0) * 75 + 150
     write_text(@title_font, "ALPHA", 50, color)
     write_text(@title_font, "CHANNEL",  150, color)
+    write_text(@info_font, "by Spooner",  260, color)
 
+    write_text(@info_font, "High Score",  335, BACKGROUND_LABEL_COLOR)
     draw_high_score
     draw_scan_lines
 
