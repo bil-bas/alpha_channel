@@ -27,6 +27,8 @@ class PixelFragment < Particle
 
   def make_glow
     @@glow = TexPlay.create_image($window, @@image.width * 10, @@image.height * 10)
+    @@glow.refresh_cache
+    @@glow.clear
 
     center = @@glow.width / 2
     radius =  @@glow.width / 2
