@@ -1,0 +1,34 @@
+require_relative 'screen'
+
+class Menu < Screen
+  def initialize
+    super
+
+    @title_font = Font.create_for_os(FONT, 160)
+    @info_font = Font.create_for_os(FONT, 36)
+
+    on_input([:f1, :h], Help)
+
+    on_input :space do
+      push_game_state LevelTransition.new(Level::INITIAL_LEVEL)
+    end
+  end
+
+  def draw
+    super
+
+    draw_background
+
+    color = MAIN_TITLE_COLOR.dup
+    color.alpha = Math::sin(milliseconds / 400.0) * 75 + 150
+    write_text(@title_font, "ALPHA", 50, color)
+    write_text(@title_font, "CHANNEL",  150, color)
+
+    draw_high_score
+    draw_scan_lines
+
+    $window.flush
+
+    write_text(@info_font, "(SPACE) to play", OPTIONS_Y, OPTIONS_COLOR)
+  end
+end

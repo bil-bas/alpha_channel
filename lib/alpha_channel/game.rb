@@ -30,6 +30,7 @@ require_relative 'states/help'
 require_relative 'states/game_over'
 require_relative 'states/help'
 require_relative 'states/level'
+require_relative 'states/menu'
 require_relative 'objects/pixel_fragment'
 require_relative 'objects/player'
 
@@ -51,7 +52,7 @@ class Game < Window
   NAME = "Alpha Channel"
   INITIAL_LIVES = 3
   
-  attr_reader :particles, :high_score
+  attr_reader :particles, :high_score, :pixel
   attr_accessor :score, :lives
 
   HIGH_SCORE_FILE = File.join(ROOT_PATH, 'high_score.dat')
@@ -64,6 +65,10 @@ class Game < Window
   def initialize(full_screen)
     super(640, 480, full_screen)
 
+    @pixel = TexPlay.create_image(self, 1, 1)
+    @pixel.refresh_cache
+    @pixel.clear color: :white
+
     on_input(:q) { close if holding_any? :left_control, :right_control }
   end
 
@@ -73,7 +78,7 @@ class Game < Window
     @score = 0
     @high_score = File.open(HIGH_SCORE_FILE, "r") { |file| file.readline.to_i } rescue 0
     
-    push_game_state(LevelTransition.new(Level::INITIAL_LEVEL))
+    push_game_state Menu
   end
 
   def game_over

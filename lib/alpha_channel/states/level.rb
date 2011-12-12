@@ -1,3 +1,5 @@
+require_relative 'screen'
+
 require_relative '../wall'
 require_relative '../objects/boss'
 require_relative '../objects/the_anti_pixel'
@@ -6,14 +8,10 @@ require_relative '../objects/shooter_pixel'
 require_relative '../objects/omni_pixel'
 require_relative 'pause_game'
 
-class Level < GameState
+class Level < Screen
   trait :timer
 
   attr_reader :level, :player
-
-  LABEL_COLOR = Color.new(255, 0, 65, 0)
-  SCAN_LINES_COLOR = Color.new(255, 0, 0, 0)
-  BACKGROUND_COLOR = Color.new(255, 0, 40, 0)
   
   BOSS_LEVELS =  {
           4 => Boss,
@@ -59,7 +57,6 @@ class Level < GameState
       end
     end
 
-    @score_font = Font.create_for_os(FONT, 120)
     @level_font = Font.create_for_os(FONT, 360)
 
     @num_kills = 0
@@ -151,12 +148,12 @@ class Level < GameState
     period = $window.milliseconds_since_last_tick / 1000.0
     @space.step period
 
-	game_objects.of_class(Pixel).each {|p| p.shape.body.reset_forces }
+    game_objects.of_class(Pixel).each {|p| p.shape.body.reset_forces }
   end
 
   def draw
     super
-    fill(BACKGROUND_COLOR, ZOrder::BACKGROUND)
+    draw_background
 
     # Draw the current number of lives.
     life_color = Player::INITIAL_COLOR.dup
@@ -166,22 +163,13 @@ class Level < GameState
     spare_lives = $window.lives - 1
     left = ($window.width - spare_lives * Player::SIZE * 2) / 2.0 
     spare_lives.times do |i|
-      Player.image.draw left + (i * 2 * Player::SIZE), - Player::SIZE / 4, ZOrder::LIVES, 1.5, 1, LABEL_COLOR
+      Player.image.draw left + (i * 2 * Player::SIZE), - Player::SIZE / 4, ZOrder::LIVES, 1.5, 1, BACKGROUND_LABEL_COLOR
     end
 
-    #
-    write_text(@score_font, "%08d" % $window.score, 36)
-    write_text(@level_font, "%02d" % @level, 92)
-    write_text(@score_font, "%08d" % $window.high_score, 344)
+    write_text(@@score_font, "%08d" % $window.score, 36, BACKGROUND_LABEL_COLOR)
+    write_text(@level_font, "%02d" % @level, 92, BACKGROUND_LABEL_COLOR)
 
-    # Draw scan-lines over both.
-    (0..$window.height).step(4) do |y|
-      $window.draw_line(0, y, SCAN_LINES_COLOR, $window.width, y, SCAN_LINES_COLOR, ZOrder::SCAN_LINES)
-    end
-  end
-
-  def write_text(font, text, y)
-    x = ($window.width - font.text_width(text)) / 2
-    font.draw(text, x, y, ZOrder::LABEL, 1, 1, LABEL_COLOR)
+    draw_high_score
+    draw_scan_lines
   end
 end
