@@ -7,9 +7,7 @@
 /high_score.dat
 readme.html
 *.exe
-<<<<<<< HEAD
 *.log
 /README.html
-=======
-*.log
->>>>>>> bf53df537dde357fab57f99894808a84e7962f3a
+*.iss
+
