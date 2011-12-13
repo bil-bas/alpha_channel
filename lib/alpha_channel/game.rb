@@ -10,10 +10,10 @@ begin
 
 rescue LoadError
   $stderr.puts "Bundler gem not installed. To install:\n  gem install bundler"
-  exit
+  exit 0
 rescue Exception
   $stderr.puts "Gem dependencies not met. To install:\n  bundle install"
-  exit
+  exit 0
 end
 
 require 'yaml' # required for ocra.
@@ -73,7 +73,7 @@ class Game < Window
     @pixel.refresh_cache
     @pixel.clear color: :white
 
-    on_input(:q) { close if holding_any? :left_control, :right_control }
+    on_input(:q) { Kernel.exit if holding_any? :left_control, :right_control }
   end
 
   def setup
