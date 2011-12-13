@@ -19,7 +19,7 @@ h2. How to run the game
 * OS X: <pre>alpha_channel.app</pre>
 * Linux: <pre>ruby bin/spooner_ld_18.rbw</pre> (see below under _compatibility_ for requirements).
 
-h3. Ingame help (View by pressing F1)
+h3. Ingame help
 
     It is hell being a pixel. Why can't they all just get along?
 
@@ -43,13 +43,13 @@ h3. Ingame help (View by pressing F1)
 
     = Controls =
 
-      * ARROW KEYS OR WASD: Move self (or a controlled Pixel).
+      * ARROW KEYS, IJKL or WASD: Move self (or a controlled Pixel).
 
-      * SPACE OR RETURN: Take/relinquish control of a another Pixel.
+      * SPACE, CONTROL, ENTER or RETURN: Take/relinquish control of a another Pixel.
 
-      * P: Pause
+      * ESCAPE or P: Pause
 
-      * CONTROL+Q: Exit game.
+      * F1 or H: Help
 
 h2. Compatibility
 

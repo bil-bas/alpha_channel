@@ -47,8 +47,8 @@ class Level < Screen
 
     after(1000) { generate_enemy }
 
-    on_input(:p) { push_game_state PauseGame, finalize: false }
-    on_input([:f1, :h]) { push_game_state Help, finalize: false }
+    on_input(KEYS[:pause]) { push_game_state PauseGame.new(KEYS[:pause]), finalize: false }
+    on_input(KEYS[:help]) { push_game_state Help.new(KEYS[:help]), finalize: false }
 
     # Switch to boss levels (debugging).
     (1..5).each do |button|

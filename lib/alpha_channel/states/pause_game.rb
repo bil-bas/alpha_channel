@@ -1,6 +1,15 @@
-class PauseGame < GameStates::Pause
-  def initialize
+require_relative "overlay"
+
+class PauseGame < Overlay
+  def initialize(inputs)
+    super inputs
+
+    @font = Gosu::Font.new($window, FONT, 80)
+  end
+
+  def draw
     super
-    @font = Gosu::Font.new($window, FONT, 24)
+
+    write_text(@font, "PAUSED", ($window.height - @font.height) / 2, GAME_OVER_COLOR)
   end
 end

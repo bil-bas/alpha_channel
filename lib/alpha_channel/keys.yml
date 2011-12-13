@@ -1,0 +1,34 @@
+:action:
+  - :left_control
+  - :right_control
+  - :enter
+  - :return
+  - :space
+
+:up:
+  - :up
+  - :w
+  - :i
+
+:down:
+  - :down
+  - :s
+  - :k
+
+:left:
+  - :left
+  - :a
+  - :j
+
+:right:
+  - :right
+  - :d
+  - :l
+
+:help:
+  - :f1
+  - :h
+
+:pause:
+  - :p
+  - :escape

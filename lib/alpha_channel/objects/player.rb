@@ -23,7 +23,7 @@ class Player < Pixel
     super(space, options)
 
     add_inputs(
-      [:space, :return] => lambda { controlling? ? lose_control : gain_control }
+      KEYS[:action] => lambda { controlling? ? lose_control : gain_control }
     )
 
     @max_energy = @energy = MAX_ENERGY
@@ -43,25 +43,25 @@ class Player < Pixel
   end
 
   def move_controlled
-    if holding_any? :left, :a
-      if holding_any? :up, :w
+    if holding_any? *KEYS[:left]
+      if holding_any? *KEYS[:up]
         @controlled.move(-0.707, -0.707)
-      elsif holding_any? :down, :s
+      elsif holding_any? *KEYS[:down]
         @controlled.move(-0.707, 0.707)
       else
         @controlled.move(-1, 0)
       end
-    elsif holding_any? :right, :d
-      if holding_any? :up, :w
+    elsif holding_any? *KEYS[:right]
+      if holding_any? *KEYS[:up]
         @controlled.move(0.707, -0.707)
-      elsif holding_any? :down, :s
+      elsif holding_any? *KEYS[:down]
         @controlled.move(0.707, 0.707)
       else
         @controlled.move(1, 0)
       end
-    elsif holding_any? :up, :w
+    elsif holding_any? *KEYS[:up]
       @controlled.move(0, -1)
-    elsif holding_any? :down, :s
+    elsif holding_any? *KEYS[:down]
       @controlled.move(0, 1)
     end
   end

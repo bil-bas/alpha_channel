@@ -48,6 +48,8 @@ ENV['PATH'] = "#{BIN_DIR};#{ENV['PATH']}"
 FONT = File.join(EXTRACT_PATH, 'media/font/pixelated.ttf')
 Text.font = FONT
 
+KEYS = YAML::load_file File.expand_path "keys.yml", File.dirname(__FILE__)
+
 class Game < Window
   NAME = "Alpha Channel"
   INITIAL_LIVES = 3
