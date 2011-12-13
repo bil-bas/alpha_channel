@@ -58,7 +58,7 @@ Runs in a 640x480 window (or full-screen at that resolution).
 * Windows: Native executable (.exe) available.
 * OS X: Native executable (.app) available.
 * Linux: Can run from Ruby source + libraries + Ruby gems 
-  * Install Ruby 1.9.2
+  * Install Ruby 1.9.2 or higher
   * Install libraries needed by Gosu (see http://code.google.com/p/gosu/wiki/GettingStartedOnLinux) 
   * Install Ruby gem dependencies <pre>bundle install</pre> (may need to <pre>sudo gem install bundler</pre> beforehand).
   * <pre>ruby bin/alpha_channel.rbw</pre>
@@ -73,10 +73,11 @@ h2. Where to get a copy of the game from
 
 h2. Tools used
 
-* Ruby 1.9.2
+* Ruby 1.9.2/1.9.3
 * Developed using JetBrains RubyMine IDE
 * Sounds created with sfxr and converted to Ogg Vorbis format with Audacity.
 * Windows executable created with the Ocra gem.
+* Images created with GIMP.
 
 
 h2. External assets

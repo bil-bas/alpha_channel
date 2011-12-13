@@ -65,6 +65,8 @@ class Game < Window
   end
 
   def initialize(full_screen)
+    enable_undocumented_retrofication
+
     super(640, 480, full_screen)
 
     @pixel = TexPlay.create_image(self, 1, 1)
