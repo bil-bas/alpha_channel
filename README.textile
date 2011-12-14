@@ -69,7 +69,7 @@ Runs in a 640x480 window (or full-screen at that resolution).
 
 h3. Credits
 
-* Special thanks to Maverick (Brian Peppers) for the music!
+* Special thanks to "KanonBaum (Brian Peppers)":http://polyhedricpeppers.weebly.com/insufficient-ram.html for the music!
 * Thanks to everyone who tested the game
 
 h2. Tools used
