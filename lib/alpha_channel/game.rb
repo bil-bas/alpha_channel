@@ -41,6 +41,7 @@ end
 media_dir =  File.join(EXTRACT_PATH, 'media')
 Image.autoload_dirs << File.join(media_dir, 'image')
 Sample.autoload_dirs << File.join(media_dir, 'sound')
+Song.autoload_dirs << File.join(media_dir, 'music')
 
 BIN_DIR = File.join(EXTRACT_PATH, 'bin')
 ENV['PATH'] = "#{BIN_DIR};#{ENV['PATH']}"
@@ -74,6 +75,21 @@ class Game < Window
     @pixel.clear color: :white
 
     on_input(:q) { Kernel.exit if holding_any? :left_control, :right_control }
+    on_input(:"holding_+") { alter_volume(+0.01)  }
+    on_input(:"holding_-") { alter_volume(-0.01) }
+    on_input(:m) { toggle_music }
+  end
+
+  def alter_volume(amount)
+    @music.volume += amount if @music.playing?
+  end
+
+  def toggle_music
+    if @music.playing?
+      @music.pause
+    else
+      @music.play true
+    end
   end
 
   def setup
@@ -81,7 +97,11 @@ class Game < Window
     @lives = 0
     @score = 0
     @high_score = File.open(HIGH_SCORE_FILE, "r") { |file| file.readline.to_i } rescue 0
-    
+
+    @music = Song["alpha_alarm.ogg"]
+    @music.volume = 0.25
+    toggle_music
+
     push_game_state Menu
   end
 
@@ -113,7 +133,8 @@ class Game < Window
 
   def update
     super
-    self.caption = "#{NAME} v#{AlphaChannel::VERSION} - F1 for help [FPS: #{fps}]"
+    music = @music.playing? ? "#{(@music.volume * 100).round}%" : "off"
+    self.caption = "#{NAME} v#{AlphaChannel::VERSION} - F1 for help [FPS: #{fps.to_s.rjust(2)}] Music: #{music}"
   end
 
   def add_particle(particle)

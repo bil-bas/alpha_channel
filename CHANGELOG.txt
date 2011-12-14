@@ -1,9 +1,11 @@
 = Changelog
 
-== 1.2.5 (2011-12-10)
+== 1.3.0 (2011-12-10)
+  - Added some music (Thanks Maverick!)
+  - Created an installer for Windows.
   - Fixed occasional graphical glitches.
   - OSX package now runs on OS X 10.5 or later.
-  - Linux version now works with Ruby 1.9.3
+  - Source (Linux) version now works with Ruby 1.9.3
 
 == 1.2.4 (2011-11-24)
   - Hopefully fixed issue with openal in ocra package (I think - thanks jlnr and dahrkael)

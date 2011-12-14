@@ -5,14 +5,14 @@ It is hell being a pixel. Why can't they all just get along?
 
 <b><c=88bb88>= How to play =</c></b>
 
-  * <c=ff0000>Red</c> is evil; <c=ff0000>Red</c> wants to hurt <c=4444ff>Blue</c>!
+  * <c=ff0000>Red</c> is evil; <c=ff0000>Red</c> wants to hurt <c=6666ff>Blue</c>!
     <c=ffff00>Yellow</c> is <i>so</i> nasty, it makes <c=ff0000>Red</c> look nice by comparison!
     Thankfully, <c=00ff00>Green</c> is too busy thinking to even notice <c=4444ff>Blue</c>.
 
   * Take control of other pixels, and use them to protect yourself!
 
   * Controlling is very strenuous and will use up your limited
-    energy reserves (<c=4444ff>Blueness</c>).
+    energy reserves (<c=6666ff>Blueness</c>).
 
   * Pixels hurt pixels that aren't the same colour.
     It has always been like that, but no-one knows exactly why...
@@ -27,5 +27,9 @@ It is hell being a pixel. Why can't they all just get along?
   * SPACE, CONTROL, ENTER or RETURN: Take/relinquish control of a another Pixel.
 
   * ESCAPE or P: Pause
+
+  * M: Toggle music
+
+  * +/-: Increase/decrease music volume
 
   * F1 or H: Help

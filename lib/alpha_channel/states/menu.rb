@@ -9,7 +9,7 @@ class Menu < Screen
     @title_font = Font.create_for_os(FONT, 8)
     @info_font = Font.create_for_os(FONT, 36)
 
-    on_input(KEYS[:help]) { push_game_state Help.new KEYS[:help] }
+    on_input(KEYS[:help]) { push_game_state Help.new(KEYS[:help]), finalize: false }
 
     on_input :space do
       push_game_state LevelTransition.new(Level::INITIAL_LEVEL)
