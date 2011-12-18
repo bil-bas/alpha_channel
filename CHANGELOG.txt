@@ -1,5 +1,11 @@
 = Changelog
 
+== 1.3.1 (2011-12-16)
+
+  - Fixed a resource path so game would actually run in native Linux!
+  - Pixel glow shrinks as a pixel is wounded.
+  - Fixed: Physics messy when window is dragged while playing.
+  
 == 1.3.0 (2011-12-15)
   - All releases now include source code.
   - Added Windows INSTALLER.
@@ -32,7 +38,7 @@
 
   Ludum Dare #18 entry compatibility update
 
-  -  Fixed CTD in Linux.
+  - Fixed CTD in Linux.
   - Fixed font rendering in Linux.
   - Made OS X executable.
 

@@ -62,23 +62,24 @@ class Pixel < GameObject
   end
 
   def make_glow
-    @@glow = TexPlay.create_image($window, @@image.width * 5, @@image.height * 5)
-    @@glow.refresh_cache
-    @@glow.clear
+    @@glow ||= begin
+      glow = TexPlay.create_image($window, @@image.width * 5, @@image.height * 5)
+      glow.refresh_cache
+      glow.clear
 
-    #
-    center = @@glow.width / 2
-    radius =  @@glow.width / 2
-    pixel_width = @@image.width / 2 # Radius of the pixel.
-    pixel_radius = radius - pixel_width # Radius of the glow outside the pixel itself.
+      center = glow.width / 2
+      radius =  glow.width / 2
+      pixel_width = @@image.width / 2 # Radius of the pixel.
+      pixel_radius = radius - pixel_width # Radius of the glow outside the pixel itself.
 
-    @@glow.circle center, center, radius, :color => :white, :filled => true,
+      glow.circle center, center, radius, :color => :white, :filled => true,
       :color_control => lambda {|source, dest, x, y|
         # Glow starts at the edge of the pixel (well, its radius, since glow is circular, not rectangular)
         distance = distance(center, center, x, y) - pixel_width
         dest[3] = (1 - (distance / pixel_radius)) ** 2
         dest
-    }
+      }
+    end
   end
 
   def health=(value)

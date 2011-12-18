@@ -4,7 +4,7 @@ class Player < Pixel
   trait :timer
   attr_reader :energy, :max_energy
 
-  MIN_CAPTURE_DISTANCE = SIZE * 6
+  MAX_CAPTURE_DISTANCE = SIZE * 6 # Furthest you can be to begin capture.
   INITIAL_COLOR = Color.new(255, 50, 50, 255)
 
   def max_health; 1000; end
@@ -140,7 +140,7 @@ class Player < Pixel
       self.distance_to enemy
     end
 
-    if nearest_enemy and self.distance_to(nearest_enemy) <= MIN_CAPTURE_DISTANCE
+    if nearest_enemy and self.distance_to(nearest_enemy) <= MAX_CAPTURE_DISTANCE
       @controlled = nearest_enemy
       @controlled.control(self)
       color.blue = color.red = color.green = 75 # Blueness shoots over to the enemy.
@@ -151,17 +151,19 @@ class Player < Pixel
   end
 
   def make_beam
-    @@beam = TexPlay.create_image($window, @@image.width, @@image.height, color: :alpha)
-    @@beam.refresh_cache
+    @@beam ||= begin
+      image = TexPlay.create_image($window, @@image.width, @@image.height, color: :alpha)
+      image.refresh_cache
 
-    center = @@beam.width / 2
-    radius =  @@beam.width / 2
+      center = image.width / 2
+      radius =  image.width / 2
 
-    @@beam.circle center, center, radius, :color => :white, :filled => true,
-      :color_control => lambda {|source, dest, x, y|
-        distance = distance(center, center, x, y)
-        dest[3] = ((1 - (distance / radius)) ** 2) / 2
-        dest
-    }
+      image.circle center, center, radius, :color => :white, :filled => true,
+        :color_control => lambda {|source, dest, x, y|
+          distance = distance(center, center, x, y)
+          dest[3] = ((1 - (distance / radius)) ** 2) / 2
+          dest
+      }
+    end
   end
 end
