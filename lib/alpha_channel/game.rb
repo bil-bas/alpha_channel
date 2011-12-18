@@ -134,7 +134,7 @@ class Game < Window
   def update
     super
     music = @music.playing? ? "#{(@music.volume * 100).round}%" : "off"
-    self.caption = "#{NAME} v#{AlphaChannel::VERSION} - F1 for help [FPS: #{fps.to_s.rjust(2)}] Music: #{music}"
+    self.caption = "#{NAME} v#{AlphaChannel::VERSION} - F1 or H for help [FPS: #{fps.to_s.rjust(2)}] Music: #{music}"
   end
 
   def add_particle(particle)
