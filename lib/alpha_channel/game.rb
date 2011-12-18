@@ -98,7 +98,7 @@ class Game < Window
     @score = 0
     @high_score = File.open(HIGH_SCORE_FILE, "r") { |file| file.readline.to_i } rescue 0
 
-    @music = Song["alpha_alarm.ogg"]
+    @music = Song["Alpha_Alarm.ogg"]
     @music.volume = 0.25
     toggle_music
 
