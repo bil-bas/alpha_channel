@@ -136,17 +136,11 @@ class Player < Pixel
   end
 
   def gain_control
-    nearest_distance = Float::INFINITY
-    nearest_enemy = nil
-    parent.game_objects.of_class(Enemy).each do |enemy|
-      distance = distance(self.x, self.y, enemy.x, enemy.y)
-      if distance < MIN_CAPTURE_DISTANCE and distance < nearest_distance
-        nearest_distance = distance
-        nearest_enemy = enemy
-      end
+    nearest_enemy = parent.game_objects.of_class(Enemy).min_by do |enemy|
+      self.distance_to enemy
     end
 
-    if nearest_enemy
+    if nearest_enemy and self.distance_to(nearest_enemy) <= MIN_CAPTURE_DISTANCE
       @controlled = nearest_enemy
       @controlled.control(self)
       color.blue = color.red = color.green = 75 # Blueness shoots over to the enemy.

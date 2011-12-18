@@ -79,11 +79,6 @@ class Pixel < GameObject
         dest[3] = (1 - (distance / pixel_radius)) ** 2
         dest
     }
-
-    # Cut out the sprite itself, so we don't super-illuminate.
-    edge = (@@glow.width - @@image.width) / 2
-    @@glow.rect edge, edge, edge + @@image.width - 1, edge + @@image.height - 1,
-                :fill => true, :color => :alpha
   end
 
   def health=(value)
@@ -105,8 +100,9 @@ class Pixel < GameObject
   end
 
   def draw
+    glow_diameter = 0.4 + 0.8 * @health / max_health
+    @@glow.draw_rot(x, y, zorder + 1, 0, 0.5, 0.5, glow_diameter, glow_diameter, glow_color, :additive)
     super
-    @@glow.draw(x - @@glow.width / 2, y - @@glow.height / 2, zorder + 1, 1, 1, glow_color, :additive)
   end
 
   def die
