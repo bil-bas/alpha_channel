@@ -64,7 +64,7 @@ Runs in a 640x480 window (or full-screen at that resolution).
 * Linux: Can run from Ruby source + libraries + Ruby gems 
   * Install Ruby 1.9.2 or higher
   * Install libraries needed by Gosu (see http://code.google.com/p/gosu/wiki/GettingStartedOnLinux) 
-  * Install Ruby gem dependencies <pre>bundle install</pre> (may need to <pre>sudo gem install bundler</pre> beforehand).
+  * Install Ruby gem dependencies <pre>bundle install --without development test</pre> (may need to <pre>sudo gem install bundler</pre> beforehand).
   * <pre>ruby bin/alpha_channel.rbw</pre>
 
 h3. Credits

@@ -10,4 +10,4 @@ readme.html
 *.log
 /README.html
 *.iss
-
+/.bundle

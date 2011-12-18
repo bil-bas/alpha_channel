@@ -7,8 +7,6 @@ APP = "alpha_channel"
 APP_READABLE = "Alpha Channel"
 RELEASE_VERSION = AlphaChannel::VERSION
 
-OSX_GEMS = %w[chingu] # Source gems for inclusion in the .app package.
-
 LICENSE_FILE = "COPYING.txt"
 
 # My scripts which help me package games.
