@@ -8,7 +8,8 @@ TexPlay.set_options :caching => false
 begin
   require 'bundler/setup' unless defined?(OSX_EXECUTABLE) or ENV['OCRA_EXECUTABLE']
 
-rescue LoadError
+rescue LoadError => ex
+  $stderr.puts ex
   $stderr.puts "Bundler gem not installed. To install:\n  gem install bundler"
   exit 0
 rescue Exception
