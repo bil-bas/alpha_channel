@@ -145,7 +145,7 @@ class Level < Screen
       switch_game_state LevelTransition.new(@level + 1)
     end
 
-    period = $window.milliseconds_since_last_tick / 1000.0
+    period = [$window.milliseconds_since_last_tick / 1000.0, 0.1].min # Prevent window dragging breaking physics.
     @space.step period
 
     game_objects.of_class(Pixel).each {|p| p.shape.body.reset_forces }
