@@ -20,9 +20,7 @@ class Overlay < Screen
   def update
     super
 
-    period = [$window.milliseconds_since_last_tick / 1000.0, 0.1].min
-
-    @color.alpha +=  (period * MAX_SHADOW_ALPHA) / FADE_IN_DURATION unless @color.alpha > MAX_SHADOW_ALPHA
+    @color.alpha += ($window.frame_time * MAX_SHADOW_ALPHA) / FADE_IN_DURATION unless @color.alpha > MAX_SHADOW_ALPHA
   end
 
   def draw

@@ -2,6 +2,7 @@ Config = RbConfig if RUBY_VERSION > '1.9.2'
 
 require 'chingu'
 require 'chipmunk'
+require_relative 'chipmunk_ext/space'
 require 'texplay'
 TexPlay.set_options :caching => false
 
@@ -61,7 +62,7 @@ class Game < Window
   NAME = "Alpha Channel"
   INITIAL_LIVES = 3
   
-  attr_reader :particles, :high_score, :pixel
+  attr_reader :high_score, :pixel, :frame_time
   attr_accessor :score, :lives
 
   HIGH_SCORE_FILE = File.join(ROOT_PATH, 'high_score.dat')
@@ -89,6 +90,13 @@ class Game < Window
     on_input(:"holding_+") { alter_volume(+0.01)  }
     on_input(:"holding_-") { alter_volume(-0.01) }
     on_input(:m) { toggle_music }
+
+    @previous_time = Time.now.to_f
+    @frame_time = 0
+
+    @used_time = 0
+    @last_time_fps_calculated = milliseconds
+    @potential_fps = 0
   end
 
   def alter_volume(amount)
@@ -104,7 +112,6 @@ class Game < Window
   end
 
   def setup
-    @particles = []
     @lives = 0
     @score = 0
     @high_score = File.open(HIGH_SCORE_FILE, "r") { |file| file.readline.to_i } rescue 0
@@ -126,34 +133,36 @@ class Game < Window
     end  
   end
 
-  def random_position(extra_objects = [])
-    size = Pixel::SIZE
-    all = Player.all + Enemy.all + DeadPixel.all + extra_objects
-    loop do
-      pos = [rand($window.width - size * 2) + size, rand($window.height - size * 2) + size]
-      too_close = false
-      all.each do |other|
-        if distance(pos[0], pos[1], other.x, other.y) < other.safe_distance
-          too_close = true
-          break
-        end
-      end
-      return pos unless too_close
-    end
+  def draw
+    draw_started = milliseconds
+
+    super
+    @used_time += milliseconds - draw_started
   end
 
   def update
+    update_started = milliseconds
+
+    now = Time.now.to_f
+    @frame_time = [now - @previous_time, 0.1].min
+
     super
     music = @music.playing? ? "#{(@music.volume * 100).round}%" : "off"
-    self.caption = "#{NAME} v#{AlphaChannel::VERSION} - F1 or H for help [FPS: #{fps.to_s.rjust(2)}] Music: #{music}"
+    self.caption = "#{NAME} v#{AlphaChannel::VERSION} - F1 or H for help [FPS: #{fps.to_s.rjust(2)} (#{@potential_fps})] Music: #{music}"
+
+    @previous_time = now
+
+    @used_time += milliseconds - update_started
+
+    recalculate_cpu_load
   end
 
-  def add_particle(particle)
-    @particles << particle
-  end
-
-  def remove_particle(particle)
-    @particles.delete particle
+  def recalculate_cpu_load
+    if (milliseconds - @last_time_fps_calculated) >= 1000
+      @potential_fps = (fps / [(@used_time.to_f / (milliseconds - @last_time_fps_calculated)), 0.0001].max).floor
+      @used_time = 0
+      @last_time_fps_calculated = milliseconds
+    end
   end
 
   def self.run

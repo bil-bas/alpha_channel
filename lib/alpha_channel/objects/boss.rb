@@ -7,16 +7,18 @@ class Boss < Enemy
   def control_cost; 15; end
   def max_health; 1000; end
   def kill_score; 5000; end
-  def damage; 20; end
+  def damage; 1200; end
   def force; 4.5; end
   def num_kills; 1000; end # Always ends the level.
-  def initial_color; Color.new(255, 255, 255, 0); end
+  def initial_color; Color.rgb(255, 255, 0); end
   def intensity; 0.7; end
+  def boss?; true; end
 
   def initialize(space, options = {})
+    options = {
+        mass: 4,
+    }.merge! options
     super space, options
-
-    shape.body.mass *= 4
   end
 
   def on_spawn
@@ -29,7 +31,7 @@ class Boss < Enemy
   end
 
   def boss_update
-    Enemy.all.each do |pixel|
+    (parent.pixels - [parent.player]).each do |pixel|
      if pixel != self and not controlled? and not pixel.controlled? and distance_to(pixel) < FEAR_RANGE
         pixel.push(x, y, - FEAR_FORCE * (FEAR_RANGE / distance_to(pixel)))
       end

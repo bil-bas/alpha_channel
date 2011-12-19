@@ -2,7 +2,7 @@ class Wall < BasicGameObject
   ELASTICITY = FRICTION = 1.0
   attr_reader :shape, :side
 
-  def damage; 0.5; end
+  def damage; 30; end
   
   def initialize(space, x1, y1, x2, y2, side)
     super()
@@ -13,8 +13,9 @@ class Wall < BasicGameObject
     @shape.e = ELASTICITY
     @shape.u = FRICTION
     @shape.body.p = CP::Vec2.new(0, 0)
-    @shape.collision_type = :wall
+    @shape.collision_type = self.class
     @side = side
+    @shape.object = self
 
     space.add_shape @shape # Body not needed, since we don't want to be affected by gravity et al.
   end

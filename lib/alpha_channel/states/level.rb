@@ -11,7 +11,7 @@ require_relative 'pause_game'
 class Level < Screen
   trait :timer
 
-  attr_reader :level, :player
+  attr_reader :level, :player, :pixels, :particles
   
   BOSS_LEVELS =  {
           4 => Boss,
@@ -24,76 +24,91 @@ class Level < Screen
   INITIAL_LEVEL = 1
   LAST_LEVEL = 20
 
+  PHYSICS_STEP = 1 / 240.0
+
   def initialize(level, options = {})
-    options = { :died => false }.merge! options
+    options = {
+        died: false,
+    }.merge! options
     
     @level = level
     @died = options[:died]
 
     super()
 
-    # Set up Chipmunk physics.
-    @space = CP::Space.new
-    @space.damping = 0.05
+    init_physics
 
-    @player = Player.create(@space, :x => $window.width / 2, :y => $window.height / 2)
+    @pixels = []
+    @particles = Set.new
 
-    # Bad pixels.
-    blockages = [@player]
-    (3 + rand(10)).times do
-      pos = $window.random_position(blockages)
-      blockages << DeadPixel.create(@space, :x => pos[0], :y => pos[1])
-    end
+    @player = Player.new(@space, x: $window.width / 2, y: $window.height / 2)
+    (3 + rand(10)).times { DeadPixel.new(@space) }
 
     after(1000) { generate_enemy }
 
-    on_input(KEYS[:pause]) { push_game_state PauseGame.new(KEYS[:pause]), finalize: false }
-    on_input(KEYS[:help]) { push_game_state Help.new(KEYS[:help]), finalize: false }
+    on_input(KEYS[:pause]) { push_game_state PauseGame.new(KEYS[:pause]) }
+    on_input(KEYS[:help]) { push_game_state Help.new(KEYS[:help]) }
 
     # Switch to boss levels (debugging).
-    (1..5).each do |button|
-      on_input :"#{button}" do       
-        switch_game_state LevelTransition.new(button * 4) if holding?(:left_control)
+    if DEVELOPMENT_MODE
+      (1..5).each do |button|
+        on_input :"#{button}" do
+          switch_game_state Level.new(button * 4) if holding?(:left_control)
+        end
       end
     end
 
     @level_font = Font.create_for_os(FONT, 360)
-
     @num_kills = 0
+  end
 
-    blockages.each do |object|
-      @space.add_body object.shape.body
-      @space.add_shape object.shape
+  def remove_pixel(pixel)
+    @pixels.delete pixel
+  end
+
+  def add_pixel(pixel)
+    @pixels << pixel
+  end
+
+  def add_particle(particle)
+    @particles << particle
+  end
+
+  def remove_particle(particle)
+    @particles.delete particle
+  end
+
+  def update_particles
+    @particles.each {|x| x.update_trait; x.update }
+  end
+
+  def init_physics
+    # Set up Chipmunk physics.
+    @space = CP::Space.new
+    @space.damping = 0.05
+
+    @space.on_collision(Pixel, Pixel) do |pixel1, pixel2|
+      pixel1.fight(pixel2) if pixel1.hurts?(pixel2)
+      pixel1.solid? and pixel2.solid? # Only collide if both are solid.
     end
 
-    @space.add_collision_func(:pixel, :pixel) do |shape1, shape2|
-      pixels = game_objects.of_class(Pixel)
-      pixel1 = pixels.find { |p| p.shape == shape1 }
-      pixel2 = pixels.find { |p| p.shape == shape2 }
-
-      if pixel1 and pixel2
-        pixel1.fight(pixel2) if  pixel1.hurts?(pixel2)
-        pixel1.solid? and pixel2.solid? # Only collide if both are solid.
-      else
-        false # Either pixel has already been destroyed, so don't collide.
-      end
-    end
-
+    # Walls are just there for physics. Don't need to be updated or drawn; just kept.
+    @walls = []
     [
       [0, 0, 0, $window.height, :left],
       [0, $window.height, $window.width, $window.height, :bottom],
       [$window.width, $window.height, $window.width, 0, :right],
       [$window.width, 0, 0, 0, :top]
     ].each do |x1, y1, x2, y2, side|
-      wall = Wall.create(@space, x1, y1, x2, y2, side)
+      @walls << Wall.new(@space, x1, y1, x2, y2, side)
     end
 
-    @space.add_collision_func(:pixel, :wall) do |pixel_shape, side_shape|
-      pixel = game_objects.of_class(Pixel).find { |p| p.shape == pixel_shape }
-      wall = Wall.all.find {|w| w.shape == side_shape }
-      pixel.hit_wall(wall) if pixel and wall
+    @space.on_collision(Pixel, Wall) do |pixel, wall|
+      pixel.hit_wall(wall)
       true # We always want a collision.
     end
+
+    @physics_time = 0.0 # The amount of time we have backlogged for physics.
   end
   
   def setup
@@ -104,25 +119,21 @@ class Level < Screen
       $window.lives = Game::INITIAL_LIVES
     end
   end
-  
-  def finalize
-    game_objects.each(&:destroy)
+
+  def boss_on_level?
+    pixels.any?(&:boss?)
   end
 
   def generate_enemy
-    x, y = $window.random_position
-
     # Boss spawns on 5/10/15/20, only after you've killed someone.
-    enemy_type = if BOSS_LEVELS[@level] and @num_kills > 0 and Boss.all.empty?
-      BOSS_LEVELS[@level] # Only one boss at a time.
+    if BOSS_LEVELS[@level] and @num_kills > 0 and not boss_on_level?
+      BOSS_LEVELS[@level].new(@space) # Only one boss at a time.
     else
-      Enemy
+      Enemy.new(@space)
     end
 
-    enemy_type.create(@space, :x => x, :y => y)
-
     # Spawn faster per level, but slower if boss is out. 
-    after(500 + rand(4000 - @level * 150 + (Boss.all.empty? ? 0 : 2000))) { generate_enemy }
+    after(500 + rand(4000 - @level * 150 + (boss_on_level? ? 2000 : 0))) { generate_enemy }
   end
 
   def add_kills(value)
@@ -136,19 +147,22 @@ class Level < Screen
       if $window.lives == 1
         after(1000) { push_game_state GameOver if current_game_state == self }
       else
-        switch_game_state(LevelTransition.new(@level, :died => true))
+        switch_game_state(LevelTransition.new(@level, died: true))
       end
-    elsif Boss.all.empty? and @num_kills >= (@level / 4) + 5
+    elsif not boss_on_level? and @num_kills >= (@level / 4) + 5
       # Only win if the boss has been killed or enough reds are killed.
       $window.score += @level * 1000
       $window.lives += 1 if BOSS_LEVELS[@level]
       switch_game_state LevelTransition.new(@level + 1)
+    else
+      update_particles
+      @pixels.each(&:update)
+
+      @physics_time += $window.frame_time
+      num_steps = (@physics_time / PHYSICS_STEP).round
+      @physics_time -= num_steps * PHYSICS_STEP
+      num_steps.times { @space.step PHYSICS_STEP }
     end
-
-    period = [$window.milliseconds_since_last_tick / 1000.0, 0.1].min # Prevent window dragging breaking physics.
-    @space.step period
-
-    game_objects.of_class(Pixel).each {|p| p.shape.body.reset_forces }
   end
 
   def draw
@@ -171,5 +185,8 @@ class Level < Screen
 
     draw_high_score
     draw_scan_lines
+
+    @particles.each(&:draw)
+    @pixels.each(&:draw)
   end
 end

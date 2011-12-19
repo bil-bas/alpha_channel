@@ -6,7 +6,9 @@ class LevelTransition < GameState
   def initialize(level, options = {})
     super options
 
-    options = { :died => false }.merge! options
+    options = {
+        died: false
+    }.merge! options
     
     @new_level = Level.new(level, options)
     @overlay_color = Color.rgba(0, 0, 0, 0)
@@ -20,18 +22,18 @@ class LevelTransition < GameState
   def update
     super
 
-    $window.particles.each { |x| x.update_trait; x.update }
-
-    period = [$window.milliseconds_since_last_tick / 1000.0, 0.1].min
-
     if @fading == :in
       # Fade in.
-      @overlay_color.alpha -= (period * 255) / FADE_IN_DURATION
+      @overlay_color.alpha -= ($window.frame_time * 255) / FADE_IN_DURATION
 
       pop_game_state if @overlay_color.alpha <= 0
     else
-      # Fade in.
-      @overlay_color.alpha += (period * 255) / FADE_OUT_DURATION
+      # Fade out.
+      @overlay_color.alpha += ($window.frame_time * 255) / FADE_OUT_DURATION
+
+      if previous_game_state.respond_to? :update_particles
+        previous_game_state.update_particles
+      end
 
       if @overlay_color.alpha >= 255
         game_state_manager.pop_until_game_state Menu

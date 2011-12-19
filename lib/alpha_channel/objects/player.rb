@@ -5,11 +5,11 @@ class Player < Pixel
   attr_reader :energy, :max_energy
 
   MAX_CAPTURE_DISTANCE = SIZE * 6 # Furthest you can be to begin capture.
-  INITIAL_COLOR = Color.new(255, 50, 50, 255)
+  INITIAL_COLOR = Color.rgb(50, 50, 255)
 
   def max_health; 1000; end
-  def force; 1.6; end
-  def damage; 5; end
+  def force; 3.3; end
+  def damage; 300; end
   def safe_distance; SIZE * 4; end
   def initial_color; INITIAL_COLOR; end
   def intensity; 1; end
@@ -17,9 +17,12 @@ class Player < Pixel
   def self.image; @@image; end
 
   MAX_ENERGY = 1000
-  ENERGY_HEAL = 5
+  ENERGY_HEAL = 300
 
   def initialize(space, options = {})
+    options = {
+        mass: 2,
+    }.merge! options
     super(space, options)
 
     add_inputs(
@@ -28,14 +31,11 @@ class Player < Pixel
 
     @max_energy = @energy = MAX_ENERGY
 
-
     @hurt = Sample["hurt_player.ogg"]
     @control_on = Sample["control_on.ogg"]
     @control_off = Sample["control_off.ogg"]
     @control_fail = Sample["control_fail.ogg"]
     @death = Sample["death.ogg"]
-
-    shape.body.mass *= 2
 
     make_beam unless defined? @@beam
 
@@ -43,6 +43,9 @@ class Player < Pixel
   end
 
   def move_controlled
+    # Ensure the player, even if they are controlling something else, has forces removed.
+    @controlled.shape.body.reset_forces
+
     if holding_any? *KEYS[:left]
       if holding_any? *KEYS[:up]
         @controlled.move(-0.707, -0.707)
@@ -69,13 +72,12 @@ class Player < Pixel
   def update
     super
 
-    @shape.body.reset_forces # Ensure the player, even if they are controlling something else, has forces removed.
     move_controlled
 
     if controlling?
       self.energy -= @controlled.control_cost
     else
-      self.energy += ENERGY_HEAL
+      self.energy += ENERGY_HEAL * $window.frame_time
     end
   end
 
@@ -83,7 +85,7 @@ class Player < Pixel
     super
     if controlling?
       distance = distance_to(@controlled)
-      beam_color = Color.new(0, 0, 0, 0)
+      beam_color = Color.rgba(0, 0, 0, 0)
       color_self = color
       color_controlled = @controlled.color
       
@@ -136,7 +138,7 @@ class Player < Pixel
   end
 
   def gain_control
-    nearest_enemy = parent.game_objects.of_class(Enemy).min_by do |enemy|
+    nearest_enemy = (parent.pixels - [self]).min_by do |enemy|
       self.distance_to enemy
     end
 
@@ -158,12 +160,12 @@ class Player < Pixel
       center = image.width / 2
       radius =  image.width / 2
 
-      image.circle center, center, radius, :color => :white, :filled => true,
-        :color_control => lambda {|source, dest, x, y|
-          distance = distance(center, center, x, y)
-          dest[3] = ((1 - (distance / radius)) ** 2) / 2
-          dest
-      }
+      image.circle center, center, radius, color: :white, filled: true,
+          color_control: lambda {|source, dest, x, y|
+            distance = distance(center, center, x, y)
+            dest[3] = ((1 - (distance / radius)) ** 2) / 2
+            dest
+          }
     end
   end
 end

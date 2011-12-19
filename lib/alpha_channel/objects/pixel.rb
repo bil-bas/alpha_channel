@@ -2,14 +2,25 @@ class Pixel < GameObject
   INITIAL_HEALTH = 10
   PHASE_IN_DURATION = 3 * 1000 # Number of ms to phase in over.
   SIZE = 32
+  HURT_SOUND_DELAY = 50 # ms between hurting sounds.
 
   attr_reader :health, :last_health, :shape
 
+  def exists?; @exists; end
   def controlled?; false; end
   def solid?; true; end
   def safe_distance; SIZE * 2; end
-  def play_hurt?; true; end
   def distance_to(other); distance(x, y, other.x, other.y); end
+  def boss?; false; end
+  def alive?; @health > 0; end
+  def dead?; @health == 0; end
+
+  def play_hurt
+    if milliseconds - @played_hurt_at > HURT_SOUND_DELAY
+      @hurt.play(0.15)
+      @played_hurt_at = milliseconds
+    end
+  end
 
   # The color a pixel glows is based on its colour affected by
   # its intensity, since some colours naturally glow more.
@@ -33,28 +44,57 @@ class Pixel < GameObject
   def initialize(space, options = {})
     @space = space
 
-    @@image ||=  TexPlay.create_image($window, SIZE, SIZE, :color => :white)
+    @@image ||=  TexPlay.create_image($window, SIZE, SIZE, color: :white)
+
+    options = {
+        image: @@image,
+        zorder: ZOrder::PIXEL,
+        mass: 1, # Default mass for a pixel.
+    }.merge! options
+
+    super(options)
+
+    self.x, self.y = random_position unless options[:x] and options[:y]
 
     make_glow unless defined? @@glow
-
-    options = {:image => @@image, :zorder => ZOrder::PIXEL}.merge! options
-    super(options)
 
     @last_health = @health = INITIAL_HEALTH
     @amount_to_heal = max_health - INITIAL_HEALTH
     @amount_left_to_heal = @amount_to_heal
     self.health = health # get correct colour shown.
 
-    body = CP::Body.new(100, Float::INFINITY)
+    @played_hurt_at = 0
+    init_physics(options[:mass])
+
+    parent.add_pixel self
+
+    on_spawn
+  end
+
+  def random_position
+    # Gradually reduce the minimum spawn distance, in case objects are pushed a bit too close.
+    (0..128).step(4) do |distance_reduction|
+      # Try several random positions before trying with a reduced safe distance.
+      100.times do
+        x, y = rand($window.width - SIZE * 2) + SIZE, rand($window.height - SIZE * 2) + SIZE
+        if parent.pixels.all? {|p| distance(x, y, p.x, p.y) > (p.safe_distance - distance_reduction) }
+          return [x, y]
+        end
+      end
+    end
+  end
+
+  def init_physics(mass)
+    body = CP::Body.new(mass * 100, Float::INFINITY)
+
     vertices = [CP::Vec2.new(-width / 2, -height / 2), CP::Vec2.new(-width / 2, height / 2), CP::Vec2.new(width / 2, height / 2), CP::Vec2.new(width / 2, -height / 2)]
     @shape = CP::Shape::Poly.new(body, vertices, CP::Vec2.new(0,0))
     @shape.body.p = CP::Vec2.new(x, y)
-    @shape.collision_type = :pixel
+    @shape.collision_type = Pixel
+    @shape.object = self
 
     @space.add_body @shape.body
     @space.add_shape @shape
-
-    on_spawn
   end
 
   def on_spawn
@@ -72,25 +112,30 @@ class Pixel < GameObject
       pixel_width = @@image.width / 2 # Radius of the pixel.
       pixel_radius = radius - pixel_width # Radius of the glow outside the pixel itself.
 
-      glow.circle center, center, radius, :color => :white, :filled => true,
-      :color_control => lambda {|source, dest, x, y|
-        # Glow starts at the edge of the pixel (well, its radius, since glow is circular, not rectangular)
-        distance = distance(center, center, x, y) - pixel_width
-        dest[3] = (1 - (distance / pixel_radius)) ** 2
-        dest
-      }
+      glow.circle center, center, radius, color: :white, filled: true,
+          color_control: lambda {|source, dest, x, y|
+            # Glow starts at the edge of the pixel (well, its radius, since glow is circular, not rectangular)
+            distance = distance(center, center, x, y) - pixel_width
+            dest[3] = (1 - (distance / pixel_radius)) ** 2
+            dest
+          }
     end
   end
 
   def health=(value)
     return if @health == 0
 
+    play_hurt if value < @health
+
     @health = [[0, value].max, max_health].min
-    self.alpha = ((@health * 155.0 / max_health) + 100).to_i
+    self.alpha = (@health * 155.0 / max_health) + 100
+
     die if @health == 0
   end
 
   def update
+    @shape.body.reset_forces unless controlled?
+
     super
 
     self.health += auto_heal
@@ -111,12 +156,16 @@ class Pixel < GameObject
     half_width = width / 2
     ((x - half_width)...(x + half_width)).step(width / 4) do |x|
       ((y - half_width)...(y + half_width)).step(width / 4) do |y|
-        PixelFragment.create(intensity, :x => x, :y => y, :color => color)
+        PixelFragment.new(intensity, x: x, y: y, color: color)
       end
     end
 
+    @shape.object = nil
     @space.remove_shape @shape
     @space.remove_body @shape.body
+    @space = @shape = nil
+
+    parent.remove_pixel self
 
     destroy
   end
@@ -130,11 +179,10 @@ class Pixel < GameObject
       enemy.fight self # Give priority to the player.
     elsif enemy.is_a? Boss and not (self.is_a? Boss or self.is_a? Player)
       enemy.fight self # Give priority to a boss, unless I am one.
-    elsif self.hurts?(enemy)
-      self.health -= enemy.damage
-      enemy.health -= damage
+    elsif hurts?(enemy)
+      self.health -= enemy.damage * parent.class::PHYSICS_STEP
+      enemy.health -= damage * parent.class::PHYSICS_STEP
 
-      @hurt.play(0.1) if play_hurt?
       color = rand(100) < 50 ? self.color : enemy.color
       spark(color, x - (x - enemy.x) / 2, y - (y - enemy.y) / 2)
     end
@@ -156,16 +204,13 @@ class Pixel < GameObject
   end
 
   def spark(color, x, y)
-    unless $window.particles.size > 100
-      PixelFragment.create(intensity, :x => x, :y => y, :color => color.dup, :scale_rate => -0.02)
-    end
+    PixelFragment.generate(parent.class::PHYSICS_STEP, intensity, x: x, y: y, color: color.dup)
   end
 
   def hit_wall(wall)
     # Ensure you don't get wounded multiple times.
-    self.health = [last_health - wall.damage, health].min
-
-    @hurt.play(0.1)
+    damage = wall.damage * parent.class::PHYSICS_STEP
+    self.health = [last_health - damage, health].min
 
     x_pos, y_pos = case wall.side
       when :left then [x - SIZE / 2, y]

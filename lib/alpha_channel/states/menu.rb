@@ -15,21 +15,22 @@ class Menu < Screen
       push_game_state LevelTransition.new(Level::INITIAL_LEVEL)
     end
 
-    @original_title = Image["title.png"]
+    @title = Image["title.png"]
 
-    create_title
+    update_title
 
-    every(100) { create_title }
+    every(100) { update_title }
   end
 
-  def create_title
-    @title = @original_title.dup
-    @title.clear dest_select: :white, color_control: proc {|c, x, y|
-      alpha = Math::sin(milliseconds / 250.0 + 100 * y) * 0.07 +
-          rand() * 0.05 + rand() * 0.05 +
-          0.2
-      [0, 255, 0, alpha]
-    }
+  def update_title
+    @title.clear dest_ignore: :transparent,
+        color_control: proc {|c, x, y|
+          alpha = Math::sin(milliseconds / 250.0 + 100 * y) * 0.07 +
+              rand() * 0.05 + rand() * 0.05 +
+              0.2
+
+          [0, 255, 0, alpha]
+        }
   end
 
   def draw

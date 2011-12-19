@@ -4,7 +4,7 @@ class Enemy < Pixel
   def control_cost; 5; end
   def max_health; 400; end
   def kill_score; 600; end
-  def damage; 10; end
+  def damage; 600; end
   def force; 1.2; end
   def num_kills; 1; end
   def initial_color; Color::RED; end

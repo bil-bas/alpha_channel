@@ -4,6 +4,7 @@
 
   - Fixed a resource path so game would actually run in native Linux!
   - Pixel glow shrinks as a pixel is wounded.
+  - Made the game entirely independent of frames per second, so it can be played on older hardware.
   - Fixed: Physics messy when window is dragged while playing.
   
 == 1.3.0 (2011-12-15)

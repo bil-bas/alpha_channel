@@ -3,14 +3,14 @@ require_relative 'boss'
 class VampirePixel < Boss
   def max_health; 400; end
   def kill_score; 2000; end
-  def initial_color; Color.new(255, 0, 150, 150); end
+  def initial_color; Color.rgb(0, 150, 150); end
   def intensity; 0.5; end
-  def damage; 15; end
+  def damage; 900; end
 
   def auto_heal; 3; end
 
   def boss_update
-    # Nothing special.
+    # Nothing special.a
   end
 
   def fight(pixel)
@@ -19,8 +19,9 @@ class VampirePixel < Boss
 
     super
 
-    if pixel.health == 0 and not pixel.is_a? Player  and not (controlled? or pixel_controlled)
-      vampire = self.class.create(@space, :x => pixel.x, :y => pixel.y)
+    # If the other pixel dies and we are still alive, then create a vampire in its stead!
+    if alive? and pixel.dead? and not pixel.is_a? Player and not (controlled? or pixel_controlled)
+      vampire = self.class.new(@space, x: pixel.x, y: pixel.y)
       vampire.health = max_health / 2 # Start a bit stronger, so they don't instantly die
     end
   end

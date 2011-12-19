@@ -7,7 +7,7 @@ class GameOver < Screen
     @game_over_font = Font.create_for_os(FONT, 240)
     @info_font = Font.create_for_os(FONT, 36)
 
-    @game_ended = $window.ms
+    @game_ended = milliseconds
 
     @words = $window.game_over ? ["HIGH", "SCORE"] : ["GAME", "OVER"]
 
@@ -29,6 +29,8 @@ class GameOver < Screen
     previous_game_state.draw
     super
 
+    $window.flush
+
     write_text(@game_over_font, @words[0], 80, @color)
     write_text(@game_over_font, @words[1],  200, @color)
     write_text(@info_font, "(R)estart or (Q)uit", OPTIONS_Y, OPTIONS_COLOR)
@@ -36,7 +38,7 @@ class GameOver < Screen
 
   def update
     super
-    $window.particles.each { |x| x.update_trait; x.update }
-    @color.alpha = ((Math.cos(($window.ms - @game_ended) / 300.0) * 80) + 100).round
+    previous_game_state.update_particles
+    @color.alpha = ((Math.cos((milliseconds - @game_ended) / 300.0) * 80) + 100).round
   end
 end
