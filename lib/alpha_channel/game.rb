@@ -17,6 +17,11 @@ rescue Exception
   exit 0
 end
 
+begin
+  require 'pry-remote' if DEVELOPMENT_MODE
+rescue LoadError
+end
+
 require 'yaml' # required for ocra.
 
 include Gosu
@@ -70,6 +75,11 @@ class Game < Window
     enable_undocumented_retrofication
 
     super(640, 480, full_screen)
+
+    if DEVELOPMENT_MODE
+      Thread.fork { binding.remote_pry }
+      on_input(:"f12") { binding.pry }
+    end
 
     @pixel = TexPlay.create_image(self, 1, 1)
     @pixel.refresh_cache
