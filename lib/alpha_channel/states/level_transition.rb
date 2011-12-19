@@ -1,5 +1,5 @@
 class LevelTransition < GameState
-  TRANSITION_DURATION = 3000.0 # 3s to fade in/out.
+  TRANSITION_DURATION = 3.0 # 3s to fade in/out.
   FADE_OUT_DURATION = TRANSITION_DURATION / 2
   FADE_IN_DURATION = TRANSITION_DURATION / 2
 
@@ -10,7 +10,6 @@ class LevelTransition < GameState
     
     @new_level = Level.new(level, options)
     @overlay_color = Color.rgba(0, 0, 0, 0)
-    @previous_time = milliseconds
     @fading = :out
 
     @@sound ||= Sample["level.ogg"]
@@ -23,16 +22,16 @@ class LevelTransition < GameState
 
     $window.particles.each { |x| x.update_trait; x.update }
 
-    time_expended = [milliseconds - @previous_time, 100].min
+    period = [$window.milliseconds_since_last_tick / 1000.0, 0.1].min
 
     if @fading == :in
       # Fade in.
-      @overlay_color.alpha -= (time_expended * 255) / FADE_IN_DURATION
+      @overlay_color.alpha -= (period * 255) / FADE_IN_DURATION
 
       pop_game_state if @overlay_color.alpha <= 0
     else
       # Fade in.
-      @overlay_color.alpha += (time_expended * 255) / FADE_OUT_DURATION
+      @overlay_color.alpha += (period * 255) / FADE_OUT_DURATION
 
       if @overlay_color.alpha >= 255
         game_state_manager.pop_until_game_state Menu
@@ -41,8 +40,6 @@ class LevelTransition < GameState
         @fading = :in
       end
     end
-
-    @previous_time = milliseconds
   end
 
   def draw

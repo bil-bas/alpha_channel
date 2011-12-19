@@ -2,7 +2,8 @@ require_relative "screen"
 
 class Overlay < Screen
   SHADOW_COLOR = Color.rgba 0, 0, 0, 0
-  MAX_SHADOW_ALPHA = 150
+  MAX_SHADOW_ALPHA = 175
+  FADE_IN_DURATION = 1
 
   def initialize(inputs)
     super()
@@ -19,7 +20,9 @@ class Overlay < Screen
   def update
     super
 
-    @color.alpha += 4 unless @color.alpha > MAX_SHADOW_ALPHA
+    period = [$window.milliseconds_since_last_tick / 1000.0, 0.1].min
+
+    @color.alpha +=  (period * MAX_SHADOW_ALPHA) / FADE_IN_DURATION unless @color.alpha > MAX_SHADOW_ALPHA
   end
 
   def draw
