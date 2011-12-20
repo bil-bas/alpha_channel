@@ -177,7 +177,7 @@ class Level < Screen
     spare_lives = $window.lives - 1
     left = ($window.width - spare_lives * Player::SIZE * 2) / 2.0 
     spare_lives.times do |i|
-      Player.image.draw left + (i * 2 * Player::SIZE), - Player::SIZE / 4, ZOrder::LIVES, 1.5, 1, BACKGROUND_LABEL_COLOR
+      $window.pixel.draw left + (i * 2 * Player::SIZE), - Player::SIZE / 4, ZOrder::LIVES, Player::SIZE * 1.5, Player::SIZE, BACKGROUND_LABEL_COLOR
     end
 
     write_text(@@score_font, "%08d" % $window.score, 36, BACKGROUND_LABEL_COLOR)

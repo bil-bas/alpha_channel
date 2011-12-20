@@ -54,7 +54,7 @@ class ShooterPixel < Boss
     super
 
     if @shootee    
-      @@glow.draw_rot(@shootee.x, @shootee.y, zorder + 1, 0, 0.5, 0.5, 1, 1, glow_color, :additive)
+      @glow.draw_rot(@shootee.x, @shootee.y, zorder + 1, 0, 0.5, 0.5, 1, 1, glow_color, :additive)
     end
   end
 end

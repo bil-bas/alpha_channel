@@ -13,8 +13,7 @@ class Player < Pixel
   def safe_distance; SIZE * 4; end
   def initial_color; INITIAL_COLOR; end
   def intensity; 1; end
-
-  def self.image; @@image; end
+  def player?; true; end
 
   MAX_ENERGY = 1000
   ENERGY_HEAL = 300
@@ -37,7 +36,7 @@ class Player < Pixel
     @control_fail = Sample["control_fail.ogg"]
     @death = Sample["death.ogg"]
 
-    make_beam unless defined? @@beam
+    @beam = Image["control_beam.png"]
 
     lose_control
   end
@@ -101,7 +100,7 @@ class Player < Pixel
         beam_color.alpha = (color_self.alpha * self_proportion + color_controlled.alpha * controlled_proportion).to_i
 
         thickness = 1 + controlled_proportion * 2
-        @@beam.draw(x_pos - (@@beam.width * thickness / 2), y_pos - (@@beam.width * thickness / 2), ZOrder::CONTROL,
+        @beam.draw(x_pos - (@beam.width * thickness / 2), y_pos - (@beam.width * thickness / 2), ZOrder::CONTROL,
                     thickness, thickness, beam_color, :additive)
       end
     end
@@ -149,23 +148,6 @@ class Player < Pixel
       @control_on.play(0.5)
     else
       @control_fail.play(0.5)
-    end
-  end
-
-  def make_beam
-    @@beam ||= begin
-      image = TexPlay.create_image($window, @@image.width, @@image.height, color: :alpha)
-      image.refresh_cache
-
-      center = image.width / 2
-      radius =  image.width / 2
-
-      image.circle center, center, radius, color: :white, filled: true,
-          color_control: lambda {|source, dest, x, y|
-            distance = distance(center, center, x, y)
-            dest[3] = ((1 - (distance / radius)) ** 2) / 2
-            dest
-          }
     end
   end
 end

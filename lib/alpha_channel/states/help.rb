@@ -1,12 +1,12 @@
 require_relative "overlay"
 
 class Help < Overlay
+  TEXT = File.read(File.expand_path("help.txt", File.dirname(__FILE__)))
+
   def initialize(inputs)
     super inputs
 
-    @@text ||= File.read File.expand_path "help.txt", File.dirname(__FILE__)
-
-    @text = Text.new(@@text, x: 15, y: 10, align: :left, size: 13)
+    @text = Text.new(TEXT, x: 15, y: 10, align: :left, size: 13)
   end
 
   def draw

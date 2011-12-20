@@ -1,6 +1,7 @@
 # A particle uses simplified physics and spins off for a little while before disappearing.
 class PixelFragment < GameObject
-  SCALE_RATE = 0.5
+  SIZE = 8
+  SCALE_RATE = SIZE / 1.5 # So it takes 1.5s to decay.
 
   class << self
     # #generate will create particles based on FPS. #new will always do it.
@@ -20,8 +21,7 @@ class PixelFragment < GameObject
   def initialize(intensity, options = {})
     @intensity = intensity * 0.6
     
-    @@image ||= TexPlay.create_image($window, Pixel::SIZE / 4, Pixel::SIZE / 4, :color => :white)
-    make_glow unless defined? @@glow
+    @glow = Image["fragment_glow.png"]
 
     angle = rand 360
     @velocity_x = Math.cos(angle) * (48 + rand(24))
@@ -31,29 +31,14 @@ class PixelFragment < GameObject
 
     options = {
       zorder: ZOrder::PARTICLES,
-      image: @@image,
+      image: $window.pixel,
+      factor: SIZE,
       mode: :default,
     }.merge! options
 
     super options
 
     parent.add_particle self
-  end
-
-  def make_glow
-    @@glow = TexPlay.create_image($window, @@image.width * 10, @@image.height * 10)
-    @@glow.refresh_cache
-    @@glow.clear
-
-    center = @@glow.width / 2
-    radius =  @@glow.width / 2
-
-    @@glow.circle center, center, radius, color: :white, filled: true,
-        color_control: lambda {|source, dest, x, y|
-          distance = distance(center, center, x, y)
-          dest[3] = ((1 - (distance / radius)) ** 2) / 8.0
-          dest
-        }
   end
 
   def update
@@ -78,6 +63,6 @@ class PixelFragment < GameObject
     super
     color = self.color.dup
     color.alpha = (color.alpha * @intensity).to_i
-    @@glow.draw_rot(x, y, zorder + 0.01, 0, 0.5, 0.5, 1, 1, color, :additive)
+    @glow.draw_rot(x, y, zorder + 0.01, 0, 0.5, 0.5, 1, 1, color, :additive)
   end
 end

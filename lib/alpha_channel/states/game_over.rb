@@ -21,7 +21,7 @@ class GameOver < Screen
       switch_game_state LevelTransition.new(Level::INITIAL_LEVEL)
     end
     on_input :q do
-      Kernel.exit
+      $window.close
     end
   end
 

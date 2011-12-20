@@ -14,8 +14,8 @@ class LevelTransition < GameState
     @overlay_color = Color.rgba(0, 0, 0, 0)
     @fading = :out
 
-    @@sound ||= Sample["level.ogg"]
-    @@sound.play(0.5) unless options[:died]
+    @sound = Sample["level.ogg"]
+    @sound.play(0.5) unless options[:died]
   end
 
   # Ensure that particles keep moving.

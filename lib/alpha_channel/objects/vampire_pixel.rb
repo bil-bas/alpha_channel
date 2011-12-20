@@ -7,7 +7,7 @@ class VampirePixel < Boss
   def intensity; 0.5; end
   def damage; 900; end
 
-  def auto_heal; 3; end
+  def auto_heal; 300 * $window.frame_time; end
 
   def boss_update
     # Nothing special.a
@@ -20,7 +20,7 @@ class VampirePixel < Boss
     super
 
     # If the other pixel dies and we are still alive, then create a vampire in its stead!
-    if alive? and pixel.dead? and not pixel.is_a? Player and not (controlled? or pixel_controlled)
+    if alive? and pixel.dead? and not pixel.player? and not (controlled? or pixel_controlled)
       vampire = self.class.new(@space, x: pixel.x, y: pixel.y)
       vampire.health = max_health / 2 # Start a bit stronger, so they don't instantly die
     end

@@ -65,12 +65,7 @@ class Game < Window
   attr_reader :high_score, :pixel, :frame_time
   attr_accessor :score, :lives
 
-  HIGH_SCORE_FILE = File.join(ROOT_PATH, 'high_score.dat')
-
-  # Allow others to read my private method!
-  def ms
-    self.send(:milliseconds)
-  end
+  HIGH_SCORE_FILE = File.join(ROOT_PATH, 'alpha_channel_high_score.dat')
 
   def initialize(full_screen)
     enable_undocumented_retrofication
@@ -86,7 +81,7 @@ class Game < Window
     @pixel.refresh_cache
     @pixel.clear color: :white
 
-    on_input(:q) { Kernel.exit if holding_any? :left_control, :right_control }
+    on_input(:q) { close if holding_any? :left_control, :right_control }
     on_input(:"holding_+") { alter_volume(+0.01)  }
     on_input(:"holding_-") { alter_volume(-0.01) }
     on_input(:m) { toggle_music }
@@ -97,6 +92,10 @@ class Game < Window
     @used_time = 0
     @last_time_fps_calculated = milliseconds
     @potential_fps = 0
+  end
+
+  def close
+    Kernel.exit # Kernel.exit! segfaults, as does letting the window close normally.
   end
 
   def alter_volume(amount)

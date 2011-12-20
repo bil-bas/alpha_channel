@@ -4,7 +4,7 @@
 /.yardoc
 /doc
 /pkg
-/high_score.dat
+/*high_score.dat
 readme.html
 *.exe
 *.log

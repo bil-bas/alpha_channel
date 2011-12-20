@@ -1,6 +1,6 @@
 class Pixel < GameObject
   INITIAL_HEALTH = 10
-  PHASE_IN_DURATION = 3 * 1000 # Number of ms to phase in over.
+  PHASE_IN_DURATION = 3 # Number of ms to phase in over.
   SIZE = 32
   HURT_SOUND_DELAY = 50 # ms between hurting sounds.
 
@@ -14,6 +14,7 @@ class Pixel < GameObject
   def boss?; false; end
   def alive?; @health > 0; end
   def dead?; @health == 0; end
+  def player?; false; end
 
   def play_hurt
     if milliseconds - @played_hurt_at > HURT_SOUND_DELAY
@@ -30,10 +31,10 @@ class Pixel < GameObject
     glow
   end
 
-  # All pixels auto-healup to maximum when they are spawned in.
+  # All pixels auto-heal up to maximum when they are spawned in.
   def auto_heal
     if @amount_left_to_heal > 0
-      heal_amount = @amount_to_heal * $window.milliseconds_since_last_tick / PHASE_IN_DURATION
+      heal_amount = @amount_to_heal * $window.frame_time / PHASE_IN_DURATION
       @amount_left_to_heal -= heal_amount
       heal_amount
     else
@@ -44,10 +45,9 @@ class Pixel < GameObject
   def initialize(space, options = {})
     @space = space
 
-    @@image ||=  TexPlay.create_image($window, SIZE, SIZE, color: :white)
-
     options = {
-        image: @@image,
+        image: $window.pixel,
+        factor: SIZE,
         zorder: ZOrder::PIXEL,
         mass: 1, # Default mass for a pixel.
     }.merge! options
@@ -56,7 +56,7 @@ class Pixel < GameObject
 
     self.x, self.y = random_position unless options[:x] and options[:y]
 
-    make_glow unless defined? @@glow
+    @glow = Image["pixel_glow.png"]
 
     @last_health = @health = INITIAL_HEALTH
     @amount_to_heal = max_health - INITIAL_HEALTH
@@ -101,27 +101,6 @@ class Pixel < GameObject
     # By default, do nothing.
   end
 
-  def make_glow
-    @@glow ||= begin
-      glow = TexPlay.create_image($window, @@image.width * 5, @@image.height * 5)
-      glow.refresh_cache
-      glow.clear
-
-      center = glow.width / 2
-      radius =  glow.width / 2
-      pixel_width = @@image.width / 2 # Radius of the pixel.
-      pixel_radius = radius - pixel_width # Radius of the glow outside the pixel itself.
-
-      glow.circle center, center, radius, color: :white, filled: true,
-          color_control: lambda {|source, dest, x, y|
-            # Glow starts at the edge of the pixel (well, its radius, since glow is circular, not rectangular)
-            distance = distance(center, center, x, y) - pixel_width
-            dest[3] = (1 - (distance / pixel_radius)) ** 2
-            dest
-          }
-    end
-  end
-
   def health=(value)
     return if @health == 0
 
@@ -147,7 +126,7 @@ class Pixel < GameObject
 
   def draw
     glow_diameter = 0.4 + 0.8 * @health / max_health
-    @@glow.draw_rot(x, y, zorder + 1, 0, 0.5, 0.5, glow_diameter, glow_diameter, glow_color, :additive)
+    @glow.draw_rot(x, y, zorder + 1, 0, 0.5, 0.5, glow_diameter, glow_diameter, glow_color, :additive)
     super
   end
 
@@ -175,16 +154,16 @@ class Pixel < GameObject
   end
 
   def fight(enemy)
-    if enemy.is_a? Player
+    if enemy.player?
       enemy.fight self # Give priority to the player.
-    elsif enemy.is_a? Boss and not (self.is_a? Boss or self.is_a? Player)
+    elsif enemy.boss? and not (self.boss? or self.player?)
       enemy.fight self # Give priority to a boss, unless I am one.
     elsif hurts?(enemy)
       self.health -= enemy.damage * parent.class::PHYSICS_STEP
       enemy.health -= damage * parent.class::PHYSICS_STEP
 
-      color = rand(100) < 50 ? self.color : enemy.color
-      spark(color, x - (x - enemy.x) / 2, y - (y - enemy.y) / 2)
+      fragment_color = [color, enemy.color].sample
+      spark(fragment_color, x - (x - enemy.x) / 2, y - (y - enemy.y) / 2)
     end
   end
 
@@ -204,7 +183,7 @@ class Pixel < GameObject
   end
 
   def spark(color, x, y)
-    PixelFragment.generate(parent.class::PHYSICS_STEP, intensity, x: x, y: y, color: color.dup)
+    PixelFragment.generate(parent.class::PHYSICS_STEP, intensity, x: x, y: y, color: color)
   end
 
   def hit_wall(wall)

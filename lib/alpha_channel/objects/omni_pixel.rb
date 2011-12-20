@@ -11,9 +11,9 @@ class OmniPixel < ShooterPixel
   def initial_color; Color::WHITE; end
   def glow_color
     glow = super
-    glow.red = (Math.sin($window.ms / 500.0) * 100).to_i + 155
-    glow.green = (Math.sin($window.ms / 600.0) * 100).to_i + 155
-    glow.blue = (Math.sin($window.ms / 700.0) * 100).to_i + 155
+    glow.red = Math.sin(milliseconds / 500.0) * 100 + 155
+    glow.green = Math.sin(milliseconds / 600.0) * 100 + 155
+    glow.blue = Math.sin(milliseconds / 700.0) * 100 + 155
     glow
   end
 
