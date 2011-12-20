@@ -23,6 +23,7 @@ end
 PIXEL_GLOW_IMAGE = "media/image/pixel_glow.png"
 BEAM_IMAGE = "media/image/control_beam.png"
 FRAGMENT_GLOW_IMAGE = "media/image/fragment_glow.png"
+CORNER_IMAGE = "media/image/corner.png"
 
 desc "Generate images"
 task "generate:images" do
@@ -33,10 +34,11 @@ task "generate:images" do
   create_pixel_glow
   create_control_beam
   create_fragment_glow
+  create_corner
 end
 
 def create_pixel_glow
-  t = Time.new.to_f
+  t = Time.now.to_f
 
   glow = TexPlay.create_image($window, 160, 160, color: :alpha)
   glow.refresh_cache
@@ -60,7 +62,7 @@ def create_pixel_glow
 end
 
 def create_fragment_glow
-  t = Time.new.to_f
+  t = Time.now.to_f
 
   glow = TexPlay.create_image($window, 80, 80, color: :alpha)
   glow.refresh_cache
@@ -80,7 +82,7 @@ def create_fragment_glow
 end
 
 def create_control_beam
-  t = Time.new.to_f
+  t = Time.now.to_f
 
   image = TexPlay.create_image($window, 32, 32, color: :alpha)
   image.refresh_cache
@@ -98,6 +100,30 @@ def create_control_beam
   image.save BEAM_IMAGE
 
   puts "Created #{BEAM_IMAGE} in #{"%.2f" % [Time.new.to_f - t]}"
+end
+
+def create_corner
+  t = Time.now.to_f
+
+  corner = TexPlay.create_image($window, 32, 32, color: :alpha)
+  corner.refresh_cache
+
+  center = 0
+  radius =  corner.width
+
+  corner.clear color: :black,
+               color_control: lambda {|c, x, y|
+                  distance = Gosu::distance(center, center, x, y)
+                  if distance > radius
+                    c[3] = ((0.25 - (distance / radius)) ** 2)
+                  end
+                  c
+                }
+
+  corner.save CORNER_IMAGE
+
+  puts "Created #{CORNER_IMAGE} in #{"%.2f" % [Time.new.to_f - t]}"
+
 end
 
 

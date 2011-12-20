@@ -31,6 +31,13 @@ class Screen < GameState
       (0..$window.height).step(4) do |y|
         $window.pixel.draw 0, y, 0, $window.width, 1, SCAN_LINES_COLOR
       end
+
+      @corner = Image["corner.png"]
+      @offset = @corner.width / 2
+      @corner.draw_rot $window.width - @offset, $window.height - @offset, 0, 0, 0.5, 0.5
+      @corner.draw_rot @offset, $window.height - @offset, 0, 90, 0.5, 0.5
+      @corner.draw_rot @offset, @offset, 0, 180, 0.5, 0.5
+      @corner.draw_rot $window.width - @offset, @offset, 0, 270, 0.5, 0.5
     end
 
     @@scan_lines.draw 0, 0, ZOrder::SCAN_LINES
