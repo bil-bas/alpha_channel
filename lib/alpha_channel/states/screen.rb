@@ -13,9 +13,13 @@ class Screen < GameState
     @@score_font ||= Font.create_for_os(FONT, 120)
   end
 
-  def write_text(font, text, y, color)
+  def write_text(font, text, y, color, options = {})
+    options = {
+        zorder: ZOrder::LABEL,
+    }.merge! options
+
     x = ($window.width - font.text_width(text)) / 2
-    font.draw(text, x, y, ZOrder::LABEL, 1, 1, color)
+    font.draw(text, x, y, options[:zorder], 1, 1, color)
   end
 
   def draw_background

@@ -6,7 +6,7 @@ class Help < Overlay
   def initialize(inputs)
     super inputs
 
-    @text = Text.new(TEXT, x: 15, y: 10, align: :left, size: 13)
+    @text = Text.new(TEXT, x: 15, y: 10, align: :left, size: 13, zorder: ZOrder::GUI)
   end
 
   def draw

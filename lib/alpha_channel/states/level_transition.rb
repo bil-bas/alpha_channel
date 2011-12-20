@@ -51,7 +51,6 @@ class LevelTransition < GameState
       previous_game_state.draw
     end
 
-    $window.flush
-    $window.pixel.draw 0, 0, 0, $window.width, $window.height, @overlay_color
+    $window.pixel.draw 0, 0, ZOrder::GUI, $window.width, $window.height, @overlay_color
   end
 end

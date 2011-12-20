@@ -46,8 +46,6 @@ class Menu < Screen
     draw_high_score
     draw_scan_lines
 
-    $window.flush
-
-    write_text(@info_font, "(SPACE) to play", OPTIONS_Y, OPTIONS_COLOR)
+    write_text(@info_font, "(SPACE) to play", OPTIONS_Y, OPTIONS_COLOR, zorder: ZOrder::GUI)
   end
 end

@@ -29,11 +29,9 @@ class GameOver < Screen
     previous_game_state.draw
     super
 
-    $window.flush
-
-    write_text(@game_over_font, @words[0], 80, @color)
-    write_text(@game_over_font, @words[1],  200, @color)
-    write_text(@info_font, "(R)estart or (Q)uit", OPTIONS_Y, OPTIONS_COLOR)
+    write_text(@game_over_font, @words[0], 80, @color, zorder: ZOrder::GUI)
+    write_text(@game_over_font, @words[1],  200, @color, zorder: ZOrder::GUI)
+    write_text(@info_font, "(R)estart or (Q)uit", OPTIONS_Y, OPTIONS_COLOR, zorder: ZOrder::GUI)
   end
 
   def update

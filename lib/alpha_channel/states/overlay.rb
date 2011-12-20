@@ -27,7 +27,6 @@ class Overlay < Screen
     previous_game_state.draw
     super
 
-    $window.flush
-    $window.pixel.draw 0, 0, 0, $window.width, $window.height, @color
+    $window.pixel.draw 0, 0, ZOrder::GUI, $window.width, $window.height, @color
   end
 end

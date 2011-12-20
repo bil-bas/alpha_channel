@@ -42,7 +42,8 @@ require_relative 'objects/pixel_fragment'
 require_relative 'objects/player'
 
 module ZOrder
-  BACKGROUND, LABEL, LIVES, SCAN_LINES, CONTROL, PIXEL, PARTICLES, OVERLAY = (0..100).to_a
+  BACKGROUND, LABEL, LIVES, SCAN_LINES, CONTROL, PIXEL, PARTICLES, OVERLAY = *(0..100)
+  GUI = Float::INFINITY
 end
 
 media_dir =  File.join(EXTRACT_PATH, 'media')
@@ -147,7 +148,7 @@ class Game < Window
 
     super
     music = @music.playing? ? "#{(@music.volume * 100).round}%" : "off"
-    self.caption = "#{NAME} v#{AlphaChannel::VERSION} - F1 or H for help [FPS: #{fps.to_s.rjust(2)} (#{@potential_fps})] Music: #{music}"
+    self.caption = "#{NAME} v#{AlphaChannel::VERSION} - F1 or H for help [FPS: #{[@potential_fps, 999].min}] Music: #{music}"
 
     @previous_time = now
 

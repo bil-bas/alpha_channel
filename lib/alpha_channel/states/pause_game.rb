@@ -10,6 +10,6 @@ class PauseGame < Overlay
   def draw
     super
 
-    write_text(@font, "PAUSED", ($window.height - @font.height) / 2, GAME_OVER_COLOR)
+    write_text(@font, "PAUSED", ($window.height - @font.height) / 2, GAME_OVER_COLOR, zorder: ZOrder::GUI)
   end
 end
