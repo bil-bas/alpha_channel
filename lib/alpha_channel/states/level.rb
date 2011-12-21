@@ -163,6 +163,8 @@ class Level < Screen
       switch_game_state LevelTransition.new(@level + 1)
     else
       update_particles
+      # reset the forces on all objects before applying new ones.
+      @pixels.each(&:reset_forces)
       @pixels.each(&:update)
 
       @physics_time += $window.frame_time

@@ -112,9 +112,9 @@ class Pixel < GameObject
     die if @health == 0
   end
 
-  def update
-    @shape.body.reset_forces unless controlled?
+  def reset_forces; @shape.body.reset_forces; end
 
+  def update
     super
 
     self.health += auto_heal

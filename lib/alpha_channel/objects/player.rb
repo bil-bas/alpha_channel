@@ -51,9 +51,6 @@ class Player < Pixel
   end
 
   def move_controlled
-    # Ensure the player, even if they are controlling something else, has forces removed.
-    @controlled.shape.body.reset_forces
-
     if holding_any? *KEYS[:left]
       if holding_any? *KEYS[:up]
         @controlled.move(-0.707, -0.707)

@@ -2,7 +2,7 @@ require_relative 'enemy'
 
 class Boss < Enemy
   FEAR_RANGE = 100
-  FEAR_FORCE = 1
+  FEAR_FORCE = 2
 
   def control_cost; 15; end
   def max_health; 1000; end
@@ -31,9 +31,10 @@ class Boss < Enemy
   end
 
   def boss_update
-    (parent.pixels - [parent.player]).each do |pixel|
-     if pixel != self and not controlled? and not pixel.controlled? and distance_to(pixel) < FEAR_RANGE
-        pixel.push(x, y, - FEAR_FORCE * (FEAR_RANGE / distance_to(pixel)))
+    unless controlled?
+      pixels = parent.pixels - [self, parent.player]
+      pixels.delete_if(&:controlled?).select {|p| distance_to(p) < FEAR_RANGE }.each do |pixel|
+        pixel.push(x, y, -FEAR_FORCE * (FEAR_RANGE / distance_to(pixel)))
       end
     end
   end

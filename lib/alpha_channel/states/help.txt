@@ -53,6 +53,6 @@
             Green is too busy musing on the nature of the
             Great Electron Gun to give you much notice.
 
-            Yellow is the first of five bosses, found on
-            screen #4. Magenta, Cyan, White and Omni will
-            follow each four screens.
+            Yellow is the first of five fearful bosses,
+            found on screen #4. Cyan, Magenta, Black and
+            White will follow after each four screens.

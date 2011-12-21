@@ -41,8 +41,8 @@ class Help < Overlay
         .gsub(/(yellow)/i,        '<c=ffff00>\1</c>')
         .gsub(/(cyan)/i,          '<c=00ffff>\1</c>')
         .gsub(/(magenta)/i,       '<c=ff00ff>\1</c>')
+        .gsub(/(black)/i,         '<c=333333>\1</c>')
         .gsub(/(white)/i,         '<c=ffffff>\1</c>')
-        .gsub(/(omni)/i,          '<c=ff0000>o</c><c=ffff00>m</c><c=00ff00>n</c><c=ffff00>i</c>')
   end
 
   def draw
