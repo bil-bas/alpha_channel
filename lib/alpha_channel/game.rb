@@ -4,7 +4,9 @@ require 'chingu'
 require 'chipmunk'
 require_relative 'chipmunk_ext/space'
 require 'texplay'
-TexPlay.set_options :caching => false
+TexPlay.set_options :caching => false#
+require 'fidgit'
+require_relative 'fidgit_ext/cursor'
 
 begin
   require 'bundler/setup' unless defined?(OSX_EXECUTABLE) or ENV['OCRA_EXECUTABLE']
@@ -38,6 +40,7 @@ require_relative 'states/game_over'
 require_relative 'states/help'
 require_relative 'states/level'
 require_relative 'states/menu'
+require_relative 'states/enter_name'
 require_relative 'objects/pixel_fragment'
 require_relative 'objects/player'
 
@@ -63,13 +66,19 @@ class Game < Window
   NAME = "Alpha Channel"
   INITIAL_LIVES = 3
   
-  attr_reader :high_score, :pixel, :frame_time
-  attr_accessor :score, :lives
+  attr_reader :pixel, :frame_time, :score
+  attr_accessor :lives, :level
 
-  HIGH_SCORE_FILE = File.join(ROOT_PATH, 'alpha_channel_high_score.dat')
+  NUM_SCORES = 20
+
+  HIGH_SCORE_LOGIN = "alpha_channel_00"
+  HIGH_SCORE_PASSWORD = "cazoo_of_solid_gold"
+  DIFFICULTIES = {easy: 27, normal: 28, hard: 29}
 
   def initialize(full_screen)
     enable_undocumented_retrofication
+
+    @difficulty = :normal
 
     super(640, 480, full_screen)
 
@@ -95,6 +104,46 @@ class Game < Window
     @potential_fps = 0
   end
 
+  def score=(score); @score = score.to_i; end
+
+  def offline_high_score?
+    score > (@offline_high_scores[@difficulty][NUM_SCORES - 1] || 0)
+  end
+
+  def online_high_score?
+    score > (@online_high_scores[@difficulty][NUM_SCORES - 1] || 0)
+  end
+
+  def high_score?
+    online_high_score? or offline_high_score?
+  end
+
+  def offline_high_score
+    score = @offline_high_scores[@difficulty][0]
+    score.is_a?(Hash) ? score[:score] : 0
+  end
+
+  def online_high_score
+    score = @online_high_scores[@difficulty][0]
+    score.is_a?(Hash) ? score[:score] : 0
+  end
+
+  def high_score
+    [online_high_score, offline_high_score].max
+  end
+
+  def add_high_score(name)
+    puts "Recording high score: #{name}:#{score}"
+
+    @offline_high_scores[@difficulty].add name: name, score: score, text: "level:#{@level}"
+    begin
+      @online_high_scores[@difficulty].add name: name, score: score, text: "level:#{@level}"
+      @online_high_scores[@difficulty].load
+    rescue
+      # Offline - don't worry about it.
+    end
+  end
+
   def close
     Kernel.exit # Kernel.exit! segfaults, as does letting the window close normally.
   end
@@ -114,23 +163,23 @@ class Game < Window
   def setup
     @lives = 0
     @score = 0
-    @high_score = File.open(HIGH_SCORE_FILE, "r") { |file| file.readline.to_i } rescue 0
+
+    @online_high_scores = Hash.new do |scores, difficulty|
+      scores[difficulty] = Chingu::OnlineHighScoreList.new limit: NUM_SCORES, login: HIGH_SCORE_LOGIN,
+                                                           password: HIGH_SCORE_PASSWORD, game_id: DIFFICULTIES[difficulty]
+      scores[difficulty].load
+    end
+
+    @offline_high_scores = Hash.new do |scores, difficulty|
+      scores[difficulty] = Chingu::HighScoreList.new size: NUM_SCORES, file: File.join(ROOT_PATH, "alpha_channel_#{difficulty}.yml")
+      scores[difficulty].load
+    end
 
     @music = Song["Alpha_Alarm.ogg"]
     @music.volume = 0.25
     toggle_music
 
     push_game_state Menu
-  end
-
-  def game_over
-    if @score > @high_score
-      @high_score = @score
-      File.open(HIGH_SCORE_FILE, "w") { |file| file.puts @high_score } rescue nil
-      true
-    else
-      false
-    end  
   end
 
   def draw

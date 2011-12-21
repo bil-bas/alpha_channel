@@ -32,6 +32,8 @@ class Level < Screen
     }.merge! options
     
     @level = level
+    $window.level = level
+
     @died = options[:died]
 
     super()
@@ -55,6 +57,9 @@ class Level < Screen
         on_input :"#{button}" do
           switch_game_state Level.new(button * 4) if holding?(:left_control)
         end
+      end
+      on_input :x do
+        @player.health = 0
       end
     end
 

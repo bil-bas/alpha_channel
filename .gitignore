@@ -4,10 +4,10 @@
 /.yardoc
 /doc
 /pkg
-/*high_score.dat
 readme.html
 *.exe
 *.log
 /README.html
 *.iss
 /.bundle
+/alpha_channel_*.yml

@@ -27,7 +27,7 @@ class LevelTransition < GameState
       @alpha -= ($window.frame_time * 255) / FADE_IN_DURATION
       @overlay_color.alpha = @alpha
 
-      pop_game_state if @overlay_color.alpha <= 0
+      pop_game_state if @alpha <= 0 or DEVELOPMENT_MODE
     else
       # Fade out.
       @alpha += ($window.frame_time * 255) / FADE_OUT_DURATION
@@ -37,7 +37,7 @@ class LevelTransition < GameState
         previous_game_state.update_particles
       end
 
-      if @overlay_color.alpha >= 255
+      if @alpha >= 255 or DEVELOPMENT_MODE
         game_state_manager.pop_until_game_state Menu
         push_game_state @new_level, setup: false
         push_game_state self, finalize: false
