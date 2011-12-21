@@ -26,6 +26,7 @@ rescue LoadError
 end
 
 require 'yaml' # required for ocra.
+require 'fileutils'
 
 include Gosu
 include Chingu
@@ -63,12 +64,22 @@ Text.font = FONT
 
 KEYS = YAML::load_file File.expand_path "keys.yml", File.dirname(__FILE__)
 
+SETTINGS_FOLDER = File.expand_path("~/.alpha_channel_spooner")
+SETTINGS_FILE = File.join(SETTINGS_FOLDER, "settings.yml")
+FileUtils.mkdir_p SETTINGS_FOLDER
+
+DEFAULT_SETTINGS = {
+    difficulty: :normal,
+    music_volume: 0.25,
+    music_muted: false
+}
+
 class Game < Window
   NAME = "Alpha Channel"
   INITIAL_LIVES = 3
   
   attr_reader :pixel, :frame_time, :score
-  attr_accessor :lives, :level, :difficulty
+  attr_accessor :lives, :level
 
   NUM_SCORES = 20
 
@@ -79,7 +90,10 @@ class Game < Window
   def initialize(full_screen)
     enable_undocumented_retrofication
 
-    @difficulty = :normal
+    @settings = YAML::load_file(SETTINGS_FILE) rescue {}
+    @settings = DEFAULT_SETTINGS.merge @settings
+
+    save_settings
 
     super(640, 480, full_screen)
 
@@ -107,6 +121,17 @@ class Game < Window
     @exception = nil
   end
 
+  def difficulty; @settings[:difficulty]; end
+  def difficulty=(difficulty)
+    @settings[:difficulty] = difficulty
+    save_settings
+    difficulty
+  end
+
+  def save_settings
+    File.open(SETTINGS_FILE, "w") {|f| f.write @settings.to_yaml } rescue nil
+  end
+
   def difficulties
     DIFFICULTIES.keys
   end
@@ -114,11 +139,11 @@ class Game < Window
   def score=(score); @score = score.to_i; end
 
   def offline_high_score?
-    score > (@offline_high_scores[@difficulty][NUM_SCORES - 1] || 0)
+    score > (@offline_high_scores[difficulty][NUM_SCORES - 1] || 0)
   end
 
   def online_high_score?
-    score > (@online_high_scores[@difficulty][NUM_SCORES - 1] || 0)
+    score > (@online_high_scores[difficulty][NUM_SCORES - 1] || 0)
   end
 
   def high_score?
@@ -134,12 +159,12 @@ class Game < Window
   end
 
   def offline_high_score
-    score = @offline_high_scores[@difficulty][0]
+    score = @offline_high_scores[difficulty][0]
     score.is_a?(Hash) ? score[:score] : 0
   end
 
   def online_high_score
-    score = @online_high_scores[@difficulty][0]
+    score = @online_high_scores[difficulty][0]
     score.is_a?(Hash) ? score[:score] : 0
   end
 
@@ -148,12 +173,12 @@ class Game < Window
   end
 
   def add_high_score(name)
-    puts "Recording high score: #{name}:#{score} on #{@difficulty}"
+    puts "Recording high score: #{name}:#{score} on #{difficulty}"
 
-    @offline_high_scores[@difficulty].add name: name, score: score, text: "level:#{@level}"
+    @offline_high_scores[difficulty].add name: name, score: score, text: "level:#{@level}"
     begin
-      @online_high_scores[@difficulty].add name: name, score: score, text: "level:#{@level}"
-      @online_high_scores[@difficulty].load
+      @online_high_scores[difficulty].add name: name, score: score, text: "level:#{@level}"
+      @online_high_scores[difficulty].load
     rescue
       # Offline - don't worry about it.
     end
@@ -164,14 +189,22 @@ class Game < Window
   end
 
   def alter_volume(amount)
-    @music.volume += amount if @music.playing?
+    if @music.playing?
+      @music.volume += amount
+      @settings[:music_volume] = @music.volume
+      save_settings
+    end
   end
 
   def toggle_music
     if @music.playing?
       @music.pause
+      @settings[:music_muted] = true
+      save_settings
     else
       @music.play true
+      @settings[:music_muted] = false
+      save_settings
     end
   end
 
@@ -186,13 +219,13 @@ class Game < Window
     end
 
     @offline_high_scores = Hash.new do |scores, difficulty|
-      scores[difficulty] = Chingu::HighScoreList.new size: NUM_SCORES, file: File.join(ROOT_PATH, "alpha_channel_#{difficulty}.yml")
+      scores[difficulty] = Chingu::HighScoreList.new size: NUM_SCORES, file: File.join(SETTINGS_FOLDER, "scores_#{difficulty}.yml")
       scores[difficulty].load
     end
 
     @music = Song["Alpha_Alarm.ogg"]
-    @music.volume = 0.25
-    toggle_music
+    @music.volume = @settings[:music_volume]
+    toggle_music unless @settings[:music_muted]
 
     push_game_state Menu
   end

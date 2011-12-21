@@ -2,6 +2,7 @@
 
 == 1.4.0 (2011-12-16)
 
+  - Settings and high scores now stored in ~/.alpha_channel_spooner
   - Added Easy/Normal/Hard difficulties ('Normal' is a bit easier than previous; 'hard' is a bit harder)
   - Top 20 global scores are recorded and can be viewed ingame and online: http://www.gamercv.com/gamers/9-spooner
   - Top 20 of your own scores, ignoring global scores, are stored locally (so you don't have to compete with people with reflexes).

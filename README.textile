@@ -19,41 +19,12 @@ h2. How to run the game
 * OS X: <pre>alpha_channel.app</pre>
 * Linux: <pre>ruby bin/spooner_ld_18.rbw</pre> (see below under _compatibility_ for requirements).
 
+NOTE: The game saves settings and high-scores into '~/.alpha_channel_spooner'
+NOTE: The game will upload your high score if they beat one of the 20 global high scores for the difficulty you are playing on, along with the name you type in and the time. No other information is recorded.
+
 h3. Ingame help
 
-    It is hell being a pixel. Why can't they all just get along?
-
-
-    = How to play =
-
-      * Red is evil; Red wants to hurt Blue!
-        Yellow is so nasty, it makes Red look nice by comparison!
-        Thankfully, Green is too busy thinking to even notice Blue.
-
-      * Take control of other pixels, and use them to protect yourself!
-
-      * Controlling is very strenuous and will use up your limited
-        energy reserves (Blueness).
-
-      * Pixels hurt pixels that aren't the same colour.
-        It has always been like that, but no-one knows exactly why...
-        Yellow is so dangerous, that even Red avoids it, but Green is more
-        interested in musing on the nature of the Great Electron Gun.
-
-
-    = Controls =
-
-      * ARROW KEYS, IJKL or WASD: Move self (or a controlled Pixel).
-
-      * SPACE, CONTROL, ENTER or RETURN: Take/relinquish control of a another Pixel.
-
-      * ESCAPE or P: Pause
-
-      * M: Toggle music
-
-      * +/-: Increase/decrease music volume
-
-      * F1 or H: Help
+Press F1 or Help for full instructions and control information.
 
 h2. Compatibility
 
@@ -70,7 +41,7 @@ Runs in a 640x480 window (or full-screen at that resolution).
 h3. Credits
 
 * Special thanks to "KanonBaum (Brian Peppers)":http://polyhedricpeppers.weebly.com/insufficient-ram.html for the music!
-* Thanks to everyone who tested the game
+* Thanks to everyone who tested the game!
 
 h2. Tools used
 
