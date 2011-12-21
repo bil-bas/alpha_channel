@@ -173,12 +173,14 @@ class Game < Window
   end
 
   def add_high_score(name)
-    puts "Recording high score: #{name}:#{score} on #{difficulty}"
+    puts "Recording high score: #{name}:#{score} on #{difficulty} (level: #{@level})"
 
     @offline_high_scores[difficulty].add name: name, score: score, text: "level:#{@level}"
     begin
-      @online_high_scores[difficulty].add name: name, score: score, text: "level:#{@level}"
-      @online_high_scores[difficulty].load
+      unless DEVELOPMENT_MODE
+        @online_high_scores[difficulty].add name: name, score: score, text: "level:#{@level}"
+        @online_high_scores[difficulty].load
+      end
     rescue
       # Offline - don't worry about it.
     end
