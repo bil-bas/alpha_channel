@@ -8,7 +8,7 @@ class Menu < Screen
 
     on_input(KEYS[:help]) { push_game_state Help.new(KEYS[:help]), finalize: false }
 
-    on_input :p do
+    on_input [:p, :space] do
       push_game_state LevelTransition.new(Level::INITIAL_LEVEL)
     end
 
