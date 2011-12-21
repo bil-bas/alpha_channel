@@ -12,9 +12,9 @@ class Help < Overlay
   def initialize(inputs)
     super inputs
 
-    @pages = TEXT[:pages].map do |data|
+    @pages = TEXT[:pages].map.with_index do |data, i|
       [
-          Text.new(data[:heading], x: LEFT_INDENT, y: HEADING_Y, align: :left, size: 80, zorder: ZOrder::GUI,
+          Text.new("#{i.succ}) #{data[:heading]}", x: LEFT_INDENT, y: HEADING_Y, align: :left, size: 75, zorder: ZOrder::GUI,
                    color: HEADING_COLOR),
           Text.new(colorize(data[:body]), x: LEFT_INDENT, y: BODY_Y, align: :left, size: 22, zorder: ZOrder::GUI,
                    color: GAME_OVER_COLOR)
