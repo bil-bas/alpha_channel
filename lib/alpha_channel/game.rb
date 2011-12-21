@@ -38,6 +38,7 @@ require_relative 'objects/enemy'
 require_relative 'states/help'
 require_relative 'states/game_over'
 require_relative 'states/help'
+require_relative 'states/high_scores'
 require_relative 'states/level'
 require_relative 'states/menu'
 require_relative 'states/enter_name'
@@ -67,7 +68,7 @@ class Game < Window
   INITIAL_LIVES = 3
   
   attr_reader :pixel, :frame_time, :score
-  attr_accessor :lives, :level
+  attr_accessor :lives, :level, :difficulty
 
   NUM_SCORES = 20
 
@@ -102,6 +103,12 @@ class Game < Window
     @used_time = 0
     @last_time_fps_calculated = milliseconds
     @potential_fps = 0
+
+    @exception = nil
+  end
+
+  def difficulties
+    DIFFICULTIES.keys
   end
 
   def score=(score); @score = score.to_i; end
@@ -116,6 +123,14 @@ class Game < Window
 
   def high_score?
     online_high_score? or offline_high_score?
+  end
+
+  def offline_high_scores(difficulty)
+    @offline_high_scores[difficulty]
+  end
+
+  def online_high_scores(difficulty)
+    @online_high_scores[difficulty]
   end
 
   def offline_high_score
@@ -133,7 +148,7 @@ class Game < Window
   end
 
   def add_high_score(name)
-    puts "Recording high score: #{name}:#{score}"
+    puts "Recording high score: #{name}:#{score} on #{@difficulty}"
 
     @offline_high_scores[@difficulty].add name: name, score: score, text: "level:#{@level}"
     begin
@@ -187,9 +202,16 @@ class Game < Window
 
     super
     @used_time += milliseconds - draw_started
+  rescue => ex
+    @exception = ex
   end
 
   def update
+    if @exception
+      puts "#{@exception.class}: #{@exception.message}\n#{@exception.backtrace.join("\n")}"
+      raise @exception
+    end
+
     update_started = milliseconds
 
     now = Time.now.to_f
@@ -211,6 +233,17 @@ class Game < Window
       @potential_fps = (fps / [(@used_time.to_f / (milliseconds - @last_time_fps_calculated)), 0.0001].max).floor
       @used_time = 0
       @last_time_fps_calculated = milliseconds
+    end
+  end
+
+  # Ensure that all Gosu call-backs catch errors properly.
+  %w(needs_redraw? needs_cursor? lose_focus button_down button_up).each do |callback|
+    define_method callback do |*args|
+      begin
+        super(*args)
+      rescue => ex
+        @exception = ex
+      end
     end
   end
 

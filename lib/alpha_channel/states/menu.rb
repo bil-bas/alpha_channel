@@ -6,13 +6,24 @@ class Menu < Screen
   def initialize
     super
 
-    @title_font = Font.create_for_os(FONT, 8)
-    @info_font = Font.create_for_os(FONT, 36)
-
     on_input(KEYS[:help]) { push_game_state Help.new(KEYS[:help]), finalize: false }
 
-    on_input :space do
+    on_input :p do
       push_game_state LevelTransition.new(Level::INITIAL_LEVEL)
+    end
+
+    on_input :s do
+      push_game_state HighScores
+    end
+
+    on_input :q do
+      $window.close
+    end
+
+    $window.difficulties.each_with_index do |difficulty, i|
+      on_input (i + 1).to_s.to_sym do
+        $window.difficulty = difficulty
+      end
     end
 
     @title = Image["title.png"]
@@ -40,12 +51,13 @@ class Menu < Screen
 
     @title.draw_rot $window.width / 2, 20, 0, 0, 0.5, 0, 18, 18
 
-    write_text(@info_font, "by Spooner",  260, BACKGROUND_LABEL_COLOR)
+    write_text(@@info_font, "by Spooner",  260, BACKGROUND_LABEL_COLOR)
 
-    write_text(@info_font, "High Score",  335, BACKGROUND_LABEL_COLOR)
+    write_text(@@info_font, "(1) Easy - (2) Normal - (3) Hard", 305, OPTIONS_COLOR, zorder: ZOrder::GUI)
+
     draw_high_score
     draw_scan_lines
 
-    write_text(@info_font, "(SPACE) to play", OPTIONS_Y, OPTIONS_COLOR, zorder: ZOrder::GUI)
+    write_text(@@info_font, "(P)lay - (S)cores - (Q)uit", OPTIONS_Y, OPTIONS_COLOR, zorder: ZOrder::GUI)
   end
 end

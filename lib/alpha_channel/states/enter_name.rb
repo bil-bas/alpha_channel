@@ -1,18 +1,22 @@
 class EnterName < Fidgit::GuiState
   MAX_NAME_LENGTH = 8
   CARET_COLOR = Color.rgba(0, 175, 0, 150)
-  PROMPT = "> "
 
   def initialize
     super()
 
     vertical align: :center do
       label "Enter name:", font_name: FONT, font_height: 60, color: Screen::GAME_OVER_COLOR
-      @name = text_area text: PROMPT, align: :center, background_color: Color::NONE,
-                        font_name: FONT, font_height: 80, height: 70, width: 550,
-                        caret_color: CARET_COLOR do |area, text|
-        filtered = PROMPT + text.strip.gsub(/[^a-z_\d]/i, '').upcase[0...MAX_NAME_LENGTH]
-        area.text = filtered unless text == filtered
+
+      horizontal padding: 0, spacing: 0, align: :center do
+        label "> ", font_name: FONT, font_height: 60, color: Screen::GAME_OVER_COLOR
+
+        @name = text_area background_color: Color::NONE,
+                          font_name: FONT, font_height: 80, height: 70, width: 500,
+                          caret_color: CARET_COLOR do |area, text|
+          filtered = text.strip.gsub(/[^a-z_\d]/i, '').upcase[0...MAX_NAME_LENGTH]
+          area.text = filtered unless text == filtered
+        end
       end
     end
 

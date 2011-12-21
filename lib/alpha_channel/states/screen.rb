@@ -11,6 +11,7 @@ class Screen < GameState
   def initialize(*args)
     super(*args)
     @@score_font ||= Font.create_for_os(FONT, 120)
+    @@info_font ||= Font.create_for_os(FONT, 36)
   end
 
   def write_text(font, text, y, color, options = {})
@@ -44,6 +45,7 @@ class Screen < GameState
   end
 
   def draw_high_score
+    write_text(@@info_font, $window.difficulty,  335, BACKGROUND_LABEL_COLOR)
     write_text(@@score_font, "%08d" % $window.high_score, 344, BACKGROUND_LABEL_COLOR)
   end
 end

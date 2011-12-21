@@ -4,7 +4,6 @@ class GameOver < Screen
   def initialize
     super
     @game_over_font = Font.create_for_os(FONT, 240)
-    @info_font = Font.create_for_os(FONT, 36)
 
     @game_ended = milliseconds
 
@@ -12,12 +11,12 @@ class GameOver < Screen
     @color = GAME_OVER_COLOR
 
     on_input(KEYS[:help]) { push_game_state Help.new(KEYS[:help]), finalize: false }
-    on_input :r do
+    on_input :p do
       pop_game_state
       switch_game_state LevelTransition.new(Level::INITIAL_LEVEL)
     end
-    on_input :q do
-      $window.close
+    on_input [:b, :escape] do
+      game_state_manager.pop_until_game_state Menu
     end
 
     @entered_name = false
@@ -29,7 +28,7 @@ class GameOver < Screen
 
     write_text(@game_over_font, @words[0], 80, @color, zorder: ZOrder::GUI)
     write_text(@game_over_font, @words[1],  200, @color, zorder: ZOrder::GUI)
-    write_text(@info_font, "(R)estart or (Q)uit", OPTIONS_Y, OPTIONS_COLOR, zorder: ZOrder::GUI)
+    write_text(@@info_font, "(P)lay - (B)ack", OPTIONS_Y, OPTIONS_COLOR, zorder: ZOrder::GUI)
   end
 
   def update
