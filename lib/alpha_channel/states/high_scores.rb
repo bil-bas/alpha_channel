@@ -43,7 +43,7 @@ class HighScores < Screen
 
       if scores[i]
         score = scores[i]
-        label = "#{score[:score].to_s.rjust(9, '0')}    #{score[:name].rjust(EnterName::MAX_NAME_LENGTH)}  -  #{score[:text]}"
+        label = "#{score[:score].to_s.rjust(Level::MAX_SCORE_WIDTH, '0')}    #{score[:name].rjust(EnterName::MAX_NAME_LENGTH)}  -  #{score[:text]}"
         @score_font.draw label, 140, y, ZOrder::LABEL, 1, 1, BACKGROUND_LABEL_COLOR
       end
     end

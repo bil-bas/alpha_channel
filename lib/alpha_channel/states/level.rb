@@ -12,6 +12,8 @@ class Level < Screen
   trait :timer
 
   attr_reader :level, :player, :pixels, :particles
+
+  MAX_SCORE_WIDTH = 8
   
   BOSS_LEVELS =  {
           4 => Boss,
@@ -185,7 +187,7 @@ class Level < Screen
       $window.pixel.draw left + (i * 2 * Player::SIZE), - Player::SIZE / 4, ZOrder::LIVES, Player::SIZE * 1.5, Player::SIZE, BACKGROUND_LABEL_COLOR
     end
 
-    write_text(@@score_font, "%08d" % $window.score, 36, BACKGROUND_LABEL_COLOR)
+    write_text(@@score_font, "%0#{MAX_SCORE_WIDTH}d" % $window.score, 36, BACKGROUND_LABEL_COLOR)
     write_text(@level_font, "%02d" % @level, 92, BACKGROUND_LABEL_COLOR)
 
     draw_high_score
