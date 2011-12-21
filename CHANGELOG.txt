@@ -1,10 +1,13 @@
 = Changelog
 
-== 1.3.1 (2011-12-16)
+== 1.4.0 (2011-12-16)
 
-  - Fixed a resource path so game would actually run in native Linux!
-  - Pixel glow shrinks as a pixel is wounded.
+  - Added Easy/Normal/Hard difficulties ('Normal' is a bit easier than previous; 'hard' is a bit harder)
+  - Top 20 global scores are recorded and can be viewed ingame and online: http://www.gamercv.com/gamers/9-spooner
+  - Top 20 of your own scores, ignoring global scores, are stored locally (so you don't have to compete with people with reflexes).
+  - Pixel glow shrinks as a pixel is wounded, as well as some other minor tweaks.
   - Made the game entirely independent of frames per second, so it can be played on older hardware.
+  - Fixed: Mistyped filename meant previous version wouldn't work on Linux :(
   - Fixed: Physics messy when window is dragged while playing.
   
 == 1.3.0 (2011-12-15)
