@@ -2,33 +2,42 @@ require_relative 'pixel'
 
 class Player < Pixel
   trait :timer
-  attr_reader :energy, :max_energy
+  attr_reader :energy, :max_energy, :max_health, :force
+
+  # Attributes based on difficulty.
+  DIFFICULTIES = {
+      easy:   { health: 1700, energy: 1500, energy_regen: 500, force: 3.8 },
+      normal: { health: 1200, energy: 1000, energy_regen: 350, force: 3.3 },
+      hard:   { health: 1000, energy:  750, energy_regen: 250, force: 3.2 }
+  }
+
 
   MAX_CAPTURE_DISTANCE = SIZE * 6 # Furthest you can be to begin capture.
   INITIAL_COLOR = Color.rgb(50, 50, 255)
 
-  def max_health; 1000; end
-  def force; 3.3; end
   def damage; 300; end
   def safe_distance; SIZE * 4; end
   def initial_color; INITIAL_COLOR; end
   def intensity; 1; end
   def player?; true; end
 
-  MAX_ENERGY = 1000
-  ENERGY_HEAL = 300
-
   def initialize(space, options = {})
     options = {
         mass: 2,
     }.merge! options
+
+    # Difficulty-based attributes.
+    attributes = DIFFICULTIES[$window.difficulty]
+    @max_health = attributes[:health]
+    @force = attributes[:force]
+    @energy = @max_energy = attributes[:energy]
+    @energy_regen_rate = attributes[:energy_regen]
+
     super(space, options)
 
     add_inputs(
-      KEYS[:action] => lambda { controlling? ? lose_control : gain_control }
+        KEYS[:action] => lambda { controlling? ? lose_control : gain_control }
     )
-
-    @max_energy = @energy = MAX_ENERGY
 
     @hurt = Sample["hurt_player.ogg"]
     @control_on = Sample["control_on.ogg"]
@@ -76,7 +85,7 @@ class Player < Pixel
     if controlling?
       self.energy -= @controlled.control_cost
     else
-      self.energy += ENERGY_HEAL * $window.frame_time
+      self.energy += @energy_regen_rate * $window.frame_time
     end
   end
 
