@@ -58,6 +58,6 @@ class Menu < Screen
     draw_high_score
     draw_scan_lines
 
-    write_text(@@info_font, "(P)lay - (S)cores - (Q)uit", OPTIONS_Y, OPTIONS_COLOR, zorder: ZOrder::GUI)
+    write_text(@@info_font, "(P)lay - (S)cores - (H)elp - (Q)uit", OPTIONS_Y, OPTIONS_COLOR, zorder: ZOrder::GUI)
   end
 end

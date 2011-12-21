@@ -1,35 +1,58 @@
-<b><c=88bb88>=== Alpha Channel (Spooner's LD-18 game: "Enemies as weapons") ===</c></b>
+---
+:heading: "Alpha Channel"
 
-It is hell being a pixel. Why can't they all just get along?
+:pages:
+    -
+        :heading: How to play
+        :body: |
+            * You are the Blue pixel.
 
+            * Take control of other pixels, and use them
+              to protect yourself!
 
-<b><c=88bb88>= How to play =</c></b>
+            * Controlling is very strenuous and will use
+              up your limited energy reserves (Blueness).
 
-  * <c=ff0000>Red</c> is evil; <c=ff0000>Red</c> wants to hurt <c=6666ff>Blue</c>!
-    <c=ffff00>Yellow</c> is <i>so</i> nasty, it makes <c=ff0000>Red</c> look nice by comparison!
-    Thankfully, <c=00ff00>Green</c> is too busy thinking to even notice <c=4444ff>Blue</c>.
+            * Pixels always hurt pixels that aren't the
+              same colour. When controlling, you taint the
+              other pixel's colour, so you can use it as a
+              weapon against its former comrades!
 
-  * Take control of other pixels, and use them to protect yourself!
+            * As pixels become weaker, they become more
+              transparent.
 
-  * Controlling is very strenuous and will use up your limited
-    energy reserves (<c=6666ff>Blueness</c>).
+    -
+        :heading: Controls
+        :body: |
+            * ARROW KEYS, IJKL or WASD:
+              Move self (or a controlled Pixel).
 
-  * Pixels hurt pixels that aren't the same colour.
-    It has always been like that, but no-one knows exactly why...
-    <c=ffff00>Yellow</c> is so dangerous, that even <c=ff0000>Red</c> avoids it, but <c=00ff00>Green</c> is more
-    interested in musing on the nature of the Great Electron Gun.
+            * SPACE, CONTROL, ENTER or RETURN:
+              Take/relinquish control of a another Pixel.
 
+            * ESCAPE or P: Pause
 
-<b><c=88bb88>= Controls =</c></b>
+            * M: Toggle music
 
-  * ARROW KEYS, IJKL or WASD: Move self (or a controlled Pixel).
+            * +/-: Increase/decrease music volume
 
-  * SPACE, CONTROL, ENTER or RETURN: Take/relinquish control of a another Pixel.
+            * F1 or H: Help
 
-  * ESCAPE or P: Pause
+    -
+        :heading: Background
+        :body: |
+            It is hell being a pixel. Why can't they all
+            just get along?
 
-  * M: Toggle music
+            You are the last of the mystic Blue pixels,
+            with the power to control the other colours.
 
-  * +/-: Increase/decrease music volume
+            Red desires nothing but to purge the screen
+            of all Blue!
 
-  * F1 or H: Help
+            Green is too busy musing on the nature of the
+            Great Electron Gun to give you much notice.
+
+            Yellow is the first of five bosses, found on
+            screen #4. Magenta, Cyan, White and Omni will
+            follow each four screens.
