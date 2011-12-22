@@ -1,10 +1,15 @@
 Config = RbConfig if RUBY_VERSION > '1.9.2'
 
 require 'chingu'
+require 'crack/xml' # "Optional" dependency for Chingu.
+require 'rest_client' # "Optional" dependency for Chingu.
+
 require 'chipmunk'
 require_relative 'chipmunk_ext/space'
+
 require 'texplay'
-TexPlay.set_options :caching => false#
+TexPlay.set_options :caching => false
+
 require 'fidgit'
 require_relative 'fidgit_ext/cursor'
 
@@ -65,6 +70,7 @@ Text.font = FONT
 KEYS = YAML::load_file File.expand_path "keys.yml", File.dirname(__FILE__)
 
 SETTINGS_FOLDER = File.expand_path("~/.alpha_channel_spooner")
+puts "Using settings folder: #{SETTINGS_FOLDER}"
 SETTINGS_FILE = File.join(SETTINGS_FOLDER, "settings.yml")
 FileUtils.mkdir_p SETTINGS_FOLDER
 
@@ -228,7 +234,7 @@ class Game < Window
     @music = Song["Alpha_Alarm.ogg"]
     @music.volume = @settings[:music_volume]
     toggle_music unless @settings[:music_muted]
-
+p "setup complete"
     push_game_state Menu
   end
 

@@ -12,4 +12,5 @@ group :development do
   gem "RedCloth", "~> 4.2.9"
   gem "pry", "~> 0.9.7.4"
   gem "pry-remote", "~> 0.1.0"
+  gem "ocra", "~> 1.3.0"
 end
