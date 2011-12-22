@@ -49,6 +49,7 @@ rvm install 1.9.3 &minus;&minus;with-openssl-dir=$rvm_path/usr</pre>
 h3. Credits
 
 * Special thanks to "KanonBaum (Brian Peppers)":http://polyhedricpeppers.weebly.com/insufficient-ram.html for the music!
+* Thanks to Outrider from #tigirc for helping debug the OSX package.
 * Thanks to everyone who tested the game!
 
 h2. Tools used
