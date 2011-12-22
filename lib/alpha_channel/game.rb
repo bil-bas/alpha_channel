@@ -183,13 +183,19 @@ class Game < Window
   def add_high_score(name)
     puts "Recording high score: #{name}:#{score} on #{difficulty} (level: #{@level})"
 
-    @offline_high_scores[difficulty].add name: name, score: score, text: "level:#{@level}"
+    begin
+      @offline_high_scores[difficulty].add name: name, score: score, text: "level:#{@level}"
+    rescue
+      $stderr.puts "Failed to write high scores from file." 
+    end
+
     begin
       unless DEVELOPMENT_MODE or @offline
         @online_high_scores[difficulty].add name: name, score: score, text: "level:#{@level}"
         @online_high_scores[difficulty].load
       end
     rescue
+      $stderr.puts "Failed to get online high-scores. Running offline."
       @offline = true
     end
   end
@@ -228,13 +234,22 @@ class Game < Window
       begin
         scores[difficulty].load unless @offline
       rescue
+        $stderr.puts "Failed to get online high-scores. Running offline."
         @offline = true
       end
+
+      scores[difficulty]
     end
 
     @offline_high_scores = Hash.new do |scores, difficulty|
       scores[difficulty] = Chingu::HighScoreList.new size: NUM_SCORES, file: File.join(SETTINGS_FOLDER, "scores_#{difficulty}.yml")
-      scores[difficulty].load
+      begin
+        scores[difficulty].load
+      rescue
+        $stderr.puts "Failed to read high scores from file." 
+      end
+
+      scores[difficulty]
     end
 
     @music = Song["Alpha_Alarm.ogg"]
