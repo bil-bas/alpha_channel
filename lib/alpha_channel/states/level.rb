@@ -94,7 +94,7 @@ class Level < Screen
     @space = CP::Space.new
     @space.damping = 0.05
 
-    @space.on_collision(Pixel, Pixel) do |pixel1, pixel2|
+    @space.on_collision(:pixel, :pixel) do |pixel1, pixel2|
       pixel1.fight(pixel2) if pixel1.hurts?(pixel2)
       pixel1.solid? and pixel2.solid? # Only collide if both are solid.
     end
@@ -110,7 +110,7 @@ class Level < Screen
       @walls << Wall.new(@space, x1, y1, x2, y2, side)
     end
 
-    @space.on_collision(Pixel, Wall) do |pixel, wall|
+    @space.on_collision(:pixel, :wall) do |pixel, wall|
       pixel.hit_wall(wall)
       true # We always want a collision.
     end

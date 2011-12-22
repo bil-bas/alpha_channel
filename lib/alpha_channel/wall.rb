@@ -13,7 +13,7 @@ class Wall < BasicGameObject
     @shape.e = ELASTICITY
     @shape.u = FRICTION
     @shape.body.p = CP::Vec2.new(0, 0)
-    @shape.collision_type = self.class
+    @shape.collision_type = :wall
     @side = side
     @shape.object = self
 

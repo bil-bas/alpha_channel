@@ -90,7 +90,7 @@ class Pixel < GameObject
     vertices = [CP::Vec2.new(-width / 2, -height / 2), CP::Vec2.new(-width / 2, height / 2), CP::Vec2.new(width / 2, height / 2), CP::Vec2.new(width / 2, -height / 2)]
     @shape = CP::Shape::Poly.new(body, vertices, CP::Vec2.new(0,0))
     @shape.body.p = CP::Vec2.new(x, y)
-    @shape.collision_type = Pixel
+    @shape.collision_type = :pixel
     @shape.object = self
 
     @space.add_body @shape.body
