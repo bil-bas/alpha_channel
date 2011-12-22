@@ -34,8 +34,16 @@ Runs in a 640x480 window (or full-screen at that resolution).
 * OS X: Native executable (.app) available.
 * Linux: Can run from Ruby source + libraries + Ruby gems 
   * Install Ruby 1.9.2 or higher
-  * Install libraries needed by Gosu (see http://code.google.com/p/gosu/wiki/GettingStartedOnLinux) 
-  * Install Ruby gem dependencies <pre>bundle install --without development test</pre> (may need to <pre>sudo gem install bundler</pre> beforehand).
+  * Install libraries needed by Gosu (see http://code.google.com/p/gosu/wiki/GettingStartedOnLinux)
+  * Install library needed for managing online high scores:
+    <pre>sudo apt-get install libopenssl-ruby</pre>
+    You may alternatively need to install the openssl package with rvm if that is what you are using:
+    <pre>rvm pkg install openssl
+rvm install 1.9.3 &minus;&minus;with-openssl-dir=$rvm_path/usr</pre>
+  * Install Ruby gem dependencies
+    <pre>bundle install &minus;&minus;without development test</pre>
+    If bundler is not installed, you may need to do so beforehand:
+    <pre>sudo gem install bundler</pre>
   * <pre>ruby bin/alpha_channel.rbw</pre>
 
 h3. Credits

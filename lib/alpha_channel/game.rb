@@ -234,7 +234,6 @@ class Game < Window
     @music = Song["Alpha_Alarm.ogg"]
     @music.volume = @settings[:music_volume]
     toggle_music unless @settings[:music_muted]
-p "setup complete"
     push_game_state Menu
   end
 
@@ -260,7 +259,7 @@ p "setup complete"
 
     super
     music = @music.playing? ? "#{(@music.volume * 100).round}%" : "off"
-    self.caption = "#{NAME} v#{AlphaChannel::VERSION} - F1 or H for help [FPS: #{[@potential_fps, 999].min}] Music: #{music}"
+    self.caption = "#{NAME} v#{AlphaChannel::VERSION} - F1 or H for help [FPS: #{fps} (#{[@potential_fps, 999].min})] Music: #{music}"
 
     @previous_time = now
 
