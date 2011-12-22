@@ -3,6 +3,7 @@ Config = RbConfig if RUBY_VERSION > '1.9.2'
 require 'chingu'
 require 'crack/xml' # "Optional" dependency for Chingu.
 require 'rest_client' # "Optional" dependency for Chingu.
+require_relative 'chingu_ext/online_high_score_list'
 
 require 'chipmunk'
 require_relative 'chipmunk_ext/space'
@@ -125,6 +126,7 @@ class Game < Window
     @potential_fps = 0
 
     @exception = nil
+    @offline = false
   end
 
   def difficulty; @settings[:difficulty]; end
@@ -183,12 +185,12 @@ class Game < Window
 
     @offline_high_scores[difficulty].add name: name, score: score, text: "level:#{@level}"
     begin
-      unless DEVELOPMENT_MODE
+      unless DEVELOPMENT_MODE or @offline
         @online_high_scores[difficulty].add name: name, score: score, text: "level:#{@level}"
         @online_high_scores[difficulty].load
       end
     rescue
-      # Offline - don't worry about it.
+      @offline = true
     end
   end
 
@@ -223,7 +225,11 @@ class Game < Window
     @online_high_scores = Hash.new do |scores, difficulty|
       scores[difficulty] = Chingu::OnlineHighScoreList.new limit: NUM_SCORES, login: HIGH_SCORE_LOGIN,
                                                            password: HIGH_SCORE_PASSWORD, game_id: DIFFICULTIES[difficulty]
-      scores[difficulty].load
+      begin
+        scores[difficulty].load unless @offline
+      rescue
+        @offline = true
+      end
     end
 
     @offline_high_scores = Hash.new do |scores, difficulty|
