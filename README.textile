@@ -17,7 +17,7 @@ h2. How to run the game
 
 * Windows: <pre>alpha_channel.exe</pre>.
 * OS X: <pre>alpha_channel.app</pre>
-* Linux: <pre>ruby bin/spooner_ld_18.rbw</pre> (see below under _compatibility_ for requirements).
+* Linux: <pre>ruby bin/alpha_channel.rbw</pre> (see below under _compatibility_ for requirements).
 
 NOTE: The game saves settings and high-scores into '~/.alpha_channel_spooner'
 NOTE: The game will upload your high score if they beat one of the 20 global high scores for the difficulty you are playing on, along with the name you type in and the time. No other information is recorded.
@@ -44,7 +44,6 @@ rvm install 1.9.3 &minus;&minus;with-openssl-dir=$rvm_path/usr</pre>
     <pre>bundle install &minus;&minus;without development test</pre>
     If bundler is not installed, you may need to do so beforehand:
     <pre>sudo gem install bundler</pre>
-  * <pre>ruby bin/alpha_channel.rbw</pre>
 
 h3. Credits
 
