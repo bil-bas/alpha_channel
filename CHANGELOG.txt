@@ -1,6 +1,6 @@
 = Changelog
 
-== 1.4.0 (2011-12-16)
+== 1.4.0 (2011-12-22)
 
   - Settings and high scores now stored in ~/.alpha_channel_spooner
   - Added Easy/Normal/Hard difficulties ('Normal' is a bit easier than previous; 'hard' is a bit harder)
