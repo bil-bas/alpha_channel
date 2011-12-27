@@ -1,19 +1,26 @@
 Config = RbConfig if defined? RbConfig and not defined? Config # 1.9.3 hack
 
 require 'rake/clean'
+require 'bundler/setup'
+require "release_packager"
 
 require_relative "lib/alpha_channel/version"
-APP = "alpha_channel"
-APP_READABLE = "Alpha Channel"
-RELEASE_VERSION = AlphaChannel::VERSION
-
-LICENSE_FILE = "COPYING.txt"
-
-# My scripts which help me package games.
-require_relative "../release_packager/lib/release_packager"
 
 CLEAN.include("*.log")
 CLOBBER.include("doc/**/*")
+
+ReleasePackager::Project.new do |p|
+  p.name = "Alpha Channel"
+  p.version = AlphaChannel::VERSION
+  p.execute = "bin/alpha_channel.rbw"
+  p.files = `git ls-files`.split("\n").reject {|f| f[0] == '.' }
+
+  p.add_compression :zip
+  p.add_output :source
+  p.add_output :win32_standalone
+  p.add_output :win32_installer
+  p add_output :osx_app
+end
 
 desc "Generate Yard docs."
 task :yard do
