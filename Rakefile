@@ -19,7 +19,7 @@ ReleasePackager::Project.new do |p|
   p.add_output :source
   p.add_output :win32_standalone
   p.add_output :win32_installer
-  p add_output :osx_app
+  p.add_output :osx_app
 end
 
 desc "Generate Yard docs."
