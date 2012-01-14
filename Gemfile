@@ -13,8 +13,8 @@ group :development do
   gem "pry", "~> 0.9.7.4"
   gem "pry-remote", "~> 0.1.0"
   gem "ocra", "~> 1.3.0"
-  #gem "release_packager", "~> 0.1.0"
-  gem "release_packager", path: "../release_packager"
+  gem "relapse", "~> 0.1.0"
+  #gem "relapse", path: "../relapse"
 end
 
 group :test do
