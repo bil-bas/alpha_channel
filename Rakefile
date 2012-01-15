@@ -28,7 +28,7 @@ Relapse::Project.new do |p|
   p.win32_installer_group = "Spooner Games"
   p.osx_app_url = "com.github.spooner.games.alpha_channel"
   p.osx_app_wrapper = "../osx_app/RubyGosu App.app"
-  p.osx_app_gems = Bundler.setup.gems
+  p.osx_app_gems = Bundler.definition.specs_for([:default])  # Don't want :development gems.
 
   p.add_archive_format :zip
   #p.add_archive_format :'7z'

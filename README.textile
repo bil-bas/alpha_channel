@@ -41,7 +41,7 @@ Runs in a 640x480 window (or full-screen at that resolution).
     <pre>rvm pkg install openssl
 rvm install 1.9.3 &minus;&minus;with-openssl-dir=$rvm_path/usr</pre>
   * Install Ruby gem dependencies
-    <pre>bundle install &minus;&minus;without development test</pre>
+    <pre>bundle install &minus;&minus;without development</pre>
     If bundler is not installed, you may need to do so beforehand:
     <pre>sudo gem install bundler</pre>
 
