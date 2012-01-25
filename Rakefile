@@ -2,37 +2,45 @@ Config = RbConfig if defined? RbConfig and not defined? Config # 1.9.3 hack
 
 require 'rake/clean'
 require 'bundler/setup'
-require "relapse"
+require "releasy"
 
 require_relative "lib/alpha_channel/version"
 
 CLEAN.include("*.log")
 CLOBBER.include("doc/**/*")
 
-Relapse::Project.new do |p|
-  p.name = "Alpha Channel"
-  p.version = AlphaChannel::VERSION
-  p.executable = "bin/alpha_channel.rbw"
-  p.files = `git ls-files`.split("\n").reject {|f| f[0] == '.' }
-  p.ocra_parameters = "--no-enc"
-  p.icon = "media/icon.ico"
-  p.add_link "http://spooner.github.com/games/alpha_channel", "Alpha Channel website"
-  p.readme = "README.html"
+Releasy::Project.new do
+  name "Alpha Channel"
+  version AlphaChannel::VERSION
+  executable "bin/alpha_channel.rbw"
+  files `git ls-files`.split("\n")
+  files.exclude ".gitignore"
+  exposed_files %w[README.html]
+  add_link "http://spooner.github.com/games/alpha_channel", "Alpha Channel website"
 
-  p.add_output :osx_app
-  p.add_output :source
-  p.add_output :win32_folder
-  p.add_output :win32_installer
-  #p.add_output :win32_standalone
+  add_build :osx_app do
+    url "com.github.spooner.games.alpha_channel"
+    wrapper "../releasy/wrappers/gosu-mac-wrapper-0.7.41.tar.gz"
+  end
 
-  p.win32_installer_group = "Spooner Games"
-  p.osx_app_url = "com.github.spooner.games.alpha_channel"
-  p.osx_app_wrapper = "../osx_app/RubyGosu App.app"
-  p.osx_app_gems = Bundler.definition.specs_for([:default])  # Don't want :development gems.
+  add_build :source
 
-  p.add_archive_format :zip
-  #p.add_archive_format :'7z'
+  add_build :windows_folder do
+    icon "media/icon.ico"
+    exclude_encoding
+    ocra_parameters "--no-enc"
+  end
+
+  add_build :windows_installer do
+    icon "media/icon.ico"
+    exclude_encoding
+    readme "README.html"
+    start_menu_group "Spooner Games"
+  end
+
+  add_archive :zip
 end
+
 
 desc "Generate Yard docs."
 task :yard do

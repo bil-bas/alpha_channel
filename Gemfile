@@ -1,4 +1,4 @@
-source "http://gemcutter.org"
+source :rubygems
 
 gem "gosu", "~> 0.7.41"
 gem "chingu", "~> 0.9rc7"
@@ -13,10 +13,5 @@ group :development do
   gem "pry", "~> 0.9.7.4"
   gem "pry-remote", "~> 0.1.0"
   gem "ocra", "~> 1.3.0"
-  gem "relapse", "~> 0.1.0"
-  #gem "relapse", path: "../relapse"
-end
-
-group :test do
-
+  gem "releasy", "~> 0.2.0rc1"
 end
