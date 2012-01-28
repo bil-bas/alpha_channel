@@ -17,28 +17,32 @@ Releasy::Project.new do
   files.exclude ".gitignore"
   exposed_files %w[README.html]
   add_link "http://spooner.github.com/games/alpha_channel", "Alpha Channel website"
+  exclude_encoding
 
   add_build :osx_app do
     url "com.github.spooner.games.alpha_channel"
     wrapper "../releasy/wrappers/gosu-mac-wrapper-0.7.41.tar.gz"
+    add_package :tar_gz
   end
 
-  add_build :source
+  add_build :source do
+    add_package :zip
+  end
 
   add_build :windows_folder do
     icon "media/icon.ico"
-    exclude_encoding
     ocra_parameters "--no-enc"
+    add_package :zip
   end
 
   add_build :windows_installer do
     icon "media/icon.ico"
-    exclude_encoding
     readme "README.html"
     start_menu_group "Spooner Games"
+    add_package :zip
   end
 
-  add_archive :zip
+  add_deploy :github
 end
 
 
